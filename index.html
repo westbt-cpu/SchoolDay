@@ -1,1 +1,1236 @@
+<!DOCTYPE html>
 
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORCSD Lunch Today</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222535;
+    --border: #2e3347;
+    --accent: #f4c842;
+    --accent2: #4ef0b0;
+    --accent3: #f07060;
+    --text: #e8eaf0;
+    --muted: #7880a0;
+    --card-radius: 16px;
+  }
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* Subtle grid background */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image:
+linear-gradient(rgba(244,200,66,0.03) 1px, transparent 1px),
+linear-gradient(90deg, rgba(244,200,66,0.03) 1px, transparent 1px);
+background-size: 40px 40px;
+pointer-events: none;
+z-index: 0;
+}
+
+.container {
+max-width: 700px;
+margin: 0 auto;
+padding: 32px 20px 80px;
+position: relative;
+z-index: 1;
+}
+
+/* Header */
+.header {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 32px;
+animation: fadeUp 0.5s ease both;
+}
+
+.header-left .label {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+letter-spacing: 0.15em;
+color: var(–accent);
+text-transform: uppercase;
+margin-bottom: 6px;
+}
+
+.header-left h1 {
+font-family: ‘Syne’, sans-serif;
+font-size: clamp(28px, 6vw, 42px);
+font-weight: 800;
+line-height: 1.05;
+letter-spacing: -0.02em;
+}
+
+.header-left h1 span {
+color: var(–accent);
+}
+
+.date-badge {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 12px 16px;
+text-align: right;
+flex-shrink: 0;
+}
+
+.date-badge .day {
+font-family: ‘Syne’, sans-serif;
+font-size: 22px;
+font-weight: 800;
+color: var(–accent);
+line-height: 1;
+}
+
+.date-badge .weekday {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+letter-spacing: 0.1em;
+color: var(–muted);
+text-transform: uppercase;
+margin-top: 2px;
+}
+
+/* School selector tabs */
+.school-tabs {
+display: flex;
+gap: 8px;
+margin-bottom: 24px;
+overflow-x: auto;
+padding-bottom: 4px;
+animation: fadeUp 0.5s 0.1s ease both;
+}
+
+.school-tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+flex-shrink: 0;
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 100px;
+padding: 8px 18px;
+font-size: 13px;
+font-weight: 500;
+color: var(–muted);
+cursor: pointer;
+transition: all 0.2s;
+white-space: nowrap;
+}
+
+.tab:hover { border-color: var(–accent); color: var(–text); }
+.tab.active {
+background: var(–accent);
+border-color: var(–accent);
+color: #0f1117;
+font-weight: 700;
+}
+
+/* AI menu card */
+.ai-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–card-radius);
+padding: 24px;
+margin-bottom: 20px;
+animation: fadeUp 0.5s 0.15s ease both;
+}
+
+.ai-card-header {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 18px;
+}
+
+.ai-badge {
+background: linear-gradient(135deg, var(–accent2), var(–accent));
+border-radius: 8px;
+padding: 6px 10px;
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+font-weight: 500;
+color: #0f1117;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+}
+
+.ai-card-header h2 {
+font-family: ‘Syne’, sans-serif;
+font-size: 16px;
+font-weight: 700;
+}
+
+.fetch-btn {
+margin-left: auto;
+background: transparent;
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 7px 14px;
+color: var(–muted);
+font-size: 12px;
+font-family: ‘DM Mono’, monospace;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.fetch-btn:hover {
+border-color: var(–accent2);
+color: var(–accent2);
+}
+
+.fetch-btn:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+}
+
+.menu-output {
+min-height: 80px;
+font-size: 15px;
+line-height: 1.7;
+color: var(–text);
+}
+
+.menu-output.loading {
+display: flex;
+align-items: center;
+gap: 10px;
+color: var(–muted);
+font-size: 14px;
+font-family: ‘DM Mono’, monospace;
+}
+
+.menu-output .placeholder {
+color: var(–muted);
+font-size: 14px;
+font-style: italic;
+}
+
+.spinner {
+width: 16px;
+height: 16px;
+border: 2px solid var(–border);
+border-top-color: var(–accent2);
+border-radius: 50%;
+animation: spin 0.7s linear infinite;
+flex-shrink: 0;
+}
+
+/* Menu items styled output */
+.menu-section { margin-bottom: 14px; }
+.menu-section-title {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+letter-spacing: 0.15em;
+text-transform: uppercase;
+color: var(–accent);
+margin-bottom: 6px;
+}
+.menu-item {
+display: flex;
+align-items: baseline;
+gap: 8px;
+padding: 5px 0;
+border-bottom: 1px solid var(–border);
+font-size: 14px;
+}
+.menu-item:last-child { border-bottom: none; }
+.menu-item-dot {
+width: 5px;
+height: 5px;
+border-radius: 50%;
+background: var(–accent2);
+flex-shrink: 0;
+margin-top: 5px;
+}
+.no-school {
+color: var(–accent3);
+font-family: ‘DM Mono’, monospace;
+font-size: 13px;
+padding: 12px 0;
+}
+
+/* Weather card */
+.weather-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–card-radius);
+padding: 20px 24px;
+margin-bottom: 20px;
+animation: fadeUp 0.5s 0.2s ease both;
+}
+
+.weather-top {
+display: flex;
+align-items: center;
+gap: 14px;
+margin-bottom: 14px;
+}
+
+.weather-icon {
+font-size: 44px;
+line-height: 1;
+flex-shrink: 0;
+}
+
+.weather-main {
+flex: 1;
+}
+
+.weather-temp {
+font-family: ‘Syne’, sans-serif;
+font-size: 36px;
+font-weight: 800;
+line-height: 1;
+letter-spacing: -0.03em;
+}
+
+.weather-temp .unit {
+font-size: 18px;
+font-weight: 400;
+color: var(–muted);
+margin-left: 2px;
+}
+
+.weather-desc {
+font-size: 13px;
+color: var(–muted);
+margin-top: 3px;
+}
+
+.weather-stats {
+display: flex;
+gap: 16px;
+}
+
+.weather-stat {
+text-align: center;
+background: var(–surface2);
+border-radius: 10px;
+padding: 10px 14px;
+flex: 1;
+}
+
+.weather-stat-val {
+font-family: ‘Syne’, sans-serif;
+font-size: 16px;
+font-weight: 700;
+}
+
+.weather-stat-lbl {
+font-family: ‘DM Mono’, monospace;
+font-size: 9px;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(–muted);
+margin-top: 2px;
+}
+
+.dress-strip {
+display: flex;
+align-items: flex-start;
+gap: 10px;
+margin-top: 14px;
+background: var(–surface2);
+border-radius: 10px;
+padding: 12px 14px;
+font-size: 13px;
+line-height: 1.55;
+color: var(–text);
+}
+
+.dress-strip .dress-emoji {
+font-size: 20px;
+flex-shrink: 0;
+margin-top: 1px;
+}
+
+.weather-loading {
+display: flex;
+align-items: center;
+gap: 10px;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
+font-size: 12px;
+padding: 8px 0;
+}
+
+.weather-error {
+color: var(–accent3);
+font-size: 13px;
+font-family: ‘DM Mono’, monospace;
+padding: 8px 0;
+}
+
+/* Quick links */
+.links-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-bottom: 20px;
+animation: fadeUp 0.5s 0.2s ease both;
+}
+
+.link-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–card-radius);
+padding: 18px;
+text-decoration: none;
+color: var(–text);
+transition: all 0.2s;
+display: block;
+}
+
+.link-card:hover {
+border-color: var(–accent);
+transform: translateY(-2px);
+}
+
+.link-card .lc-icon { font-size: 22px; margin-bottom: 8px; }
+.link-card .lc-label {
+font-family: ‘DM Mono’, monospace;
+font-size: 9px;
+letter-spacing: 0.15em;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 3px;
+}
+.link-card .lc-title {
+font-size: 13px;
+font-weight: 500;
+}
+
+/* Prices card */
+.prices-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–card-radius);
+padding: 20px 24px;
+margin-bottom: 20px;
+animation: fadeUp 0.5s 0.25s ease both;
+}
+
+.prices-card h3 {
+font-family: ‘Syne’, sans-serif;
+font-size: 14px;
+font-weight: 700;
+color: var(–muted);
+margin-bottom: 14px;
+text-transform: uppercase;
+letter-spacing: 0.05em;
+}
+
+.price-cols {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 16px;
+}
+
+.price-col-title {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(–accent);
+margin-bottom: 8px;
+}
+
+.price-row {
+display: flex;
+justify-content: space-between;
+font-size: 13px;
+padding: 4px 0;
+border-bottom: 1px dashed var(–border);
+color: var(–muted);
+}
+
+.price-row:last-child { border-bottom: none; }
+.price-row .price-amount { color: var(–text); font-weight: 500; }
+
+/* Free meals highlight */
+.free-banner {
+background: linear-gradient(135deg, rgba(78,240,176,0.1), rgba(244,200,66,0.1));
+border: 1px solid rgba(78,240,176,0.3);
+border-radius: 10px;
+padding: 12px 16px;
+margin-top: 14px;
+font-size: 13px;
+color: var(–accent2);
+font-weight: 500;
+line-height: 1.5;
+}
+
+/* Setup tab */
+.setup-section {
+animation: fadeUp 0.5s 0.3s ease both;
+}
+
+.setup-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: var(–card-radius);
+margin-bottom: 16px;
+overflow: hidden;
+}
+
+.setup-card-header {
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 18px 20px;
+cursor: pointer;
+user-select: none;
+transition: background 0.2s;
+}
+
+.setup-card-header:hover { background: var(–surface2); }
+
+.step-num {
+background: var(–accent);
+color: #0f1117;
+width: 28px;
+height: 28px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-family: ‘Syne’, sans-serif;
+font-weight: 800;
+font-size: 13px;
+flex-shrink: 0;
+}
+
+.step-num.done { background: var(–accent2); }
+.step-num.auto { background: var(–accent3); }
+
+.setup-card-header h3 {
+font-family: ‘Syne’, sans-serif;
+font-size: 15px;
+font-weight: 700;
+flex: 1;
+}
+
+.chevron {
+color: var(–muted);
+transition: transform 0.2s;
+font-size: 16px;
+}
+
+.setup-card.open .chevron { transform: rotate(180deg); }
+
+.setup-card-body {
+display: none;
+padding: 0 20px 20px;
+font-size: 14px;
+line-height: 1.7;
+color: var(–muted);
+border-top: 1px solid var(–border);
+}
+
+.setup-card.open .setup-card-body { display: block; }
+.setup-card-body p { margin-bottom: 10px; padding-top: 14px; }
+.setup-card-body p:first-child { margin-top: 0; }
+
+.code-block {
+background: #0a0c12;
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 14px 16px;
+margin: 12px 0;
+font-family: ‘DM Mono’, monospace;
+font-size: 12px;
+line-height: 1.8;
+color: #b0c0d8;
+overflow-x: auto;
+white-space: pre;
+}
+
+.code-block .comment { color: var(–muted); }
+.code-block .key { color: var(–accent2); }
+.code-block .val { color: var(–accent); }
+.code-block .str { color: #f0a070; }
+
+.inline-code {
+background: #0a0c12;
+border: 1px solid var(–border);
+border-radius: 4px;
+padding: 2px 7px;
+font-family: ‘DM Mono’, monospace;
+font-size: 12px;
+color: var(–accent2);
+}
+
+.note {
+background: rgba(244,200,66,0.08);
+border-left: 3px solid var(–accent);
+border-radius: 0 6px 6px 0;
+padding: 10px 14px;
+margin: 10px 0;
+font-size: 13px;
+color: var(–text);
+}
+
+/* Nav */
+.nav {
+display: flex;
+gap: 4px;
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 100px;
+padding: 5px;
+margin-bottom: 28px;
+animation: fadeUp 0.4s ease both;
+}
+
+.nav-btn {
+flex: 1;
+background: transparent;
+border: none;
+border-radius: 100px;
+padding: 9px 12px;
+font-size: 13px;
+font-weight: 500;
+color: var(–muted);
+cursor: pointer;
+transition: all 0.2s;
+white-space: nowrap;
+}
+
+.nav-btn.active {
+background: var(–accent);
+color: #0f1117;
+font-weight: 700;
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(14px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+to { transform: rotate(360deg); }
+}
+
+@media (max-width: 480px) {
+.links-grid { grid-template-columns: 1fr; }
+.price-cols { grid-template-columns: 1fr; }
+.header { flex-direction: column; gap: 16px; }
+.date-badge { text-align: left; }
+}
+</style>
+
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+
+  <div class="header">
+    <div class="header-left">
+      <div class="label">Oyster River CSD</div>
+      <h1>Lunch<br><span>Today</span></h1>
+    </div>
+    <div class="date-badge">
+      <div class="day" id="day-num">--</div>
+      <div class="weekday" id="day-name">---</div>
+      <div class="weekday" id="month-yr" style="margin-top:2px">--- ----</div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="switchView('menu')">🍽 Menu</button>
+    <button class="nav-btn" onclick="switchView('info')">ℹ️ Info</button>
+    <button class="nav-btn" onclick="switchView('setup')">⚙️ Setup</button>
+  </div>
+
+  <!-- MENU VIEW -->
+
+  <div class="view active" id="view-menu">
+
+```
+<!-- School tabs -->
+<div class="school-tabs">
+  <button class="tab active" onclick="setSchool(this,'mw')">Mast Way</button>
+  <button class="tab" onclick="setSchool(this,'moh')">Moharimet</button>
+  <button class="tab" onclick="setSchool(this,'ms')">Middle School</button>
+  <button class="tab" onclick="setSchool(this,'hs')">High School</button>
+</div>
+
+<!-- Weather card -->
+<div class="weather-card" id="weather-card">
+  <div class="weather-loading"><div class="spinner"></div><span>Loading Durham, NH weather…</span></div>
+</div>
+
+<!-- AI parser card -->
+<div class="ai-card">
+  <div class="ai-card-header">
+    <div class="ai-badge">AI ✦</div>
+    <h2>Today's Menu</h2>
+    <button class="fetch-btn" id="fetch-btn" onclick="fetchMenu()">↻ Parse Menu</button>
+  </div>
+  <div class="menu-output" id="menu-output">
+    <span class="placeholder">Tap "Parse Menu" to have AI read today's lunch from the school's PDF.</span>
+  </div>
+</div>
+
+<!-- Quick links -->
+<div class="links-grid">
+  <a class="link-card" href="https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026%20Lunch%20Menus/March%202026%20Lunch%20Menus/Mast%20Way%20and%20Moharimet%20Menus%20-%20March%202026.pdf" target="_blank">
+    <div class="lc-icon">📄</div>
+    <div class="lc-label">PDF Menu</div>
+    <div class="lc-title">Mast Way &amp; Moharimet</div>
+  </a>
+  <a class="link-card" href="https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026%20Lunch%20Menus/March%202026%20Lunch%20Menus/Oyster%20River%20High%20School%20Lunch%20Menu%20-%20March%202026.pdf" target="_blank">
+    <div class="lc-icon">📄</div>
+    <div class="lc-label">PDF Menu</div>
+    <div class="lc-title">High School</div>
+  </a>
+  <a class="link-card" href="https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026%20Lunch%20Menus/March%202026%20Lunch%20Menus/Oyster%20River%20Middle%20School%20Lunch%20Menu%20-%20March%202026.pdf" target="_blank">
+    <div class="lc-icon">📄</div>
+    <div class="lc-label">PDF Menu</div>
+    <div class="lc-title">Middle School</div>
+  </a>
+  <a class="link-card" href="https://linqconnect.com/" target="_blank">
+    <div class="lc-icon">💳</div>
+    <div class="lc-label">Account</div>
+    <div class="lc-title">LINQConnect</div>
+  </a>
+</div>
+```
+
+  </div>
+
+  <!-- INFO VIEW -->
+
+  <div class="view" id="view-info">
+
+```
+<div class="prices-card">
+  <h3>2025–2026 Prices</h3>
+  <div class="price-cols">
+    <div>
+      <div class="price-col-title">🌅 Breakfast</div>
+      <div class="price-row"><span>K–8</span><span class="price-amount">$1.75</span></div>
+      <div class="price-row"><span>9–12</span><span class="price-amount">$2.00</span></div>
+      <div class="price-row"><span>Adult</span><span class="price-amount">$2.75</span></div>
+    </div>
+    <div>
+      <div class="price-col-title">☀️ Lunch</div>
+      <div class="price-row"><span>Pre-K–4</span><span class="price-amount">$3.25</span></div>
+      <div class="price-row"><span>5–8</span><span class="price-amount">$3.50</span></div>
+      <div class="price-row"><span>9–12</span><span class="price-amount">$3.75</span></div>
+      <div class="price-row"><span>Adult</span><span class="price-amount">$5.00</span></div>
+    </div>
+  </div>
+  <div class="free-banner">
+    ✦ Reduced meal families get <strong>one free breakfast + one free lunch</strong> daily this year — thanks to NH SB82 and school board vote.
+  </div>
+</div>
+
+<div class="links-grid" style="animation:none">
+  <a class="link-card" href="https://linqconnect.com/" target="_blank">
+    <div class="lc-icon">💳</div>
+    <div class="lc-label">Account Portal</div>
+    <div class="lc-title">LINQConnect</div>
+  </a>
+  <a class="link-card" href="https://www.orcsd.org/departments/child-nutrition/free-and-reduced-meals" target="_blank">
+    <div class="lc-icon">📋</div>
+    <div class="lc-label">Apply</div>
+    <div class="lc-title">Free &amp; Reduced</div>
+  </a>
+  <a class="link-card" href="https://www.orcsd.org/departments/child-nutrition/files/documents/special_dietary_medical_statement_form_2018.pdf" target="_blank">
+    <div class="lc-icon">⚕️</div>
+    <div class="lc-label">Form</div>
+    <div class="lc-title">Food Allergy Statement</div>
+  </a>
+  <a class="link-card" href="https://www.orcsd.org/departments/child-nutrition" target="_blank">
+    <div class="lc-icon">🏫</div>
+    <div class="lc-label">Department</div>
+    <div class="lc-title">Child Nutrition Page</div>
+  </a>
+</div>
+```
+
+  </div>
+
+  <!-- SETUP VIEW -->
+
+  <div class="view" id="view-setup">
+    <div class="setup-section">
+
+```
+  <div class="setup-card" onclick="toggleCard(this)">
+    <div class="setup-card-header">
+      <div class="step-num done">✓</div>
+      <h3>NFC Tag — Smart Monthly Redirect</h3>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="setup-card-body">
+      <p>Host this file on GitHub Pages as <span class="inline-code">index.html</span>. Your NFC tag points to your GitHub Pages URL — <strong>never needs reprogramming</strong> as months change.</p>
+      <p>The page auto-builds PDF links for the current month using this pattern:</p>
+      <div class="code-block"><span class="comment">// PDF URL pattern (auto-generated each visit)</span>
+```
+
+<span class="key">const</span> month = <span class="str">“March 2026”</span>;
+<span class="key">const</span> base = <span class="str">“https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026 Lunch Menus/”</span>;
+<span class="key">const</span> url = <span class="str">`${base}${month} Lunch Menus/Mast Way and Moharimet Menus - ${month}.pdf`</span>;</div>
+<div class="note">ℹ️ Program your NFC tag using <strong>NFC Tools</strong> (iOS/Android) → Write → URL → paste your GitHub Pages link. Use NTAG213 tags (~$0.50 each).</div>
+</div>
+</div>
+
+```
+  <div class="setup-card" onclick="toggleCard(this)">
+    <div class="setup-card-header">
+      <div class="step-num">2</div>
+      <h3>AI Menu Parser — Add Your API Key</h3>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="setup-card-body">
+      <p>The "Parse Menu" button uses Claude's API to fetch today's PDF and extract the lunch items. To enable it, add your Anthropic API key as a GitHub Pages environment variable or paste it directly into the source.</p>
+      <p>Find this line in the JS and replace the placeholder:</p>
+      <div class="code-block"><span class="comment">// In the fetchMenu() function:</span>
+```
+
+<span class="key">const</span> ANTHROPIC_KEY = <span class="str">“sk-ant-YOUR-KEY-HERE”</span>;
+<span class="comment">// Get one free at console.anthropic.com</span></div>
+<div class="note">⚠️ If hosting publicly on GitHub Pages, use a backend proxy (like a free Cloudflare Worker) to keep your API key private. See Step 3.</div>
+</div>
+</div>
+
+```
+  <div class="setup-card" onclick="toggleCard(this)">
+    <div class="setup-card-header">
+      <div class="step-num auto">3</div>
+      <h3>Morning Notification — GitHub Actions + SMS</h3>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="setup-card-body">
+      <p>Add this workflow file to your repo at <span class="inline-code">.github/workflows/daily-menu.yml</span> to get a text every school morning at 7am with today's menu.</p>
+      <div class="code-block"><span class="key">name:</span> <span class="val">Daily Lunch Menu</span>
+```
+
+<span class="key">on:</span>
+<span class="key">schedule:</span>
+<span class="comment"># 7am ET Mon-Fri (12:00 UTC)</span>
+- <span class="key">cron:</span> <span class="str">‘0 12 * * 1-5’</span>
+<span class="key">workflow_dispatch:</span>  <span class="comment"># manual trigger</span>
+
+<span class="key">jobs:</span>
+<span class="key">send-menu:</span>
+<span class="key">runs-on:</span> <span class="val">ubuntu-latest</span>
+<span class="key">steps:</span>
+- <span class="key">uses:</span> <span class="val">actions/checkout@v4</span>
+
+```
+  - <span class="key">name:</span> <span class="val">Parse menu &amp; send SMS</span>
+    <span class="key">env:</span>
+      <span class="key">ANTHROPIC_KEY:</span> <span class="val">${{ secrets.ANTHROPIC_KEY }}</span>
+      <span class="key">TWILIO_SID:</span> <span class="val">${{ secrets.TWILIO_SID }}</span>
+      <span class="key">TWILIO_TOKEN:</span> <span class="val">${{ secrets.TWILIO_TOKEN }}</span>
+      <span class="key">TO_PHONE:</span> <span class="val">${{ secrets.TO_PHONE }}</span>
+      <span class="key">FROM_PHONE:</span> <span class="val">${{ secrets.FROM_PHONE }}</span>
+    <span class="key">run:</span> <span class="val">node scripts/send-menu.js</span></div>
+      <p>The script (<span class="inline-code">scripts/send-menu.js</span>) downloads today's PDF, sends it to Claude, and texts the result via <strong>Twilio</strong> (free trial = 1000 free SMS).</p>
+      <div class="note">💡 Store all keys in GitHub repo → Settings → Secrets. Never commit them to code.</div>
+    </div>
+  </div>
+
+  <div class="setup-card" onclick="toggleCard(this)">
+    <div class="setup-card-header">
+      <div class="step-num auto">4</div>
+      <h3>Node Script — send-menu.js</h3>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="setup-card-body">
+      <p>Create <span class="inline-code">scripts/send-menu.js</span> in your repo:</p>
+      <div class="code-block"><span class="key">const</span> https = require(<span class="str">'https'</span>);
+```
+
+<span class="key">const</span> Anthropic = require(<span class="str">’@anthropic-ai/sdk’</span>);
+<span class="key">const</span> twilio = require(<span class="str">‘twilio’</span>);
+
+<span class="comment">// Build current month’s PDF URL</span>
+<span class="key">function</span> <span class="val">getMenuUrl</span>(school) {
+<span class="key">const</span> d = <span class="key">new</span> Date();
+<span class="key">const</span> m = d.toLocaleString(<span class="str">‘en-US’</span>,{month:<span class="str">‘long’</span>});
+<span class="key">const</span> y = d.getFullYear();
+<span class="key">const</span> base = <span class="str">`https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026 Lunch Menus/${m} ${y} Lunch Menus/`</span>;
+<span class="key">const</span> files = {
+mw: <span class="str">`Mast Way and Moharimet Menus - ${m} ${y}.pdf`</span>,
+ms: <span class="str">`Oyster River Middle School Lunch Menu - ${m} ${y}.pdf`</span>,
+hs: <span class="str">`Oyster River High School Lunch Menu - ${m} ${y}.pdf`</span>
+};
+<span class="key">return</span> base + encodeURIComponent(files[school]);
+}
+
+<span class="key">async function</span> <span class="val">main</span>() {
+<span class="comment">// Fetch PDF as base64</span>
+<span class="key">const</span> res = <span class="key">await</span> fetch(getMenuUrl(<span class="str">‘mw’</span>));
+<span class="key">const</span> buf = <span class="key">await</span> res.arrayBuffer();
+<span class="key">const</span> pdf64 = Buffer.from(buf).toString(<span class="str">‘base64’</span>);
+
+<span class="comment">// Ask Claude what’s for lunch TODAY</span>
+<span class="key">const</span> ai = <span class="key">new</span> Anthropic({apiKey: process.env.ANTHROPIC_KEY});
+<span class="key">const</span> today = <span class="key">new</span> Date().toLocaleDateString(<span class="str">‘en-US’</span>,{weekday:<span class="str">‘long’</span>,month:<span class="str">‘long’</span>,day:<span class="str">‘numeric’</span>});
+<span class="key">const</span> msg = <span class="key">await</span> ai.messages.create({
+model: <span class="str">‘claude-opus-4-6’</span>,
+max_tokens: 300,
+messages: [{
+role: <span class="str">‘user’</span>,
+content: [{
+type: <span class="str">‘document’</span>,
+source: {type:<span class="str">‘base64’</span>, media_type:<span class="str">‘application/pdf’</span>, data: pdf64}
+},{
+type: <span class="str">‘text’</span>,
+text: <span class="str">`Today is ${today}. List ONLY today's lunch items from Mast Way, one per line. Be brief.`</span>
+}]
+}]
+});
+
+<span class="key">const</span> menu = msg.content[0].text;
+<span class="key">const</span> body = <span class="str">`🍽 Mast Way Lunch (${today.split(',')[0]}):\n${menu}`</span>;
+
+<span class="comment">// Send SMS via Twilio</span>
+<span class="key">const</span> client = twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
+<span class="key">await</span> client.messages.create({
+body, to: process.env.TO_PHONE, from: process.env.FROM_PHONE
+});
+console.log(<span class="str">‘✓ Menu sent:’</span>, body);
+}
+
+main().catch(console.error);</div>
+<div class="note">📦 Run <span class="inline-code">npm init -y && npm install @anthropic-ai/sdk twilio</span> in your repo root, then commit <span class="inline-code">package.json</span>.</div>
+</div>
+</div>
+
+```
+</div>
+```
+
+  </div>
+
+</div>
+
+<script>
+// --- Date display ---
+(function() {
+  const d = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const fullMonths = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('day-num').textContent = d.getDate();
+  document.getElementById('day-name').textContent = days[d.getDay()];
+  document.getElementById('month-yr').textContent = months[d.getMonth()] + ' ' + d.getFullYear();
+})();
+
+// --- Nav ---
+function switchView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// --- School tabs ---
+let currentSchool = 'mw';
+function setSchool(el, school) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentSchool = school;
+  // Reset output when switching school
+  const out = document.getElementById('menu-output');
+  out.className = 'menu-output';
+  out.innerHTML = '<span class="placeholder">Tap "Parse Menu" to load this school\'s menu.</span>';
+}
+
+// --- Setup accordions ---
+function toggleCard(card) {
+  card.classList.toggle('open');
+}
+
+// --- Build PDF URL for current month ---
+function getPdfUrl(school) {
+  const d = new Date();
+  const fullMonths = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const m = fullMonths[d.getMonth()];
+  const y = d.getFullYear();
+  const base = `https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026 Lunch Menus/${m} ${y} Lunch Menus/`;
+  const names = {
+    mw:  `Mast Way and Moharimet Menus - ${m} ${y}.pdf`,
+    moh: `Mast Way and Moharimet Menus - ${m} ${y}.pdf`,
+    ms:  `Oyster River Middle School Lunch Menu - ${m} ${y}.pdf`,
+    hs:  `Oyster River High School Lunch Menu - ${m} ${y}.pdf`
+  };
+  return base + names[school];
+}
+
+// --- AI Menu Fetch ---
+async function fetchMenu() {
+  const btn = document.getElementById('fetch-btn');
+  const out = document.getElementById('menu-output');
+
+  // Check weekend
+  const day = new Date().getDay();
+  if (day === 0 || day === 6) {
+    out.className = 'menu-output';
+    out.innerHTML = '<div class="no-school">⛔ No school today (weekend). Check back Monday!</div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Parsing…';
+  out.className = 'menu-output loading';
+  out.innerHTML = '<div class="spinner"></div><span>Fetching PDF and asking Claude…</span>';
+
+  const ANTHROPIC_KEY = 'sk-ant-YOUR-KEY-HERE'; // ← Replace with your key
+
+  try {
+    const pdfUrl = getPdfUrl(currentSchool);
+    const schoolNames = { mw:'Mast Way', moh:'Moharimet', ms:'Middle School', hs:'High School' };
+    const today = new Date().toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 600,
+        system: `You are a helpful assistant that reads school lunch menus from PDFs and returns structured JSON only. 
+Return ONLY valid JSON in this format:
+{
+  "date": "Monday, March 14",
+  "school": "Mast Way",
+  "hasSchool": true,
+  "sections": [
+    { "title": "Entrée", "items": ["Pizza", "Hamburger"] },
+    { "title": "Sides", "items": ["Corn", "Apple"] },
+    { "title": "Breakfast (if shown)", "items": ["Cereal", "Toast"] }
+  ],
+  "note": "any special note or empty string"
+}
+If no school today, set hasSchool to false.`,
+        messages: [{
+          role: 'user',
+          content: [{
+            type: 'text',
+            text: `Today is ${today}. I am looking at the ${schoolNames[currentSchool]} school menu PDF at this URL: ${pdfUrl}
+
+Please fetch this PDF and extract ONLY today's lunch items for ${schoolNames[currentSchool]}. Return JSON as instructed.
+
+If you cannot access the PDF, return:
+{"date":"${today}","school":"${schoolNames[currentSchool]}","hasSchool":true,"sections":[{"title":"Note","items":["PDF could not be loaded — tap the PDF link below to view manually"]}],"note":""}`
+          }]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const raw = data.content?.[0]?.text || '';
+
+    let parsed;
+    try {
+      const clean = raw.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(clean);
+    } catch {
+      throw new Error('Could not parse response');
+    }
+
+    out.className = 'menu-output';
+
+    if (!parsed.hasSchool) {
+      out.innerHTML = '<div class="no-school">⛔ No school today — enjoy the day!</div>';
+    } else {
+      let html = '';
+      for (const section of (parsed.sections || [])) {
+        if (!section.items?.length) continue;
+        html += `<div class="menu-section">
+          <div class="menu-section-title">${section.title}</div>
+          ${section.items.map(i => `<div class="menu-item"><div class="menu-item-dot"></div><span>${i}</span></div>`).join('')}
+        </div>`;
+      }
+      if (parsed.note) html += `<div style="margin-top:10px;font-size:12px;color:var(--muted)">${parsed.note}</div>`;
+      out.innerHTML = html || '<span class="placeholder">No menu data found. Try the PDF links below.</span>';
+    }
+
+  } catch(e) {
+    out.className = 'menu-output';
+    out.innerHTML = `<div class="no-school">⚠️ Error: ${e.message}. Check your API key in Setup tab.</div>`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '↻ Parse Menu';
+}
+
+// --- Weather (Open-Meteo, no API key needed) ---
+// Durham, NH coords
+const DURHAM_LAT = 43.1339;
+const DURHAM_LON = -70.9234;
+
+function weatherCodeToInfo(code, isDay) {
+  const map = {
+    0:  { icon: isDay ? '☀️' : '🌙', desc: 'Clear sky' },
+    1:  { icon: isDay ? '🌤️' : '🌙', desc: 'Mainly clear' },
+    2:  { icon: '⛅', desc: 'Partly cloudy' },
+    3:  { icon: '☁️', desc: 'Overcast' },
+    45: { icon: '🌫️', desc: 'Foggy' },
+    48: { icon: '🌫️', desc: 'Icy fog' },
+    51: { icon: '🌦️', desc: 'Light drizzle' },
+    53: { icon: '🌦️', desc: 'Drizzle' },
+    55: { icon: '🌧️', desc: 'Heavy drizzle' },
+    61: { icon: '🌧️', desc: 'Light rain' },
+    63: { icon: '🌧️', desc: 'Rain' },
+    65: { icon: '🌧️', desc: 'Heavy rain' },
+    71: { icon: '🌨️', desc: 'Light snow' },
+    73: { icon: '❄️', desc: 'Snow' },
+    75: { icon: '❄️', desc: 'Heavy snow' },
+    77: { icon: '🌨️', desc: 'Snow grains' },
+    80: { icon: '🌦️', desc: 'Rain showers' },
+    81: { icon: '🌧️', desc: 'Heavy showers' },
+    82: { icon: '⛈️', desc: 'Violent showers' },
+    85: { icon: '🌨️', desc: 'Snow showers' },
+    86: { icon: '❄️', desc: 'Heavy snow showers' },
+    95: { icon: '⛈️', desc: 'Thunderstorm' },
+    96: { icon: '⛈️', desc: 'Thunderstorm w/ hail' },
+    99: { icon: '⛈️', desc: 'Heavy thunderstorm' },
+  };
+  return map[code] || { icon: '🌡️', desc: 'Unknown' };
+}
+
+function getDressAdvice(tempF, code, windMph, precipMm) {
+  const isSnow = [71,73,75,77,85,86].includes(code);
+  const isRain = [51,53,55,61,63,65,80,81,82].includes(code);
+  const isThunder = [95,96,99].includes(code);
+  const windyCold = windMph > 15 && tempF < 45;
+
+  let emoji, advice;
+
+  if (tempF <= 20) {
+    emoji = '🧥❄️';
+    advice = 'Heavy winter coat, hat, gloves, and warm boots — it\'s dangerously cold. Limit time outside.';
+  } else if (tempF <= 32) {
+    emoji = '🧥🧤';
+    advice = 'Heavy winter coat, hat, gloves, and warm layers. ' + (isSnow ? 'Snow boots too — it\'s snowing!' : 'It\'s freezing.');
+  } else if (tempF <= 40) {
+    emoji = '🧥';
+    advice = 'Warm coat required' + (windyCold ? ' — wind makes it feel much colder' : '') + '. ' + (isSnow ? 'Snow gear and boots.' : 'Hat and gloves recommended.');
+  } else if (tempF <= 50) {
+    emoji = '🧣';
+    advice = 'Coat and a warm layer. ' + (isRain ? 'Rain jacket or umbrella — wet weather today.' : 'Scarf or hood for wind.');
+  } else if (tempF <= 60) {
+    emoji = '🧥';
+    advice = 'Light jacket or hoodie. ' + (isRain ? 'Grab a rain jacket — showers expected.' : 'Comfortable, but bring a layer.');
+  } else if (tempF <= 70) {
+    emoji = '👕';
+    advice = 'Light layer optional. ' + (isRain ? 'Light rain jacket — some rain possible.' : 'Nice out — a light zip-up is fine.');
+  } else if (tempF <= 80) {
+    emoji = '😎';
+    advice = 'Shorts and a t-shirt weather! ' + (isThunder ? '⛈️ Watch for afternoon storms.' : isRain ? 'Rain jacket just in case.' : 'Great day to be outside.');
+  } else {
+    emoji = '🌞🥵';
+    advice = 'Very hot — light, breathable clothing and sunscreen. Stay hydrated!';
+  }
+
+  if (isThunder) advice += ' ⚡ Thunderstorms — avoid outdoor activities.';
+  if (precipMm > 10) advice += ' Heavy precipitation expected — waterproof boots recommended.';
+
+  return { emoji, advice };
+}
+
+async function loadWeather() {
+  const card = document.getElementById('weather-card');
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${DURHAM_LAT}&longitude=${DURHAM_LON}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&forecast_days=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const c = data.current;
+    const d = data.daily;
+
+    const temp = Math.round(c.temperature_2m);
+    const feels = Math.round(c.apparent_temperature);
+    const wind = Math.round(c.wind_speed_10m);
+    const humidity = c.relative_humidity_2m;
+    const code = c.weather_code;
+    const isDay = c.is_day === 1;
+    const hi = Math.round(d.temperature_2m_max[0]);
+    const lo = Math.round(d.temperature_2m_min[0]);
+    const precipIn = d.precipitation_sum[0] || 0;
+    const precipMm = precipIn * 25.4;
+
+    const { icon, desc } = weatherCodeToInfo(code, isDay);
+    const { emoji, advice } = getDressAdvice(temp, code, wind, precipMm);
+
+    // Temp color
+    let tempColor = 'var(--accent2)';
+    if (temp <= 32) tempColor = '#7ab4f0';
+    else if (temp <= 50) tempColor = '#a0d4f0';
+    else if (temp >= 80) tempColor = 'var(--accent3)';
+    else if (temp >= 70) tempColor = 'var(--accent)';
+
+    card.innerHTML = `
+      <div class="weather-top">
+        <div class="weather-icon">${icon}</div>
+        <div class="weather-main">
+          <div class="weather-temp" style="color:${tempColor}">${temp}<span class="unit">°F</span></div>
+          <div class="weather-desc">${desc} · Durham, NH</div>
+        </div>
+      </div>
+      <div class="weather-stats">
+        <div class="weather-stat">
+          <div class="weather-stat-val">↑${hi}° ↓${lo}°</div>
+          <div class="weather-stat-lbl">Hi / Lo</div>
+        </div>
+        <div class="weather-stat">
+          <div class="weather-stat-val">${feels}°F</div>
+          <div class="weather-stat-lbl">Feels Like</div>
+        </div>
+        <div class="weather-stat">
+          <div class="weather-stat-val">${wind} mph</div>
+          <div class="weather-stat-lbl">Wind</div>
+        </div>
+        <div class="weather-stat">
+          <div class="weather-stat-val">${humidity}%</div>
+          <div class="weather-stat-lbl">Humidity</div>
+        </div>
+      </div>
+      <div class="dress-strip">
+        <span class="dress-emoji">${emoji}</span>
+        <span>${advice}</span>
+      </div>
+    `;
+  } catch(e) {
+    card.innerHTML = `<div class="weather-error">⚠️ Could not load weather. Check your connection.</div>`;
+  }
+}
+
+// Load weather on page load
+loadWeather();
+
+</script>
+
+</body>
+</html>
