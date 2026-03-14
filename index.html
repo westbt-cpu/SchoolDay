@@ -274,7 +274,69 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .bug-ta:focus{outline:none;border-color:#1B3A6B}
 .bug-copy-btn{width:100%;padding:11px;border-radius:10px;border:none;background:#1f78b4;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:‘Inter’,sans-serif;margin-top:8px}
 
-/* ── Toast ── */
+/* ── Leave House ── */
+.leave-header{display:flex;align-items:center;gap:14px;background:#0f2244;background:linear-gradient(135deg,#091830,#1B3A6B);border-radius:var(–radius);padding:18px;margin-bottom:14px;color:#fff;box-shadow:var(–shadow-lg)}
+.leave-icon{font-size:36px;flex-shrink:0}
+.leave-title{font-size:22px;font-weight:900;line-height:1}
+.leave-sub{font-size:13px;color:rgba(255,255,255,.6);margin-top:3px;font-weight:500}
+.leave-reset-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:10px;color:#fff;font-size:20px;width:40px;height:40px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.leave-reset-btn:active{background:rgba(255,255,255,.28)}
+.leave-progress-track{height:6px;background:#d0d8e8;border-radius:3px;overflow:hidden;margin-bottom:5px}
+.leave-progress-fill{height:100%;background:linear-gradient(90deg,#1a9e5e,#2dbe7a);border-radius:3px;transition:width .4s cubic-bezier(.4,0,.2,1);width:0%}
+.leave-progress-label{font-size:11px;font-weight:700;color:var(–muted);text-align:right;margin-bottom:14px;text-transform:uppercase;letter-spacing:.08em}
+.leave-kid-card{background:#fff;border:1.5px solid #b8c4d8;border-radius:var(–radius);box-shadow:var(–shadow);margin-bottom:12px;overflow:hidden}
+.leave-kid-hdr{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #b8c4d8}
+.leave-kid-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0}
+.leave-kid-name{font-size:16px;font-weight:800;flex:1}
+.leave-kid-count{font-size:12px;font-weight:600;color:var(–muted)}
+.leave-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #b8c4d8;cursor:pointer;transition:background .12s;user-select:none}
+.leave-item:last-child{border-bottom:none}
+.leave-item:active{background:#f0f4fa}
+.leave-item.done{background:#f8fffe}
+.leave-cb{width:26px;height:26px;border-radius:8px;border:2px solid #b8c4d8;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;background:#fff}
+.leave-item.done .leave-cb{background:#1a9e5e;border-color:#1a9e5e;color:#fff}
+.leave-item-label{font-size:16px;font-weight:600;color:var(–text);transition:all .15s}
+.leave-item.done .leave-item-label{color:var(–muted);text-decoration:line-through}
+.leave-done-banner{background:linear-gradient(135deg,#0d6e3f,#1a9e5e);border-radius:var(–radius);padding:24px;text-align:center;color:#fff;margin-top:8px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:var(–shadow-lg);animation:fadeIn .4s ease both}
+.leave-edit-btn{width:100%;margin-top:14px;padding:12px;border-radius:12px;border:1.5px dashed #9aaabf;background:transparent;font-size:13px;font-weight:600;color:var(–muted);cursor:pointer;font-family:‘Inter’,sans-serif}
+
+/* ── Home Tasks ── */
+.task-card{background:#fff;border:1.5px solid #b8c4d8;border-radius:var(–radius);box-shadow:var(–shadow);margin-bottom:10px;overflow:hidden;display:flex;align-items:stretch}
+.task-card.overdue{border-color:#cc3333;background:#fef8f8}
+.task-card.due-soon{border-color:#d4631a;background:#fef9f4}
+.task-card.ok{opacity:.85}
+.task-status-bar{width:5px;flex-shrink:0}
+.task-card.overdue .task-status-bar{background:#cc3333}
+.task-card.due-soon .task-status-bar{background:#d4631a}
+.task-card.ok .task-status-bar{background:#1a9e5e}
+.task-body{flex:1;padding:13px 14px;cursor:pointer;min-width:0}
+.task-name{font-size:15px;font-weight:700;color:var(–text);margin-bottom:3px}
+.task-meta{font-size:12px;color:var(–muted);font-weight:500;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.task-due-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;flex-shrink:0}
+.task-card.overdue .task-due-badge{background:#fcd8d8;color:#8a1a1a}
+.task-card.due-soon .task-due-badge{background:#fdecd8;color:#7a3010}
+.task-card.ok .task-due-badge{background:#ccf0e0;color:#0d5e30}
+.task-done-btn{padding:0 16px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:none;border:none;border-left:1px solid #b8c4d8;flex-shrink:0;color:var(–muted);font-size:22px;transition:all .15s;font-family:‘Inter’,sans-serif}
+.task-done-btn:active{background:#d0d8e8}
+.task-section-hdr{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(–muted);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.task-section-hdr::after{content:’’;flex:1;height:1px;background:var(–border)}
+.tasks-empty{text-align:center;padding:40px 20px;color:var(–muted)}
+
+/* ── Task / checklist item edit overlay ── */
+.add-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,40,.6);z-index:200;backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
+.add-overlay.open{display:flex}
+.add-sheet{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:500px;padding-bottom:env(safe-area-inset-bottom);animation:slideUp .28s cubic-bezier(.32,1.1,.4,1) both;box-shadow:0 -8px 40px rgba(0,0,0,.2)}
+.add-sheet-handle{width:36px;height:4px;background:#b8c4d8;border-radius:2px;margin:14px auto 0}
+.add-sheet-title{font-size:18px;font-weight:800;padding:14px 20px 10px}
+.add-sheet-body{padding:0 20px 20px;display:flex;flex-direction:column;gap:12px}
+.add-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(–muted);display:block;margin-bottom:5px}
+.add-input{width:100%;background:#d0d8e8;border:1.5px solid #b8c4d8;border-radius:9px;padding:11px 12px;font-size:15px;font-family:‘Inter’,sans-serif;color:var(–text);-webkit-appearance:none}
+.add-input:focus{outline:none;border-color:#1B3A6B;background:#fff}
+.add-row{display:flex;gap:10px}
+.add-btn-cancel{flex:1;padding:13px;border-radius:12px;border:1.5px solid #b8c4d8;background:#d0d8e8;font-size:14px;font-weight:700;color:var(–text2);cursor:pointer;font-family:‘Inter’,sans-serif}
+.add-btn-save{flex:2;padding:13px;border-radius:12px;border:none;background:#1B3A6B;font-size:14px;font-weight:800;color:#fff;cursor:pointer;font-family:‘Inter’,sans-serif;box-shadow:0 4px 14px rgba(27,58,107,.3)}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(10px);background:#0f2244;color:#fff;border-radius:100px;padding:10px 20px;font-size:13px;font-weight:700;opacity:0;transition:all .25s;pointer-events:none;z-index:500;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.3)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -523,6 +585,58 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 </div>
 ```
 
+  <!-- ══ LEAVE HOUSE ══ -->
+
+  <section class="view" id="view-leave">
+    <div class="leave-header">
+      <div class="leave-icon">🚪</div>
+      <div>
+        <div class="leave-title">Ready to Go?</div>
+        <div class="leave-sub" id="leave-sub">Check everything before heading out</div>
+      </div>
+      <button class="leave-reset-btn" onclick="resetChecklist()" title="Reset all">↺</button>
+    </div>
+
+```
+<div id="leave-progress-bar-wrap">
+  <div class="leave-progress-track"><div class="leave-progress-fill" id="leave-progress-fill"></div></div>
+  <div class="leave-progress-label" id="leave-progress-label">0 of 0 ready</div>
+</div>
+
+<div id="leave-kids-list"></div>
+
+<div class="leave-done-banner" id="leave-done-banner" style="display:none">
+  <span style="font-size:32px">🎉</span>
+  <div>
+    <div style="font-size:18px;font-weight:800">Everyone's ready!</div>
+    <div style="font-size:13px;opacity:.8;margin-top:2px">Have a great day</div>
+  </div>
+</div>
+
+<button class="leave-edit-btn" onclick="switchView('settings',document.querySelector('.bnav-btn[data-view=settings]'))">✏️ Edit kids &amp; items in Settings</button>
+```
+
+  </section>
+
+  <!-- ══ HOME TASKS ══ -->
+
+  <section class="view" id="view-tasks">
+    <div class="sh" style="margin-top:0">
+      <span class="sh-title">Home Tasks</span>
+      <button class="sh-action" onclick="openAddTask()">+ Add</button>
+    </div>
+
+```
+<div id="tasks-due" style="margin-bottom:4px"></div>
+<div id="tasks-ok"></div>
+
+<div class="tasks-empty" id="tasks-empty" style="display:none">
+  <div style="font-size:36px;margin-bottom:10px">🏠</div>
+  <div style="font-weight:700;font-size:16px;margin-bottom:6px">No tasks yet</div>
+  <div style="font-size:13px;color:var(--muted)">Tap + Add to track recurring home maintenance</div>
+</div>
+```
+
   </section>
 
 </main>
@@ -530,7 +644,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <nav class="bnav">
   <button class="bnav-btn active" data-view="today" onclick="switchView('today',this)"><span class="bnav-icon">🏠</span><span class="bnav-lbl">Today</span></button>
   <button class="bnav-btn" data-view="month" onclick="switchView('month',this)"><span class="bnav-icon">📅</span><span class="bnav-lbl">Month</span></button>
-  <button class="bnav-btn" data-view="info" onclick="switchView('info',this)"><span class="bnav-icon">ℹ️</span><span class="bnav-lbl">Info</span></button>
+  <button class="bnav-btn" data-view="leave" onclick="switchView('leave',this);renderChecklist()"><span class="bnav-icon">🚪</span><span class="bnav-lbl">Leave</span></button>
+  <button class="bnav-btn" data-view="tasks" onclick="switchView('tasks',this);renderTasks()"><span class="bnav-icon">🔧</span><span class="bnav-lbl">Tasks</span></button>
   <button class="bnav-btn" data-view="settings" onclick="switchView('settings',this)"><span class="bnav-icon">⚙️</span><span class="bnav-lbl">Settings</span></button>
 </nav>
 
@@ -553,6 +668,43 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <div class="modal-foot">
       <button class="btn-sec" onclick="closeModal()">Cancel</button>
       <button class="btn-pri" id="save-votes-btn" onclick="saveVotes()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Task sheet -->
+
+<div class="add-overlay" id="task-overlay" onclick="taskOverlayClose(event)">
+  <div class="add-sheet">
+    <div class="add-sheet-handle"></div>
+    <div class="add-sheet-title" id="task-sheet-title">Add Home Task</div>
+    <div class="add-sheet-body">
+      <div class="add-field"><label>Task Name</label><input class="add-input" id="task-name-input" placeholder="e.g. Change furnace filter" autocorrect="off"></div>
+      <div class="add-field"><label>Repeat Every (days)</label><input class="add-input" id="task-freq-input" type="number" min="1" max="999" placeholder="90" inputmode="numeric"></div>
+      <div class="add-field"><label>Last Completed</label><input class="add-input" id="task-date-input" type="date"></div>
+      <div class="add-row">
+        <button class="add-btn-cancel" onclick="closeTaskSheet()">Cancel</button>
+        <button class="add-btn-save" onclick="saveTask()">Save Task</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Checklist Item sheet -->
+
+<div class="add-overlay" id="item-overlay" onclick="itemOverlayClose(event)">
+  <div class="add-sheet">
+    <div class="add-sheet-handle"></div>
+    <div class="add-sheet-title">Add Checklist Item</div>
+    <div class="add-sheet-body">
+      <div class="add-field"><label>Kid</label>
+        <select class="add-input" id="item-kid-select"></select>
+      </div>
+      <div class="add-field"><label>Item</label><input class="add-input" id="item-name-input" placeholder="e.g. Swim bag" autocorrect="off" autocapitalize="words"></div>
+      <div class="add-row">
+        <button class="add-btn-cancel" onclick="closeItemSheet()">Cancel</button>
+        <button class="add-btn-save" onclick="saveItem()">Add Item</button>
+      </div>
     </div>
   </div>
 </div>
@@ -585,17 +737,21 @@ const EVENTS={
   '2026-06-19':{lbl:'Juneteenth',ns:true},
 };
 const NO_SCH=new Set(Object.entries(EVENTS).filter(([,v])=>v.ns).map(([k])=>k));
-
 const SCHOOL_NAMES={mw:'Mast Way',ms:'Middle School',hs:'High School'};
 const SNAMES={mw:'Mast Way & Moharimet',ms:'Middle School',hs:'High School'};
 
 // ════════════════════════
 //  STATE
 // ════════════════════════
-let cfg={kids:[{name:'Kid 1',color:'#2dbe7a'},{name:'Kid 2',color:'#C8962A'}],mySchool:'mw'};
+let cfg={
+  kids:[{name:'Kid 1',color:'#2dbe7a',items:['Backpack','Homework','Lunch']},{name:'Kid 2',color:'#C8962A',items:['Backpack','Library book']}],
+  mySchool:'mw'
+};
 let votes={};
+let checks={}; // { 'YYYY-MM-DD': { kidIdx: { itemIdx: true } } }
+let tasks=[];   // [{ id, name, freq, lastDone }]
 let calY=new Date().getFullYear(), calM=new Date().getMonth();
-let mSt=null;
+let mSt=null, editTaskId=null;
 let curSchool='mw';
 
 // ════════════════════════
@@ -603,40 +759,42 @@ let curSchool='mw';
 // ════════════════════════
 function load(){
   try{
-    const c=localStorage.getItem('sd-cfg'); if(c) cfg={...cfg,...JSON.parse(c)};
-    const v=localStorage.getItem('sd-votes'); if(v) votes=JSON.parse(v);
+    const c=localStorage.getItem('sd-cfg');     if(c) cfg={...cfg,...JSON.parse(c)};
+    const v=localStorage.getItem('sd-votes');   if(v) votes=JSON.parse(v);
+    const ch=localStorage.getItem('sd-checks'); if(ch) checks=JSON.parse(ch);
+    const tk=localStorage.getItem('sd-tasks');  if(tk) tasks=JSON.parse(tk);
     curSchool=cfg.mySchool||'mw';
-    // First run check
     const isFirstRun=!localStorage.getItem('sd-onboard-done');
     const hasDefaultNames=cfg.kids.some(k=>k.name==='Kid 1'||k.name==='Kid 2');
     if(isFirstRun&&hasDefaultNames) document.getElementById('onboard-banner').style.display='flex';
-    // Add to home screen nudge — iOS only, shown once after 2nd visit
     const visits=parseInt(localStorage.getItem('sd-visits')||'0')+1;
     localStorage.setItem('sd-visits',visits);
     const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-    const notStandalone=!window.navigator.standalone;
-    const notDismissed=!localStorage.getItem('sd-a2hs-done');
-    if(isIOS&&notStandalone&&notDismissed&&visits===2){
+    if(isIOS&&!window.navigator.standalone&&!localStorage.getItem('sd-a2hs-done')&&visits===2){
       document.getElementById('a2hs-banner').style.display='flex';
     }
-  }catch(e){}
+    // Handle NFC deep links
+    const params=new URLSearchParams(window.location.search);
+    const screen=params.get('screen');
+    if(screen){
+      const btn=document.querySelector(`.bnav-btn[data-view="${screen}"]`);
+      if(btn){
+        switchView(screen,btn);
+        if(screen==='leave') setTimeout(renderChecklist,50);
+        if(screen==='tasks') setTimeout(renderTasks,50);
+      }
+    }
+  }catch(e){console.error('load error',e);}
 }
 function save(){
   localStorage.setItem('sd-cfg',JSON.stringify(cfg));
   localStorage.setItem('sd-votes',JSON.stringify(votes));
+  localStorage.setItem('sd-checks',JSON.stringify(checks));
+  localStorage.setItem('sd-tasks',JSON.stringify(tasks));
 }
-function dismissOnboard(){
-  document.getElementById('onboard-banner').style.display='none';
-  localStorage.setItem('sd-onboard-done','1');
-}
-function goSetup(){
-  dismissOnboard();
-  switchView('settings',document.querySelector('.bnav-btn[data-view=settings]'));
-}
-function dismissA2hs(){
-  document.getElementById('a2hs-banner').style.display='none';
-  localStorage.setItem('sd-a2hs-done','1');
-}
+function dismissOnboard(){document.getElementById('onboard-banner').style.display='none';localStorage.setItem('sd-onboard-done','1');}
+function goSetup(){dismissOnboard();switchView('settings',document.querySelector('.bnav-btn[data-view=settings]'));}
+function dismissA2hs(){document.getElementById('a2hs-banner').style.display='none';localStorage.setItem('sd-a2hs-done','1');}
 
 // ════════════════════════
 //  BOOT
@@ -650,6 +808,18 @@ renderSettings();
 updateLinks();
 updateMenuCard(curSchool);
 setActivePill(curSchool);
+// Seed default tasks if none
+if(tasks.length===0){
+  tasks=[
+    {id:uid(),name:'Change furnace filter',freq:90,lastDone:'2026-01-01'},
+    {id:uid(),name:'Test smoke detectors',freq:180,lastDone:'2026-01-01'},
+    {id:uid(),name:'Clean gutters',freq:180,lastDone:'2025-10-01'},
+    {id:uid(),name:'Order furnace oil',freq:60,lastDone:'2026-02-01'},
+  ];
+  save();
+}
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
 function initHeader(){
   const d=new Date();
@@ -659,8 +829,7 @@ function initHeader(){
 function setActivePill(school){
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
   const pills={mw:0,ms:1,hs:2};
-  const idx=pills[school]??0;
-  document.querySelectorAll('.pill')[idx]?.classList.add('active');
+  document.querySelectorAll('.pill')[pills[school]??0]?.classList.add('active');
 }
 
 // ════════════════════════
@@ -682,8 +851,7 @@ function dk(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padSt
 function todayKey(){const t=new Date();return dk(t.getFullYear(),t.getMonth(),t.getDate());}
 function isWE(y,m,d){return new Date(y,m,d).getDay()%6===0;}
 function isNS(key){return NO_SCH.has(key);}
-function isSchoolDay(y,m,d){const key=dk(y,m,d);return !isWE(y,m,d)&&!isNS(key);}
-
+function isSchoolDay(y,m,d){return !isWE(y,m,d)&&!isNS(dk(y,m,d));}
 function getPdf(school,date){
   const n=date||new Date(),mo=FM[n.getMonth()],yr=n.getFullYear();
   const base=`https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026 Lunch Menus/${mo} ${yr} Lunch Menus/`;
@@ -696,26 +864,23 @@ function updateLinks(){
 }
 function nextSchoolDay(){
   const d=new Date(); d.setDate(d.getDate()+1);
-  for(let i=0;i<14;i++){
-    if(isSchoolDay(d.getFullYear(),d.getMonth(),d.getDate())) return new Date(d);
-    d.setDate(d.getDate()+1);
-  }
+  for(let i=0;i<14;i++){if(isSchoolDay(d.getFullYear(),d.getMonth(),d.getDate()))return new Date(d);d.setDate(d.getDate()+1);}
   return d;
 }
 function menuTargetDate(){
   const t=new Date(),dow=t.getDay(),key=dk(t.getFullYear(),t.getMonth(),t.getDate());
-  if(dow!==0&&dow!==6&&!isNS(key)) return t;
+  if(dow!==0&&dow!==6&&!isNS(key))return t;
   return nextSchoolDay();
 }
 function updateMenuSectionLabel(){
   const target=menuTargetDate(),today=new Date();
-  today.setHours(0,0,0,0); target.setHours(0,0,0,0);
+  today.setHours(0,0,0,0);target.setHours(0,0,0,0);
   const el=document.getElementById('menu-sh-title');
-  if(el) el.textContent=target.getTime()===today.getTime()?"TODAY'S LUNCH":`${LD[target.getDay()].toUpperCase()}'S LUNCH`;
+  if(el)el.textContent=target.getTime()===today.getTime()?"TODAY'S LUNCH":`${LD[target.getDay()].toUpperCase()}'S LUNCH`;
 }
 function toast(msg,dur=2500){
   const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
+  t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),dur);
 }
 
@@ -723,15 +888,11 @@ function toast(msg,dur=2500){
 //  WEATHER
 // ════════════════════════
 const NOAA_OFFICE='GYX',NOAA_GX=65,NOAA_GY=55;
-
 async function loadWx(){
   const el=document.getElementById('wx-card');
   el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.45);font-size:13px"><div class="spin spin-white"></div><span>Loading weather…</span></div>`;
-  try{ await loadWxNOAA(el); }
-  catch(e){
-    try{ await loadWxOpenMeteo(el); }
-    catch(e2){ el.innerHTML=`<div style="color:rgba(255,255,255,.4);font-size:13px">⚠️ Weather unavailable</div>`; }
-  }
+  try{await loadWxNOAA(el);}
+  catch(e){try{await loadWxOpenMeteo(el);}catch(e2){el.innerHTML=`<div style="color:rgba(255,255,255,.4);font-size:13px">⚠️ Weather unavailable</div>`;}}
 }
 async function loadWxNOAA(el){
   const hdr={'User-Agent':'SchoolDay/1.0 (ORCSD parent app)'};
@@ -740,17 +901,16 @@ async function loadWxNOAA(el){
     Promise.race([fetch(`https://api.weather.gov/gridpoints/${NOAA_OFFICE}/${NOAA_GX},${NOAA_GY}/forecast/hourly`,{headers:hdr}),timeout(8000)]),
     Promise.race([fetch(`https://api.weather.gov/gridpoints/${NOAA_OFFICE}/${NOAA_GX},${NOAA_GY}/forecast`,{headers:hdr}),timeout(8000)])
   ]);
-  if(!hr.ok||!dy.ok) throw new Error('NOAA error');
-  const[jhr,jdy]=await Promise.all([hr.json(),dy.json()]);
+  if(!hr.ok||!dy.ok)throw new Error('NOAA error');
+  const [jhr,jdy]=await Promise.all([hr.json(),dy.json()]);
   const cur=jhr.properties.periods[0];
   const tmp=cur.temperature,wndStr=cur.windSpeed||'0 mph',wnd=parseInt(wndStr)||0;
   const fl=cur.windChill?.value!=null?Math.round(cur.windChill.value*9/5+32):tmp;
   const all=jdy.properties.periods;
-  const dayP=all.find(p=>p.isDaytime)||all[0];
-  const ngtP=all.find(p=>!p.isDaytime)||all[1];
+  const dayP=all.find(p=>p.isDaytime)||all[0],ngtP=all.find(p=>!p.isDaytime)||all[1];
   const hi=dayP?.temperature??tmp,lo=ngtP?.temperature??(tmp-10);
-  const{icon,desc}=wxFromForecast(cur.shortForecast||'',cur.isDaytime);
-  const{em,ad}=dress(tmp,cur.shortForecast||'',wnd);
+  const {icon,desc}=wxFromForecast(cur.shortForecast||'',cur.isDaytime);
+  const {em,ad}=dress(tmp,cur.shortForecast||'',wnd);
   const forecast7=buildNOAAForecast7(all);
   renderWxCard(el,{tmp,fl,hi,lo,wnd,icon,desc,em,ad,forecast7,source:'NOAA · Durham NH 03824'});
 }
@@ -758,12 +918,12 @@ function buildNOAAForecast7(periods){
   const out=[],seen=new Set();
   for(const p of periods){
     const date=new Date(p.startTime),dayKey=date.toDateString();
-    if(seen.has(dayKey)||!p.isDaytime) continue;
+    if(seen.has(dayKey)||!p.isDaytime)continue;
     seen.add(dayKey);
     const night=periods.find(n=>!n.isDaytime&&new Date(n.startTime).toDateString()===dayKey);
-    const{icon:fi}=wxFromForecast(p.shortForecast||'',true);
+    const {icon:fi}=wxFromForecast(p.shortForecast||'',true);
     out.push({dow:SD[date.getDay()],icon:fi,hi:p.temperature,lo:night?.temperature??'—',date});
-    if(out.length>=7) break;
+    if(out.length>=7)break;
   }
   return out;
 }
@@ -772,79 +932,57 @@ async function loadWxOpenMeteo(el){
   const c=j.current,d=j.daily;
   const tmp=Math.round(c.temperature_2m),fl=Math.round(c.apparent_temperature),wnd=Math.round(c.wind_speed_10m);
   const hi=Math.round(d.temperature_2m_max[0]),lo=Math.round(d.temperature_2m_min[0]);
-  const{icon,desc}=wxCode(c.weather_code,c.is_day===1);
-  const{em,ad}=dress(tmp,c.weather_code,wnd);
+  const {icon,desc}=wxCode(c.weather_code,c.is_day===1);
+  const {em,ad}=dress(tmp,c.weather_code,wnd);
   const forecast7=d.time.slice(0,7).map((ds,i)=>{
     const date=new Date(ds+'T12:00:00');
-    const{icon:fi}=wxCode(d.weather_code[i],true);
+    const {icon:fi}=wxCode(d.weather_code[i],true);
     return{dow:SD[date.getDay()],icon:fi,hi:Math.round(d.temperature_2m_max[i]),lo:Math.round(d.temperature_2m_min[i]),date};
   });
   renderWxCard(el,{tmp,fl,hi,lo,wnd,icon,desc,em,ad,forecast7,source:'Open-Meteo · Durham NH'});
 }
 function renderWxCard(el,{tmp,fl,hi,lo,wnd,icon,desc,em,ad,forecast7,source}){
-  const today=new Date(); today.setHours(0,0,0,0);
-  const fhtml=(forecast7?.length)?`
-    <div class="wx-divider"></div>
-    <div class="wx-forecast">
-      ${forecast7.map(d=>{
-        const isT=d.date&&new Date(d.date).setHours(0,0,0,0)===today.getTime();
-        const isW=d.date&&(new Date(d.date).getDay()===0||new Date(d.date).getDay()===6);
-        return `<div class="wx-day${isT?' wx-today':''}${isW?' wx-weekend':''}">
-          <div class="wx-day-name">${isT?'Now':d.dow}</div>
-          <div class="wx-day-icon">${d.icon}</div>
-          <div class="wx-day-hi">${d.hi}°</div>
-          <div class="wx-day-lo">${d.lo}°</div>
-        </div>`;
-      }).join('')}
-    </div>`:'';
-  el.innerHTML=`
-    <div class="wx-top">
-      <div class="wx-icon">${icon}</div>
-      <div><div class="wx-temp">${tmp}<span class="wx-unit">°F</span></div><div class="wx-desc">${desc}</div></div>
-    </div>
-    <div class="wx-stats">
-      <div class="wx-s"><div class="wx-sv">↑${hi}°</div><div class="wx-sl">High</div></div>
-      <div class="wx-s"><div class="wx-sv">↓${lo}°</div><div class="wx-sl">Low</div></div>
-      <div class="wx-s"><div class="wx-sv">${fl}°</div><div class="wx-sl">Feels</div></div>
-      <div class="wx-s"><div class="wx-sv">${wnd}mph</div><div class="wx-sl">Wind</div></div>
-    </div>
-    <div class="dress"><span class="dress-icon">${em}</span><span>${ad}</span></div>
-    ${fhtml}
-    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);text-align:right;font-family:'DM Mono',monospace;letter-spacing:.04em">${source}</div>`;
+  const today=new Date();today.setHours(0,0,0,0);
+  const fhtml=(forecast7?.length)?`<div class="wx-divider"></div><div class="wx-forecast">${forecast7.map(d=>{
+    const isT=d.date&&new Date(d.date).setHours(0,0,0,0)===today.getTime();
+    const isW=d.date&&(new Date(d.date).getDay()===0||new Date(d.date).getDay()===6);
+    return `<div class="wx-day${isT?' wx-today':''}${isW?' wx-weekend':''}"><div class="wx-day-name">${isT?'Now':d.dow}</div><div class="wx-day-icon">${d.icon}</div><div class="wx-day-hi">${d.hi}°</div><div class="wx-day-lo">${d.lo}°</div></div>`;
+  }).join('')}</div>`:'';
+  el.innerHTML=`<div class="wx-top"><div class="wx-icon">${icon}</div><div><div class="wx-temp">${tmp}<span class="wx-unit">°F</span></div><div class="wx-desc">${desc}</div></div></div><div class="wx-stats"><div class="wx-s"><div class="wx-sv">↑${hi}°</div><div class="wx-sl">High</div></div><div class="wx-s"><div class="wx-sv">↓${lo}°</div><div class="wx-sl">Low</div></div><div class="wx-s"><div class="wx-sv">${fl}°</div><div class="wx-sl">Feels</div></div><div class="wx-s"><div class="wx-sv">${wnd}mph</div><div class="wx-sl">Wind</div></div></div><div class="dress"><span class="dress-icon">${em}</span><span>${ad}</span></div>${fhtml}<div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.3);text-align:right;font-family:'DM Mono',monospace;letter-spacing:.04em">${source}</div>`;
 }
 function wxFromForecast(txt,isDay){
   const t=txt.toLowerCase();
-  if(t.includes('thunder')) return{icon:'⛈️',desc:txt};
-  if(t.includes('blizzard')||t.includes('heavy snow')) return{icon:'❄️',desc:txt};
-  if(t.includes('snow shower')||t.includes('flurr')) return{icon:'🌨️',desc:txt};
-  if(t.includes('snow')) return{icon:'❄️',desc:txt};
-  if(t.includes('freezing')||t.includes('sleet')||t.includes('ice')) return{icon:'🌨️',desc:txt};
-  if(t.includes('heavy rain')||t.includes('rain shower')) return{icon:'🌧️',desc:txt};
-  if(t.includes('rain')||t.includes('shower')||t.includes('drizzle')) return{icon:'🌦️',desc:txt};
-  if(t.includes('fog')||t.includes('haze')||t.includes('mist')) return{icon:'🌫️',desc:txt};
-  if(t.includes('overcast')||(t.includes('cloudy')&&t.includes('mostly'))) return{icon:'☁️',desc:txt};
-  if(t.includes('cloudy')||t.includes('cloud')) return{icon:'⛅',desc:txt};
-  if(t.includes('clear')||t.includes('sunny')) return{icon:isDay?'☀️':'🌙',desc:txt};
-  if(t.includes('partly')) return{icon:'🌤️',desc:txt};
-  if(t.includes('wind')) return{icon:'💨',desc:txt};
+  if(t.includes('thunder'))return{icon:'⛈️',desc:txt};
+  if(t.includes('blizzard')||t.includes('heavy snow'))return{icon:'❄️',desc:txt};
+  if(t.includes('snow shower')||t.includes('flurr'))return{icon:'🌨️',desc:txt};
+  if(t.includes('snow'))return{icon:'❄️',desc:txt};
+  if(t.includes('freezing')||t.includes('sleet')||t.includes('ice'))return{icon:'🌨️',desc:txt};
+  if(t.includes('heavy rain')||t.includes('rain shower'))return{icon:'🌧️',desc:txt};
+  if(t.includes('rain')||t.includes('shower')||t.includes('drizzle'))return{icon:'🌦️',desc:txt};
+  if(t.includes('fog')||t.includes('haze')||t.includes('mist'))return{icon:'🌫️',desc:txt};
+  if(t.includes('overcast')||(t.includes('cloudy')&&t.includes('mostly')))return{icon:'☁️',desc:txt};
+  if(t.includes('cloudy')||t.includes('cloud'))return{icon:'⛅',desc:txt};
+  if(t.includes('clear')||t.includes('sunny'))return{icon:isDay?'☀️':'🌙',desc:txt};
+  if(t.includes('partly'))return{icon:'🌤️',desc:txt};
+  if(t.includes('wind'))return{icon:'💨',desc:txt};
   return{icon:isDay?'🌤️':'🌙',desc:txt||'Durham, NH'};
 }
 function wxCode(c,day){
   const m={0:{i:day?'☀️':'🌙',d:'Clear'},1:{i:day?'🌤️':'🌙',d:'Mainly clear'},2:{i:'⛅',d:'Partly cloudy'},3:{i:'☁️',d:'Overcast'},45:{i:'🌫️',d:'Foggy'},48:{i:'🌫️',d:'Icy fog'},51:{i:'🌦️',d:'Light drizzle'},53:{i:'🌦️',d:'Drizzle'},55:{i:'🌧️',d:'Heavy drizzle'},61:{i:'🌧️',d:'Light rain'},63:{i:'🌧️',d:'Rain'},65:{i:'🌧️',d:'Heavy rain'},71:{i:'🌨️',d:'Light snow'},73:{i:'❄️',d:'Snow'},75:{i:'❄️',d:'Heavy snow'},77:{i:'🌨️',d:'Snow grains'},80:{i:'🌦️',d:'Showers'},81:{i:'🌧️',d:'Heavy showers'},82:{i:'⛈️',d:'Violent showers'},85:{i:'🌨️',d:'Snow showers'},86:{i:'❄️',d:'Heavy snow showers'},95:{i:'⛈️',d:'Thunderstorm'},96:{i:'⛈️',d:'Thunderstorm+hail'},99:{i:'⛈️',d:'Severe thunderstorm'}};
-  const r=m[c]||{i:'🌡️',d:'Unknown'}; return{icon:r.i,desc:r.d};
+  const r=m[c]||{i:'🌡️',d:'Unknown'};return{icon:r.i,desc:r.d};
 }
 function dress(t,cond,w){
   const cs=String(cond).toLowerCase();
   const sn=cs.includes('snow')||cs.includes('blizzard')||[71,73,75,77,85,86].some(c=>cond===c);
   const rn=cs.includes('rain')||cs.includes('shower')||cs.includes('drizzle')||[51,53,55,61,63,65,80,81,82].some(c=>cond===c);
   const th=cs.includes('thunder')||[95,96,99].some(c=>cond===c);
-  if(t<=20) return{em:'🧥❄️',ad:'Extreme cold — heavy coat, hat, gloves & warm boots. Limit time outside.'};
-  if(t<=32) return{em:'🧥🧤',ad:`Freezing — heavy coat, hat & gloves.${sn?' Snow boots today!':''}`};
-  if(t<=40) return{em:'🧥',ad:`Bundle up — coat, hat & gloves.${w>15?' Wind makes it feel colder.':''} ${sn?'Snow gear today.':''}`};
-  if(t<=50) return{em:'🧣',ad:`Chilly — coat and warm layers.${rn?' Grab a rain jacket.':w>15?' Scarf helps with wind.':''}`};
-  if(t<=60) return{em:'🧥',ad:`Cool — light jacket or hoodie.${rn?" Don't forget rain gear!":''}`};
-  if(t<=70) return{em:'👕',ad:`Comfortable — light layer optional.${rn?' Light rain jacket just in case.':' Nice day out!'}`};
-  if(t<=80) return{em:'😎',ad:`Great day — shorts & t-shirt!${th?' Watch for afternoon storms.':''}`};
+  if(t<=20)return{em:'🧥❄️',ad:'Extreme cold — heavy coat, hat, gloves & warm boots. Limit time outside.'};
+  if(t<=32)return{em:'🧥🧤',ad:`Freezing — heavy coat, hat & gloves.${sn?' Snow boots today!':''}`};
+  if(t<=40)return{em:'🧥',ad:`Bundle up — coat, hat & gloves.${w>15?' Wind makes it feel colder.':''} ${sn?'Snow gear today.':''}`};
+  if(t<=50)return{em:'🧣',ad:`Chilly — coat and warm layers.${rn?' Grab a rain jacket.':w>15?' Scarf helps with wind.':''}`};
+  if(t<=60)return{em:'🧥',ad:`Cool — light jacket or hoodie.${rn?" Don't forget rain gear!":''}`};
+  if(t<=70)return{em:'👕',ad:`Comfortable — light layer optional.${rn?' Light rain jacket just in case.':' Nice day out!'}`};
+  if(t<=80)return{em:'😎',ad:`Great day — shorts & t-shirt!${th?' Watch for afternoon storms.':''}`};
   return{em:'🌞',ad:'Hot out — breathable clothes, sunscreen & water!'};
 }
 
@@ -853,8 +991,8 @@ function dress(t,cond,w){
 // ════════════════════════
 function getDisplayMonday(){
   const today=new Date(),dow=today.getDay(),mon=new Date(today);
-  if(dow===0) mon.setDate(today.getDate()+1);
-  else if(dow===6) mon.setDate(today.getDate()+2);
+  if(dow===0)mon.setDate(today.getDate()+1);
+  else if(dow===6)mon.setDate(today.getDate()+2);
   else mon.setDate(today.getDate()-(dow-1));
   return mon;
 }
@@ -868,7 +1006,7 @@ function renderWeek(){
   if(isWknd){banner.innerHTML=`<span style="font-size:16px">🎉</span><span>Weekend — showing <strong>next week's</strong> schedule</span>`;banner.style.display='flex';}
   else banner.style.display='none';
   for(let i=0;i<5;i++){
-    const d=new Date(mon); d.setDate(mon.getDate()+i);
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
     const key=dk(d.getFullYear(),d.getMonth(),d.getDate());
     const isToday=key===tk,noSch=isNS(key);
     const isPast=!isWknd&&d<new Date(today.getFullYear(),today.getMonth(),today.getDate());
@@ -879,11 +1017,11 @@ function renderWeek(){
       const bc=v?(v==='no'?'#cc3333':cfg.kids[i].color):'#9aaabf';
       return `<div class="wddot" style="background:${bg};border-color:${bc}"></div>`;
     }).join('');
-    let cls='wd'; if(isToday)cls+=' today'; if(noSch)cls+=' no-school'; if(isPast)cls+=' past';
+    let cls='wd';if(isToday)cls+=' today';if(noSch)cls+=' no-school';if(isPast)cls+=' past';
     const evLine=noSch?`<div class="wd-ns">No School</div>`:ev?`<div class="wd-evt">${ev.lbl}</div>`:'';
-    const el=document.createElement('div'); el.className=cls;
+    const el=document.createElement('div');el.className=cls;
     el.innerHTML=`<div class="wdn">${SD[d.getDay()]}</div><div class="wdd">${d.getDate()}</div>${evLine}<div class="wddots">${dots}</div>`;
-    if(noSch) el.addEventListener('click',()=>toast(`🏫 ${ev?ev.lbl:'No school'}`,2000));
+    if(noSch)el.addEventListener('click',()=>toast(`🏫 ${ev?ev.lbl:'No school'}`,2000));
     else el.addEventListener('click',()=>openModal(d.getFullYear(),d.getMonth(),d.getDate()));
     strip.appendChild(el);
   }
@@ -893,24 +1031,20 @@ function renderWeek(){
 //  MONTH CALENDAR
 // ════════════════════════
 function changeMonth(delta){
-  calM+=delta;
-  if(calM>11){calM=0;calY++;}
-  if(calM<0){calM=11;calY--;}
-  renderCal();
+  calM+=delta;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}renderCal();
 }
 function renderCal(){
   document.getElementById('cal-title').textContent=`${FM[calM]} ${calY}`;
-  const grid=document.getElementById('cal-grid');
-  grid.innerHTML='';
+  const grid=document.getElementById('cal-grid');grid.innerHTML='';
   const sY=calY,sM=calM,tk=todayKey();
   ['S','M','T','W','T','F','S'].forEach(h=>{const e=document.createElement('div');e.className='cal-hdr';e.textContent=h;grid.appendChild(e);});
   const fd=new Date(sY,sM,1).getDay(),dim=new Date(sY,sM+1,0).getDate();
-  const tod=new Date(); tod.setHours(0,0,0,0);
+  const tod=new Date();tod.setHours(0,0,0,0);
   for(let i=0;i<fd;i++){const e=document.createElement('div');e.className='cal-cell empty';grid.appendChild(e);}
   for(let day=1;day<=dim;day++){
     const key=dk(sY,sM,day),we=isWE(sY,sM,day),ns=isNS(key);
     const isT=key===tk,past=new Date(sY,sM,day)<tod,ev=EVENTS[key],dv=votes[key]||{};
-    let cls='cal-cell'; if(we)cls+=' we'; else if(ns)cls+=' ns'; if(isT)cls+=' today'; if(past)cls+=' past';
+    let cls='cal-cell';if(we)cls+=' we';else if(ns)cls+=' ns';if(isT)cls+=' today';if(past)cls+=' past';
     const dots=(!we&&!ns)?cfg.kids.map((_,i)=>{
       const v=dv[i];
       const bg=v==='yes'?cfg.kids[i].color:v==='no'?'#cc3333':'transparent';
@@ -918,10 +1052,10 @@ function renderCal(){
       return `<div class="cdot ${v||''}" style="background:${bg};border-color:${bc}"></div>`;
     }).join(''):'';
     const evH=ev?`<div class="cal-ev">${ns?ev.lbl.replace(' Break','').replace(' Day',''):ev.lbl}</div>`:'';
-    const cell=document.createElement('div'); cell.className=cls;
+    const cell=document.createElement('div');cell.className=cls;
     cell.innerHTML=`<div class="cal-num">${day}</div>${evH}<div class="cal-dots">${dots}</div>`;
-    if(ns) cell.addEventListener('click',()=>toast(`🏫 ${ev?ev.lbl:'No school'}`,2000));
-    else if(!we){const _y=sY,_m=sM,_d=day; cell.addEventListener('click',()=>openModal(_y,_m,_d));}
+    if(ns)cell.addEventListener('click',()=>toast(`🏫 ${ev?ev.lbl:'No school'}`,2000));
+    else if(!we){const _y=sY,_m=sM,_d=day;cell.addEventListener('click',()=>openModal(_y,_m,_d));}
     grid.appendChild(cell);
   }
 }
@@ -935,8 +1069,7 @@ function openModal(y,m,d){
   document.getElementById('m-title').textContent=`${LD[dt.getDay()]}, ${FM[m]} ${d}`;
   const ev=EVENTS[key];
   document.getElementById('m-event').textContent=(!ev||ev.ns)?'':('📅 '+ev.lbl);
-  renderKidRows();
-  updateSaveBtn();
+  renderKidRows();updateSaveBtn();
   document.getElementById('m-cal').classList.remove('show');
   document.getElementById('cal-links').innerHTML='';
   document.getElementById('day-overlay').classList.add('open');
@@ -966,46 +1099,27 @@ function vote(i,choice){
   row.querySelector('.'+choice).classList.add('active');
   updateSaveBtn();
 }
-function closeModal(){
-  document.getElementById('day-overlay').classList.remove('open');
-  document.body.style.overflow='';
-  mSt=null;
-}
-function overlayClose(e){if(e.target===document.getElementById('day-overlay')) closeModal();}
-
+function closeModal(){document.getElementById('day-overlay').classList.remove('open');document.body.style.overflow='';mSt=null;}
+function overlayClose(e){if(e.target===document.getElementById('day-overlay'))closeModal();}
 function saveVotes(){
-  if(!mSt) return;
-  votes[mSt.key]={...mSt.p};
-  save();
+  if(!mSt)return;
+  votes[mSt.key]={...mSt.p};save();
   const noKids=cfg.kids.filter((_,i)=>mSt.p[i]==='no');
   if(noKids.length>0){
-    const{y,m,d}=mSt;
-    // Night before at 7pm
+    const {y,m,d}=mSt;
     const prev=new Date(y,m,d-1);
     const pad=n=>String(n).padStart(2,'0');
     const prevStr=`${prev.getFullYear()}${pad(prev.getMonth()+1)}${pad(prev.getDate())}`;
     const fmtD=`${FM[m]} ${d}`;
-
     document.getElementById('cal-links').innerHTML=noKids.map(k=>{
-      const title=encodeURIComponent(`🎒 Pack lunch — ${k.name}`);
-      const notes=encodeURIComponent(`${k.name} is bringing lunch from home on ${fmtD}. Pack tonight!`);
-
-      // Apple Calendar / iOS Calendar via .ics blob
-      const uid=`schoolday-${mSt.key}-${k.name.replace(/\s/g,'')}@orcsd`;
-      const ics=[
-        'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SchoolDay//ORCSD//EN',
-        'BEGIN:VEVENT',
-        `UID:${uid}`,
-        `DTSTART:${prevStr}T190000`,
-        `DTEND:${prevStr}T193000`,
+      const uid_str=`schoolday-${mSt.key}-${k.name.replace(/\s/g,'')}@orcsd`;
+      const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SchoolDay//ORCSD//EN','BEGIN:VEVENT',
+        `UID:${uid_str}`,`DTSTART:${prevStr}T190000`,`DTEND:${prevStr}T193000`,
         `SUMMARY:🎒 Pack lunch — ${k.name}`,
         `DESCRIPTION:${k.name} is bringing lunch from home on ${fmtD}. Pack tonight!`,
-        'END:VEVENT','END:VCALENDAR'
-      ].join('\r\n');
-      const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
-      const icsUrl=URL.createObjectURL(blob);
-
-      return `<a class="cal-link" href="${icsUrl}" target="_blank">
+        'END:VEVENT','END:VCALENDAR'].join('\r\n');
+      const dataUri='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
+      return `<a class="cal-link" href="${dataUri}">
         <span class="cal-link-icon">📅</span>
         <div class="cal-link-text">
           <div class="cal-link-name">Pack lunch — ${k.name}</div>
@@ -1014,14 +1128,10 @@ function saveVotes(){
         <span style="font-size:16px;opacity:.5">→</span>
       </a>`;
     }).join('');
-
     document.getElementById('m-cal').classList.add('show');
-    toast('Saved! Tap the calendar link to add reminder.',3500);
-  } else {
-    toast('Saved! ✓');
-    closeModal();
-  }
-  renderWeek(); renderCal();
+    toast('Saved! Tap to add calendar reminder.',3500);
+  } else {toast('Saved! ✓');closeModal();}
+  renderWeek();renderCal();
 }
 
 // ════════════════════════
@@ -1029,36 +1139,245 @@ function saveVotes(){
 // ════════════════════════
 function setSchool(btn,school){
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  curSchool=school;
-  updateMenuCard(school);
+  btn.classList.add('active');curSchool=school;updateMenuCard(school);
 }
 function updateMenuCard(school){
   const target=menuTargetDate();
-  const today=new Date(); today.setHours(0,0,0,0); target.setHours(0,0,0,0);
+  const today=new Date();today.setHours(0,0,0,0);target.setHours(0,0,0,0);
   const isAhead=target.getTime()!==today.getTime();
   const mo=FM[target.getMonth()],yr=target.getFullYear();
   document.getElementById('menu-card-school').textContent=SNAMES[school];
   document.getElementById('menu-card-title').textContent=`${mo} ${yr} Menu`;
-  document.getElementById('menu-card-date').textContent=isAhead
-    ?`Showing ${LD[target.getDay()]}, ${mo} ${target.getDate()} — next school day`:'';
+  document.getElementById('menu-card-date').textContent=isAhead?`Showing ${LD[target.getDay()]}, ${mo} ${target.getDate()} — next school day`:'';
   document.getElementById('menu-open-btn').href=getPdf(school,target);
-  updateMenuSectionLabel();
-  updateLinks();
+  updateMenuSectionLabel();updateLinks();
+}
+
+// ════════════════════════
+//  LEAVE HOUSE CHECKLIST
+// ════════════════════════
+function renderChecklist(){
+  const tk=todayKey();
+  if(!checks[tk]) checks[tk]={};
+  const todayChecks=checks[tk];
+
+  // Auto-reset: clear yesterday's checks (keys older than today)
+  Object.keys(checks).filter(k=>k<tk).forEach(k=>delete checks[k]);
+  save();
+
+  const list=document.getElementById('leave-kids-list');
+  list.innerHTML='';
+
+  let totalItems=0,totalDone=0;
+
+  cfg.kids.forEach((kid,kidIdx)=>{
+    const items=kid.items||[];
+    if(!items.length)return;
+    const kidChecks=todayChecks[kidIdx]||{};
+    const doneCnt=items.filter((_,ii)=>kidChecks[ii]).length;
+    totalItems+=items.length; totalDone+=doneCnt;
+
+    const card=document.createElement('div');
+    card.className='leave-kid-card';
+    card.innerHTML=`
+      <div class="leave-kid-hdr">
+        <div class="leave-kid-av" style="background:${kid.color}22;color:${kid.color}">${kid.name[0].toUpperCase()}</div>
+        <div class="leave-kid-name">${kid.name}</div>
+        <div class="leave-kid-count" id="kid-count-${kidIdx}">${doneCnt}/${items.length} ready</div>
+      </div>
+      ${items.map((item,ii)=>`
+        <div class="leave-item${kidChecks[ii]?' done':''}" id="li-${kidIdx}-${ii}" onclick="toggleItem(${kidIdx},${ii})">
+          <div class="leave-cb">${kidChecks[ii]?'✓':''}</div>
+          <div class="leave-item-label">${item}</div>
+        </div>`).join('')}
+      <div style="padding:10px 16px;border-top:1px dashed #b8c4d8">
+        <button onclick="openItemSheet(${kidIdx})" style="background:none;border:none;color:#1f78b4;font-size:13px;font-weight:600;cursor:pointer;padding:0;font-family:'Inter',sans-serif">+ Add item</button>
+        ${items.length>0?`<button onclick="removeLastItem(${kidIdx})" style="background:none;border:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;padding:0;margin-left:16px;font-family:'Inter',sans-serif">Remove last</button>`:''}
+      </div>`;
+    list.appendChild(card);
+  });
+
+  updateChecklistProgress(totalDone,totalItems);
+}
+
+function toggleItem(kidIdx,itemIdx){
+  const tk=todayKey();
+  if(!checks[tk])checks[tk]={};
+  if(!checks[tk][kidIdx])checks[tk][kidIdx]={};
+  checks[tk][kidIdx][itemIdx]=!checks[tk][kidIdx][itemIdx];
+  save();
+
+  // Update just this item visually
+  const el=document.getElementById(`li-${kidIdx}-${itemIdx}`);
+  const done=checks[tk][kidIdx][itemIdx];
+  el.className='leave-item'+(done?' done':'');
+  el.querySelector('.leave-cb').textContent=done?'✓':'';
+
+  // Update count for this kid
+  const items=cfg.kids[kidIdx].items||[];
+  const kidChecks=checks[tk][kidIdx]||{};
+  const doneCnt=items.filter((_,ii)=>kidChecks[ii]).length;
+  const countEl=document.getElementById(`kid-count-${kidIdx}`);
+  if(countEl)countEl.textContent=`${doneCnt}/${items.length} ready`;
+
+  // Recalculate total
+  let totalItems=0,totalDone=0;
+  cfg.kids.forEach((kid,ki)=>{
+    const its=kid.items||[];
+    const kc=checks[tk][ki]||{};
+    totalItems+=its.length;totalDone+=its.filter((_,ii)=>kc[ii]).length;
+  });
+  updateChecklistProgress(totalDone,totalItems);
+  if(navigator.vibrate&&done)navigator.vibrate(30);
+}
+
+function updateChecklistProgress(done,total){
+  const pct=total>0?(done/total)*100:0;
+  document.getElementById('leave-progress-fill').style.width=pct+'%';
+  document.getElementById('leave-progress-label').textContent=`${done} of ${total} ready`;
+  const banner=document.getElementById('leave-done-banner');
+  const allDone=total>0&&done===total;
+  banner.style.display=allDone?'flex':'none';
+  const sub=document.getElementById('leave-sub');
+  sub.textContent=allDone?'All packed up! 🎉':'Check everything before heading out';
+}
+
+function resetChecklist(){
+  const tk=todayKey();
+  checks[tk]={};save();renderChecklist();
+  toast('Checklist reset',1500);
+}
+
+// Checklist item sheet
+let editKidIdx=null;
+function openItemSheet(kidIdx){
+  editKidIdx=kidIdx;
+  const sel=document.getElementById('item-kid-select');
+  sel.innerHTML=cfg.kids.map((k,i)=>`<option value="${i}" ${i===kidIdx?'selected':''}>${k.name}</option>`).join('');
+  document.getElementById('item-name-input').value='';
+  document.getElementById('item-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('item-name-input').focus(),100);
+}
+function closeItemSheet(){document.getElementById('item-overlay').classList.remove('open');document.body.style.overflow='';}
+function itemOverlayClose(e){if(e.target===document.getElementById('item-overlay'))closeItemSheet();}
+function saveItem(){
+  const kidIdx=parseInt(document.getElementById('item-kid-select').value);
+  const name=document.getElementById('item-name-input').value.trim();
+  if(!name)return;
+  if(!cfg.kids[kidIdx].items)cfg.kids[kidIdx].items=[];
+  cfg.kids[kidIdx].items.push(name);
+  save();closeItemSheet();renderChecklist();toast(`Added "${name}" to ${cfg.kids[kidIdx].name}'s list`);
+}
+function removeLastItem(kidIdx){
+  if(!cfg.kids[kidIdx].items?.length)return;
+  const removed=cfg.kids[kidIdx].items.pop();
+  save();renderChecklist();toast(`Removed "${removed}"`);
+}
+
+// ════════════════════════
+//  HOME TASKS
+// ════════════════════════
+function renderTasks(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const dueTasks=[],okTasks=[];
+  tasks.forEach(t=>{
+    const last=t.lastDone?new Date(t.lastDone):new Date(0);
+    const nextDue=new Date(last);nextDue.setDate(nextDue.getDate()+t.freq);
+    const daysLeft=Math.round((nextDue-today)/(1000*60*60*24));
+    dueTasks.push({...t,daysLeft,nextDue});
+  });
+  dueTasks.sort((a,b)=>a.daysLeft-b.daysLeft);
+  const overdue=dueTasks.filter(t=>t.daysLeft<=0);
+  const soon=dueTasks.filter(t=>t.daysLeft>0&&t.daysLeft<=14);
+  const ok=dueTasks.filter(t=>t.daysLeft>14);
+
+  const dueEl=document.getElementById('tasks-due');
+  const okEl=document.getElementById('tasks-ok');
+  const emptyEl=document.getElementById('tasks-empty');
+
+  dueEl.innerHTML='';okEl.innerHTML='';
+
+  if(tasks.length===0){emptyEl.style.display='block';return;}
+  emptyEl.style.display='none';
+
+  function taskCard(t){
+    const cls=t.daysLeft<=0?'overdue':t.daysLeft<=14?'due-soon':'ok';
+    const badge=t.daysLeft<=0?`${Math.abs(t.daysLeft)}d overdue`:t.daysLeft===0?'Due today':`Due in ${t.daysLeft}d`;
+    const last=t.lastDone?new Date(t.lastDone).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Never';
+    return `<div class="task-card ${cls}">
+      <div class="task-status-bar"></div>
+      <div class="task-body" onclick="openEditTask('${t.id}')">
+        <div class="task-name">${t.name}</div>
+        <div class="task-meta">
+          <span class="task-due-badge">${badge}</span>
+          <span>Every ${t.freq}d · Last: ${last}</span>
+        </div>
+      </div>
+      <button class="task-done-btn" onclick="markTaskDone('${t.id}')" title="Mark done">✓</button>
+    </div>`;
+  }
+
+  if(overdue.length||soon.length){
+    dueEl.innerHTML=(overdue.length?`<div class="task-section-hdr">⚠️ Overdue</div>${overdue.map(taskCard).join('')}`:'')
+      +(soon.length?`<div class="task-section-hdr">🔔 Due soon</div>${soon.map(taskCard).join('')}`:'');
+  }
+  if(ok.length){
+    okEl.innerHTML=`<div class="task-section-hdr">✅ Up to date</div>${ok.map(taskCard).join('')}`;
+  }
+}
+
+function markTaskDone(id){
+  const t=tasks.find(t=>t.id===id);if(!t)return;
+  t.lastDone=new Date().toISOString().slice(0,10);
+  save();renderTasks();toast(`✓ ${t.name} marked done`);
+}
+
+function openAddTask(){
+  editTaskId=null;
+  document.getElementById('task-sheet-title').textContent='Add Home Task';
+  document.getElementById('task-name-input').value='';
+  document.getElementById('task-freq-input').value='90';
+  document.getElementById('task-date-input').value=new Date().toISOString().slice(0,10);
+  document.getElementById('task-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('task-name-input').focus(),100);
+}
+function openEditTask(id){
+  const t=tasks.find(t=>t.id===id);if(!t)return;
+  editTaskId=id;
+  document.getElementById('task-sheet-title').textContent='Edit Task';
+  document.getElementById('task-name-input').value=t.name;
+  document.getElementById('task-freq-input').value=t.freq;
+  document.getElementById('task-date-input').value=t.lastDone||new Date().toISOString().slice(0,10);
+  document.getElementById('task-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeTaskSheet(){document.getElementById('task-overlay').classList.remove('open');document.body.style.overflow='';}
+function taskOverlayClose(e){if(e.target===document.getElementById('task-overlay'))closeTaskSheet();}
+function saveTask(){
+  const name=document.getElementById('task-name-input').value.trim();
+  const freq=parseInt(document.getElementById('task-freq-input').value)||90;
+  const lastDone=document.getElementById('task-date-input').value;
+  if(!name)return;
+  if(editTaskId){
+    const t=tasks.find(t=>t.id===editTaskId);
+    if(t){t.name=name;t.freq=freq;t.lastDone=lastDone;}
+  } else {
+    tasks.push({id:uid(),name,freq,lastDone});
+  }
+  save();closeTaskSheet();renderTasks();toast(editTaskId?'Task updated':'Task added ✓');
 }
 
 // ════════════════════════
 //  SETTINGS
 // ════════════════════════
 function renderSettings(){
-  // School selector
   const row=document.getElementById('school-select-row');
   row.innerHTML=['mw','ms','hs'].map(s=>`
     <button class="school-sel-btn ${cfg.mySchool===s?'active':''}" onclick="selectMySchool('${s}',this)">
       ${s==='mw'?'Mast Way':s==='ms'?'Middle School':'High School'}
     </button>`).join('');
-
-  // Kids
   document.getElementById('kids-list').innerHTML=cfg.kids.map((k,i)=>`
     <div class="kid-stg-card">
       <div class="kid-stg-hdr">
@@ -1069,10 +1388,24 @@ function renderSettings(){
       <div class="kid-stg-body">
         <div class="fld"><div class="fld-lbl">Name</div><input class="stg-input" id="kn-${i}" value="${k.name}" placeholder="e.g. Emma" autocorrect="off" autocapitalize="words"></div>
         <div class="fld"><div class="fld-lbl">Color</div><div class="swatches">${COLORS.map(c=>`<button class="swatch ${k.color===c?'sel':''}" style="background:${c}" onclick="pickColor(${i},'${c}',this)"></button>`).join('')}</div></div>
+        <div class="fld"><div class="fld-lbl">Checklist Items</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Items on the Leave House checklist for this kid</div>
+          <div id="items-${i}">${(k.items||[]).map((item,ii)=>`
+            <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #b8c4d8">
+              <span style="flex:1;font-size:14px">${item}</span>
+              <button onclick="removeItemAt(${i},${ii})" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:2px 6px;font-family:'Inter',sans-serif">✕</button>
+            </div>`).join('')}
+            <button onclick="openItemSheet(${i})" style="margin-top:8px;background:none;border:1.5px dashed #9aaabf;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:600;color:#1f78b4;cursor:pointer;width:100%;font-family:'Inter',sans-serif">+ Add item</button>
+          </div>
+        </div>
       </div>
     </div>`).join('');
   document.getElementById('add-btn').style.display=cfg.kids.length>=3?'none':'';
   document.getElementById('add-btn').textContent=cfg.kids.length===0?'+ Add First Kid':'+ Add Another Kid';
+}
+function removeItemAt(kidIdx,itemIdx){
+  cfg.kids[kidIdx].items.splice(itemIdx,1);
+  save();renderSettings();
 }
 function selectMySchool(school,btn){
   cfg.mySchool=school;
@@ -1081,18 +1414,15 @@ function selectMySchool(school,btn){
 }
 function pickColor(i,c,btn){
   cfg.kids[i].color=c;
-  btn.closest('.swatches').querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel')); btn.classList.add('sel');
-  const av=btn.closest('.kid-stg-card').querySelector('.kid-stg-av'); av.style.background=c+'33'; av.style.color=c;
+  btn.closest('.swatches').querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));btn.classList.add('sel');
+  const av=btn.closest('.kid-stg-card').querySelector('.kid-stg-av');av.style.background=c+'33';av.style.color=c;
 }
-function addKid(){if(cfg.kids.length>=3)return; cfg.kids.push({name:'',color:COLORS[cfg.kids.length]}); renderSettings();}
-function removeKid(i){cfg.kids.splice(i,1); renderSettings();}
+function addKid(){if(cfg.kids.length>=3)return;cfg.kids.push({name:'',color:COLORS[cfg.kids.length],items:['Backpack']});renderSettings();}
+function removeKid(i){cfg.kids.splice(i,1);renderSettings();}
 function saveSettings(){
   cfg.kids=cfg.kids.map((k,i)=>({...k,name:(document.getElementById(`kn-${i}`)?.value.trim()||k.name)}));
-  save(); renderWeek(); renderCal();
-  // Update default school pill
-  curSchool=cfg.mySchool;
-  setActivePill(curSchool);
-  updateMenuCard(curSchool);
+  save();renderWeek();renderCal();
+  curSchool=cfg.mySchool;setActivePill(curSchool);updateMenuCard(curSchool);
   localStorage.setItem('sd-onboard-done','1');
   document.getElementById('onboard-banner').style.display='none';
   toast('Settings saved ✓');
@@ -1102,14 +1432,14 @@ function saveSettings(){
 //  BUG REPORTER
 // ════════════════════════
 function generateBugReport(){
-  const snap={app:'SchoolDay v4.0 — ORCSD',date:new Date().toLocaleString(),
+  const snap={app:'SchoolDay v4.1 — ORCSD',date:new Date().toLocaleString(),
     view:document.querySelector('.view.active')?.id||'?',mySchool:cfg.mySchool,
-    kids:cfg.kids.map(k=>k.name),voteDays:Object.keys(votes).length,
+    kids:cfg.kids.map(k=>k.name),voteDays:Object.keys(votes).length,taskCount:tasks.length,
     ua:navigator.userAgent.substring(0,150),
     issue:'[ DESCRIBE THE BUG HERE ]',steps:'[ What did you tap? ]',
     expected:'[ What should have happened? ]',actual:'[ What actually happened? ]'};
   const ta=document.getElementById('bug-ta');
-  ta.value=JSON.stringify(snap,null,2); ta.focus();
+  ta.value=JSON.stringify(snap,null,2);ta.focus();
 }
 async function copyBug(){
   const txt=document.getElementById('bug-ta').value;
