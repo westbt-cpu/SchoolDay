@@ -108,17 +108,14 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .menu-label{font-size:15px;font-weight:700;flex:1}
 .pdf-open-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#fff;text-decoration:none;white-space:nowrap;transition:background .15s}
 .pdf-open-btn:active{background:rgba(255,255,255,.28)}
-.pdf-frame-wrap{position:relative;width:100%;height:65vh;min-height:380px;max-height:600px;background:#e8ecf4;overflow:hidden;touch-action:pan-x pan-y pinch-zoom}
-.pdf-canvas-container{width:100%;height:100%;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y pinch-zoom;display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px;background:#525659}
-.pdf-canvas-container canvas{display:block;box-shadow:0 2px 8px rgba(0,0,0,.4);max-width:none}
-.pdf-loading-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#e8ecf4;gap:12px;font-size:13px;color:var(–muted);font-weight:500;z-index:2;transition:opacity .4s}
-.pdf-loading-overlay.hidden{opacity:0;pointer-events:none}
-.pdf-retry-btn{background:#1B3A6B;color:#fff;padding:10px 20px;border-radius:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;font-family:‘Inter’,sans-serif;margin-top:4px;text-decoration:none;display:inline-block}
-.pdf-controls{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#f0f4fa;border-top:1px solid #b0c4e0}
-.pdf-page-info{font-size:12px;font-weight:600;color:#1B3A6B}
-.pdf-zoom-btns{display:flex;gap:6px}
-.pdf-zoom-btn{background:#1B3A6B;color:#fff;border:none;border-radius:7px;width:32px;height:32px;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:‘Inter’,sans-serif}
-.pdf-hint{padding:9px 16px;background:#e8f0fa;border-top:1px solid #b0c4e0;font-size:12px;color:#1B3A6B;font-weight:500;display:flex;align-items:center;gap:6px}
+.pdf-wrap{position:relative;width:100%;height:65vh;min-height:400px;background:#525659;overflow:hidden}
+.pdf-object{width:100%;height:100%;border:none;display:block}
+.pdf-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:100%;padding:24px;text-align:center;background:#e8ecf4}
+.pdf-fallback-icon{font-size:36px}
+.pdf-fallback-title{font-size:15px;font-weight:700;color:var(–text)}
+.pdf-fallback-body{font-size:13px;color:var(–muted);line-height:1.6;max-width:280px}
+.pdf-fallback-btn{display:inline-block;background:#1B3A6B;color:#fff;padding:12px 24px;border-radius:12px;text-decoration:none;font-weight:800;font-size:15px;box-shadow:0 4px 14px rgba(27,58,107,.3)}
+.pdf-hint{padding:9px 16px;background:#e8f0fa;border-top:1px solid #b0c4e0;font-size:12px;color:#1B3A6B;font-weight:500}
 
 /* ── Quick links ── */
 .ql-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
@@ -324,20 +321,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <span class="menu-label" id="menu-lbl">Mast Way &amp; Moharimet</span>
     <a class="pdf-open-btn" id="pdf-open-btn" href="#" target="_blank">Open ↗</a>
   </div>
-  <div class="pdf-frame-wrap">
-    <div class="pdf-loading-overlay" id="pdf-loading">
-      <div class="spin"></div>
-      <span id="pdf-loading-msg">Loading menu…</span>
-    </div>
-    <div class="pdf-canvas-container" id="pdf-canvas-container"></div>
-  </div>
-  <div class="pdf-controls">
-    <span class="pdf-page-info" id="pdf-page-info"></span>
-    <div class="pdf-zoom-btns">
-      <button class="pdf-zoom-btn" onclick="pdfZoom(-0.25)" title="Zoom out">−</button>
-      <button class="pdf-zoom-btn" onclick="pdfZoom(0)" title="Reset zoom">⊙</button>
-      <button class="pdf-zoom-btn" onclick="pdfZoom(0.25)" title="Zoom in">+</button>
-    </div>
+  <div class="pdf-wrap" id="pdf-wrap">
+    <!-- Populated by loadPdf() -->
   </div>
   <div class="pdf-hint">👆 Pinch to zoom &nbsp;·&nbsp; Scroll to browse &nbsp;·&nbsp; Tap <strong>Open ↗</strong> for full screen</div>
 </div>
@@ -501,7 +486,6 @@ let cfg={kids:[{name:'Kid 1',color:'#2dbe7a'},{name:'Kid 2',color:'#C8962A'}]};
 let votes={};
 let calY=new Date().getFullYear(), calM=new Date().getMonth();
 let mSt=null;
-let pdfDoc=null, pdfScale=1.2, pdfBaseScale=1.2;
 let curSchool='mw';
 
 // ════════════════════════
@@ -819,14 +803,6 @@ function saveVotes(){
 // ════════════════════════
 const SNAMES={mw:'Mast Way & Moharimet',moh:'Mast Way & Moharimet',ms:'Middle School',hs:'High School'};
 
-// CORS proxy waterfall — tries each in order until one works
-const PROXIES=[
-  url=>`https://corsproxy.io/?${encodeURIComponent(url)}`,
-  url=>`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  url=>`https://thingproxy.freeboard.io/fetch/${url}`,
-  url=>url, // direct last — works if ORCSD adds CORS headers in future
-];
-
 function setSchool(btn,school){
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
@@ -844,149 +820,48 @@ function loadPdf(school){
   const pdfUrl=getPdf(school,target);
   document.getElementById('pdf-open-btn').href=pdfUrl;
   updateLinks();
-  renderPdfFromUrl(pdfUrl);
+  renderPdf(pdfUrl);
 }
 
-async function renderPdfFromUrl(pdfUrl){
-  const container=document.getElementById('pdf-canvas-container');
-  const loadingEl=document.getElementById('pdf-loading');
-  const loadingMsg=document.getElementById('pdf-loading-msg');
-  const pageInfo=document.getElementById('pdf-page-info');
-  container.innerHTML='';
-  loadingEl.classList.remove('hidden');
-  loadingMsg.textContent='Loading menu…';
-  pageInfo.textContent='';
+function renderPdf(pdfUrl){
+  const wrap=document.getElementById('pdf-wrap');
 
-  // Load PDF.js once
-  if(!window.pdfjsLib){
-    try{
-      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    }catch(e){
-      showPdfFallback(pdfUrl,'Could not load PDF renderer.');
-      return;
-    }
-  }
+  // Detect iOS — iOS Safari supports PDFs natively via <object> src
+  // For all other browsers we show the fallback with direct open link
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||
+    (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const isSafari=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-  // Try each proxy in sequence
-  let arrayBuffer=null;
-  for(let i=0;i<PROXIES.length;i++){
-    const proxyUrl=PROXIES[i](pdfUrl);
-    loadingMsg.textContent=`Fetching menu… (${i+1}/${PROXIES.length})`;
-    try{
-      const resp=await Promise.race([
-        fetch(proxyUrl,{cache:'no-store'}),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),10000))
-      ]);
-      if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      const buf=await resp.arrayBuffer();
-      // Verify it looks like a PDF (starts with %PDF)
-      const header=new Uint8Array(buf.slice(0,4));
-      const isPdf=header[0]===0x25&&header[1]===0x50&&header[2]===0x44&&header[3]===0x46;
-      if(!isPdf) throw new Error('Not a PDF');
-      arrayBuffer=buf;
-      break;
-    }catch(e){
-      console.warn(`Proxy ${i+1} failed:`,e.message);
-      if(i===PROXIES.length-1){
-        showPdfFallback(pdfUrl,'All network attempts failed.');
-        return;
-      }
-    }
-  }
-
-  // Render with PDF.js
-  try{
-    loadingMsg.textContent='Rendering…';
-    pdfDoc=await window.pdfjsLib.getDocument({data:arrayBuffer}).promise;
-    const containerWidth=(container.parentElement?.offsetWidth||window.innerWidth)-32;
-    const firstPage=await pdfDoc.getPage(1);
-    const nativeVp=firstPage.getViewport({scale:1});
-    pdfBaseScale=Math.min(containerWidth/nativeVp.width, 2.0);
-    pdfScale=pdfBaseScale;
-    await renderAllPages(container);
-    loadingEl.classList.add('hidden');
-    pageInfo.textContent=`${pdfDoc.numPages} page${pdfDoc.numPages>1?'s':''}  ·  pinch or use +/− to zoom`;
-    setupPinchZoom(container);
-  }catch(e){
-    console.error('PDF.js render error:',e);
-    showPdfFallback(pdfUrl,'Render error: '+e.message);
+  if(isIOS||isSafari){
+    // iOS/Safari: use <object> — renders PDF inline with native pinch-zoom
+    wrap.innerHTML=`
+      <object
+        class="pdf-object"
+        data="${pdfUrl}"
+        type="application/pdf"
+      >
+        ${fallbackHtml(pdfUrl,'Your browser didn\'t load the preview.')}
+      </object>`;
+  } else {
+    // Desktop / other: use iframe with Google Docs viewer as it works there
+    const viewer=`https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+    wrap.innerHTML=`
+      <iframe
+        class="pdf-object"
+        src="${viewer}"
+        title="Lunch Menu"
+        frameborder="0"
+      ></iframe>`;
   }
 }
 
-function showPdfFallback(pdfUrl, reason){
-  console.warn('PDF fallback:',reason);
-  const loadingEl=document.getElementById('pdf-loading');
-  loadingEl.innerHTML=`
-    <span style="font-size:32px">📄</span>
-    <span style="font-weight:700;color:var(--text);font-size:15px">Menu preview unavailable</span>
-    <span style="font-size:12px;color:var(--muted);text-align:center;max-width:260px;line-height:1.6">
-      Tap below to open the full menu PDF in your browser.<br>Pinch to zoom works there too.
-    </span>
-    <a href="${pdfUrl}" target="_blank" class="pdf-retry-btn">📄 Open Menu PDF ↗</a>
-    <button onclick="renderPdfFromUrl('${pdfUrl}')" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:4px;font-family:'Inter',sans-serif;">↻ Try again</button>`;
-  loadingEl.classList.remove('hidden');
-}
-
-async function renderAllPages(container){
-  container.innerHTML='';
-  const dpr=Math.min(window.devicePixelRatio||1,2);
-  for(let i=1;i<=pdfDoc.numPages;i++){
-    const page=await pdfDoc.getPage(i);
-    const vp=page.getViewport({scale:pdfScale*dpr});
-    const canvas=document.createElement('canvas');
-    const ctx=canvas.getContext('2d');
-    canvas.width=vp.width; canvas.height=vp.height;
-    canvas.style.width=`${vp.width/dpr}px`;
-    canvas.style.height=`${vp.height/dpr}px`;
-    container.appendChild(canvas);
-    await page.render({canvasContext:ctx,viewport:vp}).promise;
-  }
-}
-
-function pdfZoom(delta){
-  if(!pdfDoc) return;
-  pdfScale=delta===0?pdfBaseScale:Math.max(0.4,Math.min(4,pdfScale+delta));
-  const container=document.getElementById('pdf-canvas-container');
-  const loadingEl=document.getElementById('pdf-loading');
-  const loadingMsg=document.getElementById('pdf-loading-msg');
-  loadingEl.classList.remove('hidden'); loadingMsg.textContent='Re-rendering…';
-  renderAllPages(container).then(()=>loadingEl.classList.add('hidden'));
-}
-
-function setupPinchZoom(container){
-  let startDist=0,startScale=1;
-  container.addEventListener('touchstart',e=>{
-    if(e.touches.length===2){
-      startDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-      startScale=pdfScale; e.preventDefault();
-    }
-  },{passive:false});
-  container.addEventListener('touchmove',e=>{
-    if(e.touches.length===2&&startDist>0){
-      const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-      pdfScale=Math.max(0.4,Math.min(4,startScale*(dist/startDist)));
-      e.preventDefault();
-    }
-  },{passive:false});
-  container.addEventListener('touchend',e=>{
-    if(e.changedTouches.length>0&&startDist>0){
-      startDist=0;
-      const loadingEl=document.getElementById('pdf-loading');
-      const loadingMsg=document.getElementById('pdf-loading-msg');
-      loadingEl.classList.remove('hidden'); loadingMsg.textContent='Re-rendering…';
-      renderAllPages(container).then(()=>loadingEl.classList.add('hidden'));
-    }
-  });
-}
-
-function loadScript(src){
-  return new Promise((resolve,reject)=>{
-    if(document.querySelector(`script[src="${src}"]`)){resolve();return;}
-    const s=document.createElement('script');
-    s.src=src; s.onload=resolve; s.onerror=reject;
-    document.head.appendChild(s);
-  });
+function fallbackHtml(pdfUrl, reason){
+  return `<div class="pdf-fallback">
+    <div class="pdf-fallback-icon">📄</div>
+    <div class="pdf-fallback-title">Menu couldn't load in-app</div>
+    <div class="pdf-fallback-body">Tap the button to open the full menu — pinch to zoom works in your browser too.</div>
+    <a href="${pdfUrl}" target="_blank" class="pdf-fallback-btn">Open Menu PDF ↗</a>
+  </div>`;
 }
 
 // ════════════════════════
