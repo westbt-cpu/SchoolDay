@@ -103,19 +103,21 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .pill.active{background:#1B3A6B;border-color:#1B3A6B;color:#fff;box-shadow:0 2px 10px rgba(27,58,107,.3)}
 .pill:not(.active):active{background:#d0d8e8}
 
-/* ── PDF card ── */
-.menu-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#0f2244;background:linear-gradient(135deg,#091830,#1B3A6B);color:#fff;border-radius:var(–radius) var(–radius) 0 0}
-.menu-label{font-size:15px;font-weight:700;flex:1}
-.pdf-open-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#fff;text-decoration:none;white-space:nowrap;transition:background .15s}
-.pdf-open-btn:active{background:rgba(255,255,255,.28)}
-.pdf-wrap{position:relative;width:100%;height:65vh;min-height:400px;background:#525659;overflow:hidden}
-.pdf-object{width:100%;height:100%;border:none;display:block}
-.pdf-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:100%;padding:24px;text-align:center;background:#e8ecf4}
-.pdf-fallback-icon{font-size:36px}
-.pdf-fallback-title{font-size:15px;font-weight:700;color:var(–text)}
-.pdf-fallback-body{font-size:13px;color:var(–muted);line-height:1.6;max-width:280px}
-.pdf-fallback-btn{display:inline-block;background:#1B3A6B;color:#fff;padding:12px 24px;border-radius:12px;text-decoration:none;font-weight:800;font-size:15px;box-shadow:0 4px 14px rgba(27,58,107,.3)}
-.pdf-hint{padding:9px 16px;background:#e8f0fa;border-top:1px solid #b0c4e0;font-size:12px;color:#1B3A6B;font-weight:500}
+/* ── Menu card ── */
+.menu-card{background:#fff;border:1.5px solid #b8c4d8;border-radius:var(–radius);box-shadow:var(–shadow);margin-bottom:12px;overflow:hidden}
+.menu-card-hdr{background:#0f2244;background:linear-gradient(135deg,#091830,#1B3A6B);padding:14px 16px;border-radius:var(–radius) var(–radius) 0 0}
+.menu-card-school{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.55);margin-bottom:3px}
+.menu-card-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:2px}
+.menu-card-date{font-size:12px;color:rgba(255,255,255,.6);font-weight:500}
+.menu-card-body{padding:16px}
+.menu-open-btn{display:flex;align-items:center;justify-content:space-between;background:#1B3A6B;color:#fff;text-decoration:none;border-radius:12px;padding:16px 18px;margin-bottom:10px;box-shadow:0 4px 14px rgba(27,58,107,.3);transition:all .15s;active:opacity:.85}
+.menu-open-btn:active{opacity:.85;transform:scale(.98)}
+.menu-open-btn-left{display:flex;align-items:center;gap:12px}
+.menu-open-icon{font-size:26px;line-height:1}
+.menu-open-label{font-size:15px;font-weight:800}
+.menu-open-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px;font-weight:500}
+.menu-open-arrow{font-size:20px;opacity:.7}
+.menu-card-note{font-size:12px;color:var(–muted);text-align:center;padding:4px 0 2px;line-height:1.5}
 
 /* ── Quick links ── */
 .ql-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
@@ -312,27 +314,42 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <div class="sh"><span class="sh-title" id="menu-sh-title">TODAY'S LUNCH</span></div>
 <div class="pill-bar">
   <button class="pill active" onclick="setSchool(this,'mw')">Mast Way</button>
-  <button class="pill" onclick="setSchool(this,'moh')">Moharimet</button>
   <button class="pill" onclick="setSchool(this,'ms')">Middle School</button>
   <button class="pill" onclick="setSchool(this,'hs')">High School</button>
 </div>
-<div class="card">
-  <div class="menu-hdr">
-    <span class="menu-label" id="menu-lbl">Mast Way &amp; Moharimet</span>
-    <a class="pdf-open-btn" id="pdf-open-btn" href="#" target="_blank">Open ↗</a>
+<div class="menu-card" id="menu-card">
+  <div class="menu-card-hdr">
+    <div class="menu-card-school" id="menu-card-school">Mast Way &amp; Moharimet</div>
+    <div class="menu-card-title" id="menu-card-title">March 2026 Menu</div>
+    <div class="menu-card-date" id="menu-card-date"></div>
   </div>
-  <div class="pdf-wrap" id="pdf-wrap">
-    <!-- Populated by loadPdf() -->
+  <div class="menu-card-body">
+    <a class="menu-open-btn" id="menu-open-btn" href="#" target="_blank">
+      <div class="menu-open-btn-left">
+        <span class="menu-open-icon">📋</span>
+        <div>
+          <div class="menu-open-label">Open Lunch Menu PDF</div>
+          <div class="menu-open-sub">Opens in browser · Pinch to zoom</div>
+        </div>
+      </div>
+      <span class="menu-open-arrow">↗</span>
+    </a>
+    <div class="menu-card-note" id="menu-card-note"></div>
   </div>
-  <div class="pdf-hint">👆 Pinch to zoom &nbsp;·&nbsp; Scroll to browse &nbsp;·&nbsp; Tap <strong>Open ↗</strong> for full screen</div>
+</div>
+
+<div class="sh"><span class="sh-title">All School Menus</span></div>
+<div class="ql-grid">
+  <a class="ql" id="lnk-mw" href="#" target="_blank"><div class="ql-icon">📄</div><div><div class="ql-lbl">Elementary</div><div class="ql-name">Mast Way &amp; Moharimet</div></div></a>
+  <a class="ql" id="lnk-ms" href="#" target="_blank"><div class="ql-icon">📄</div><div><div class="ql-lbl">Grades 5–8</div><div class="ql-name">Middle School</div></div></a>
+  <a class="ql" id="lnk-hs" href="#" target="_blank"><div class="ql-icon">📄</div><div><div class="ql-lbl">Grades 9–12</div><div class="ql-name">High School</div></div></a>
+  <a class="ql" href="https://linqconnect.com/" target="_blank"><div class="ql-icon">💳</div><div><div class="ql-lbl">Account</div><div class="ql-name">LINQConnect</div></div></a>
 </div>
 
 <div class="sh"><span class="sh-title">Quick Links</span></div>
 <div class="ql-grid">
-  <a class="ql" id="lnk-mw" href="#" target="_blank"><div class="ql-icon">📄</div><div><div class="ql-lbl">PDF Menu</div><div class="ql-name">Mast Way &amp; Moharimet</div></div></a>
-  <a class="ql" id="lnk-hs" href="#" target="_blank"><div class="ql-icon">📄</div><div><div class="ql-lbl">PDF Menu</div><div class="ql-name">High School</div></div></a>
-  <a class="ql" id="lnk-ms" href="#" target="_blank"><div class="ql-icon">📄</div><div><div class="ql-lbl">PDF Menu</div><div class="ql-name">Middle School</div></div></a>
-  <a class="ql" href="https://linqconnect.com/" target="_blank"><div class="ql-icon">💳</div><div><div class="ql-lbl">Account</div><div class="ql-name">LINQConnect</div></div></a>
+  <a class="ql" href="https://www.parentsquare.com/" target="_blank"><div class="ql-icon">💬</div><div><div class="ql-lbl">School Comms</div><div class="ql-name">ParentSquare</div></div></a>
+  <a class="ql" href="https://calendar.google.com/" target="_blank"><div class="ql-icon">📅</div><div><div class="ql-lbl">Calendar</div><div class="ql-name">Google Calendar</div></div></a>
 </div>
 ```
 
@@ -526,7 +543,7 @@ renderCal();
 renderSettings();
 updateLinks();
 updateMenuSectionLabel();
-loadPdf('mw');
+updateMenuCard('mw');
 
 function initHeader(){
   const d=new Date();
@@ -558,7 +575,7 @@ function isSchoolDay(y,m,d){const key=dk(y,m,d);return !isWE(y,m,d)&&!isNS(key);
 function getPdf(school,date){
   const n=date||new Date(), mo=FM[n.getMonth()], yr=n.getFullYear();
   const base=`https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026 Lunch Menus/${mo} ${yr} Lunch Menus/`;
-  return base+{mw:`Mast Way and Moharimet Menus - ${mo} ${yr}.pdf`,moh:`Mast Way and Moharimet Menus - ${mo} ${yr}.pdf`,ms:`Oyster River Middle School Lunch Menu - ${mo} ${yr}.pdf`,hs:`Oyster River High School Lunch Menu - ${mo} ${yr}.pdf`}[school];
+  return base+{mw:`Mast Way and Moharimet Menus - ${mo} ${yr}.pdf`,ms:`Oyster River Middle School Lunch Menu - ${mo} ${yr}.pdf`,hs:`Oyster River High School Lunch Menu - ${mo} ${yr}.pdf`}[school];
 }
 function updateLinks(){
   document.getElementById('lnk-mw').href=getPdf('mw');
@@ -596,27 +613,131 @@ function nsToast(msg){
 }
 
 // ════════════════════════
-//  WEATHER
+//  WEATHER — NOAA primary, Open-Meteo fallback
+//  Durham NH 03824 · 43.1339, -70.9234
 // ════════════════════════
+
+// NOAA gridpoint for Durham NH (pre-resolved so we skip the points lookup)
+// Resolved from: https://api.weather.gov/points/43.1339,-70.9234
+const NOAA_OFFICE='GYX', NOAA_GX=65, NOAA_GY=55;
+
 async function loadWx(){
   const el=document.getElementById('wx-card');
+  el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.45);font-size:13px"><div class="spin spin-white"></div><span>Loading weather…</span></div>`;
   try{
-    const j=await(await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.1339&longitude=-70.9234&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m,is_day&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York&forecast_days=1')).json();
-    const c=j.current,d=j.daily;
-    const tmp=Math.round(c.temperature_2m),fl=Math.round(c.apparent_temperature);
-    const wnd=Math.round(c.wind_speed_10m);
-    const hi=Math.round(d.temperature_2m_max[0]),lo=Math.round(d.temperature_2m_min[0]);
-    const{icon,desc}=wxCode(c.weather_code,c.is_day===1);
-    const{em,ad}=dress(tmp,c.weather_code,wnd);
-    el.innerHTML=`<div class="wx-top"><div class="wx-icon">${icon}</div><div><div class="wx-temp">${tmp}<span class="wx-unit">°F</span></div><div class="wx-desc">${desc} · Durham, NH</div></div></div><div class="wx-stats"><div class="wx-s"><div class="wx-sv">↑${hi}°</div><div class="wx-sl">High</div></div><div class="wx-s"><div class="wx-sv">↓${lo}°</div><div class="wx-sl">Low</div></div><div class="wx-s"><div class="wx-sv">${fl}°</div><div class="wx-sl">Feels</div></div><div class="wx-s"><div class="wx-sv">${wnd}mph</div><div class="wx-sl">Wind</div></div></div><div class="dress"><span class="dress-icon">${em}</span><span>${ad}</span></div>`;
-  }catch(e){el.innerHTML=`<div style="color:rgba(255,255,255,.4);font-size:13px">⚠️ Weather unavailable — check connection</div>`;}
+    await loadWxNOAA(el);
+  }catch(e){
+    console.warn('NOAA failed, trying Open-Meteo:',e.message);
+    try{
+      await loadWxOpenMeteo(el);
+    }catch(e2){
+      el.innerHTML=`<div style="color:rgba(255,255,255,.4);font-size:13px">⚠️ Weather unavailable — check connection</div>`;
+    }
+  }
 }
+
+async function loadWxNOAA(el){
+  // Fetch hourly forecast from pre-resolved gridpoint
+  const furl=`https://api.weather.gov/gridpoints/${NOAA_OFFICE}/${NOAA_GX},${NOAA_GY}/forecast/hourly`;
+  const dresp=await Promise.race([
+    fetch(furl,{headers:{'User-Agent':'SchoolDay/1.0 (ORCSD parent app)'}}),
+    new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))
+  ]);
+  if(!dresp.ok) throw new Error(`NOAA hourly HTTP ${dresp.status}`);
+  const dhour=await dresp.json();
+
+  // Also fetch daily for hi/lo
+  const durl=`https://api.weather.gov/gridpoints/${NOAA_OFFICE}/${NOAA_GX},${NOAA_GY}/forecast`;
+  const ddresp=await Promise.race([
+    fetch(durl,{headers:{'User-Agent':'SchoolDay/1.0 (ORCSD parent app)'}}),
+    new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),8000))
+  ]);
+  if(!ddresp.ok) throw new Error(`NOAA daily HTTP ${ddresp.status}`);
+  const ddaily=await ddresp.json();
+
+  // Current conditions from first hourly period
+  const cur=dhour.properties.periods[0];
+  const tmp=cur.temperature; // already °F
+  const fl=cur.windChill?.value!=null ? Math.round(cur.windChill.value*9/5+32) : tmp;
+  const wndStr=cur.windSpeed||'0 mph';
+  const wnd=parseInt(wndStr)||0;
+  const shortForecast=cur.shortForecast||'';
+  const isDay=cur.isDaytime;
+
+  // Hi/lo from today's daily periods
+  const todayPeriods=ddaily.properties.periods.slice(0,2);
+  const dayPeriod=todayPeriods.find(p=>p.isDaytime)||todayPeriods[0];
+  const nightPeriod=todayPeriods.find(p=>!p.isDaytime)||todayPeriods[1];
+  const hi=dayPeriod?.temperature??tmp;
+  const lo=nightPeriod?.temperature??(tmp-10);
+
+  const{icon,desc}=wxFromForecast(shortForecast,isDay);
+  const{em,ad}=dress(tmp,shortForecast,wnd);
+
+  renderWxCard(el,{tmp,fl,hi,lo,wnd,icon,desc,em,ad,source:'NOAA · Durham, NH 03824'});
+}
+
+async function loadWxOpenMeteo(el){
+  const j=await(await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.1339&longitude=-70.9234&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York&forecast_days=1')).json();
+  const c=j.current,d=j.daily;
+  const tmp=Math.round(c.temperature_2m),fl=Math.round(c.apparent_temperature);
+  const wnd=Math.round(c.wind_speed_10m);
+  const hi=Math.round(d.temperature_2m_max[0]),lo=Math.round(d.temperature_2m_min[0]);
+  const{icon,desc}=wxCode(c.weather_code,c.is_day===1);
+  const{em,ad}=dress(tmp,c.weather_code,wnd);
+  renderWxCard(el,{tmp,fl,hi,lo,wnd,icon,desc,em,ad,source:'Open-Meteo · Durham, NH'});
+}
+
+function renderWxCard(el,{tmp,fl,hi,lo,wnd,icon,desc,em,ad,source}){
+  el.innerHTML=`
+    <div class="wx-top">
+      <div class="wx-icon">${icon}</div>
+      <div>
+        <div class="wx-temp">${tmp}<span class="wx-unit">°F</span></div>
+        <div class="wx-desc">${desc}</div>
+      </div>
+    </div>
+    <div class="wx-stats">
+      <div class="wx-s"><div class="wx-sv">↑${hi}°</div><div class="wx-sl">High</div></div>
+      <div class="wx-s"><div class="wx-sv">↓${lo}°</div><div class="wx-sl">Low</div></div>
+      <div class="wx-s"><div class="wx-sv">${fl}°</div><div class="wx-sl">Feels</div></div>
+      <div class="wx-s"><div class="wx-sv">${wnd}mph</div><div class="wx-sl">Wind</div></div>
+    </div>
+    <div class="dress"><span class="dress-icon">${em}</span><span>${ad}</span></div>
+    <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.35);text-align:right;font-family:'DM Mono',monospace;letter-spacing:.04em">${source}</div>`;
+}
+
+// Map NOAA short forecast text → emoji + description
+function wxFromForecast(txt, isDay){
+  const t=txt.toLowerCase();
+  if(t.includes('thunder')) return{icon:'⛈️',desc:txt};
+  if(t.includes('blizzard')||t.includes('heavy snow')) return{icon:'❄️',desc:txt};
+  if(t.includes('snow shower')||t.includes('flurr')) return{icon:'🌨️',desc:txt};
+  if(t.includes('snow')) return{icon:'❄️',desc:txt};
+  if(t.includes('freezing rain')||t.includes('sleet')||t.includes('ice')) return{icon:'🌨️',desc:txt};
+  if(t.includes('heavy rain')||t.includes('rain shower')) return{icon:'🌧️',desc:txt};
+  if(t.includes('rain')||t.includes('shower')||t.includes('drizzle')) return{icon:'🌦️',desc:txt};
+  if(t.includes('fog')||t.includes('haze')||t.includes('mist')) return{icon:'🌫️',desc:txt};
+  if(t.includes('overcast')||t.includes('cloudy')&&t.includes('mostly')) return{icon:'☁️',desc:txt};
+  if(t.includes('cloudy')||t.includes('cloud')) return{icon:'⛅',desc:txt};
+  if(t.includes('clear')||t.includes('sunny')) return{icon:isDay?'☀️':'🌙',desc:txt};
+  if(t.includes('partly')) return{icon:'🌤️',desc:txt};
+  if(t.includes('wind')) return{icon:'💨',desc:txt};
+  return{icon:isDay?'🌤️':'🌙',desc:txt||'Durham, NH'};
+}
+
+// For Open-Meteo WMO codes
 function wxCode(c,day){
   const m={0:{i:day?'☀️':'🌙',d:'Clear'},1:{i:day?'🌤️':'🌙',d:'Mainly clear'},2:{i:'⛅',d:'Partly cloudy'},3:{i:'☁️',d:'Overcast'},45:{i:'🌫️',d:'Foggy'},48:{i:'🌫️',d:'Icy fog'},51:{i:'🌦️',d:'Light drizzle'},53:{i:'🌦️',d:'Drizzle'},55:{i:'🌧️',d:'Heavy drizzle'},61:{i:'🌧️',d:'Light rain'},63:{i:'🌧️',d:'Rain'},65:{i:'🌧️',d:'Heavy rain'},71:{i:'🌨️',d:'Light snow'},73:{i:'❄️',d:'Snow'},75:{i:'❄️',d:'Heavy snow'},77:{i:'🌨️',d:'Snow grains'},80:{i:'🌦️',d:'Showers'},81:{i:'🌧️',d:'Heavy showers'},82:{i:'⛈️',d:'Violent showers'},85:{i:'🌨️',d:'Snow showers'},86:{i:'❄️',d:'Heavy snow showers'},95:{i:'⛈️',d:'Thunderstorm'},96:{i:'⛈️',d:'Thunderstorm+hail'},99:{i:'⛈️',d:'Severe thunderstorm'}};
   const r=m[c]||{i:'🌡️',d:'Unknown'}; return{icon:r.i,desc:r.d};
 }
-function dress(t,c,w){
-  const sn=[71,73,75,77,85,86].includes(c),rn=[51,53,55,61,63,65,80,81,82].includes(c),th=[95,96,99].includes(c);
+
+// Dress advice — works with both NOAA text and WMO codes
+function dress(t,cond,w){
+  const condStr=String(cond).toLowerCase();
+  const sn=condStr.includes('snow')||condStr.includes('blizzard')||[71,73,75,77,85,86].some(c=>cond===c);
+  const rn=condStr.includes('rain')||condStr.includes('shower')||condStr.includes('drizzle')||[51,53,55,61,63,65,80,81,82].some(c=>cond===c);
+  const th=condStr.includes('thunder')||[95,96,99].some(c=>cond===c);
   if(t<=20) return{em:'🧥❄️',ad:'Extreme cold — heavy coat, hat, gloves & warm boots. Limit time outside.'};
   if(t<=32) return{em:'🧥🧤',ad:`Freezing — heavy coat, hat & gloves.${sn?' Snow boots today!':''}`};
   if(t<=40) return{em:'🧥',ad:`Bundle up — coat, hat & gloves.${w>15?' Wind makes it feel colder.':''} ${sn?'Snow gear today.':''}`};
@@ -799,69 +920,35 @@ function saveVotes(){
 }
 
 // ════════════════════════
-//  PDF MENU
+//  MENU CARD
 // ════════════════════════
-const SNAMES={mw:'Mast Way & Moharimet',moh:'Mast Way & Moharimet',ms:'Middle School',hs:'High School'};
+const SNAMES={mw:'Mast Way & Moharimet',ms:'Middle School',hs:'High School'};
 
 function setSchool(btn,school){
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
   curSchool=school;
-  loadPdf(school);
+  updateMenuCard(school);
 }
 
-function loadPdf(school){
+function updateMenuCard(school){
   const target=menuTargetDate();
   const today=new Date(); today.setHours(0,0,0,0); target.setHours(0,0,0,0);
   const isAhead=target.getTime()!==today.getTime();
-  const dayTag=isAhead?` — ${LD[target.getDay()]}`:' — Today';
-  document.getElementById('menu-lbl').textContent=SNAMES[school]+dayTag;
-  updateMenuSectionLabel();
   const pdfUrl=getPdf(school,target);
-  document.getElementById('pdf-open-btn').href=pdfUrl;
+  const mo=FM[target.getMonth()], yr=target.getFullYear();
+
+  document.getElementById('menu-card-school').textContent=SNAMES[school];
+  document.getElementById('menu-card-title').textContent=`${mo} ${yr} Menu`;
+  document.getElementById('menu-card-date').textContent=isAhead
+    ?`Showing ${LD[target.getDay()]}, ${mo} ${target.getDate()} — next school day`
+    :'';
+  document.getElementById('menu-open-btn').href=pdfUrl;
+  document.getElementById('menu-card-note').textContent=isAhead
+    ?''
+    :'';
+  updateMenuSectionLabel();
   updateLinks();
-  renderPdf(pdfUrl);
-}
-
-function renderPdf(pdfUrl){
-  const wrap=document.getElementById('pdf-wrap');
-
-  // Detect iOS — iOS Safari supports PDFs natively via <object> src
-  // For all other browsers we show the fallback with direct open link
-  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||
-    (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  const isSafari=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-  if(isIOS||isSafari){
-    // iOS/Safari: use <object> — renders PDF inline with native pinch-zoom
-    wrap.innerHTML=`
-      <object
-        class="pdf-object"
-        data="${pdfUrl}"
-        type="application/pdf"
-      >
-        ${fallbackHtml(pdfUrl,'Your browser didn\'t load the preview.')}
-      </object>`;
-  } else {
-    // Desktop / other: use iframe with Google Docs viewer as it works there
-    const viewer=`https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
-    wrap.innerHTML=`
-      <iframe
-        class="pdf-object"
-        src="${viewer}"
-        title="Lunch Menu"
-        frameborder="0"
-      ></iframe>`;
-  }
-}
-
-function fallbackHtml(pdfUrl, reason){
-  return `<div class="pdf-fallback">
-    <div class="pdf-fallback-icon">📄</div>
-    <div class="pdf-fallback-title">Menu couldn't load in-app</div>
-    <div class="pdf-fallback-body">Tap the button to open the full menu — pinch to zoom works in your browser too.</div>
-    <a href="${pdfUrl}" target="_blank" class="pdf-fallback-btn">Open Menu PDF ↗</a>
-  </div>`;
 }
 
 // ════════════════════════
@@ -907,7 +994,7 @@ function generateBugReport(){
     kids:cfg.kids.map(k=>({name:k.name,color:k.color})),
     voteDays:Object.keys(votes).length,
     currentSchool:curSchool,
-    currentPdf:document.getElementById('pdf-open-btn')?.href||'none',
+    currentPdf:document.getElementById('menu-open-btn')?.href||'none',
     ua:navigator.userAgent.substring(0,150),
     issue:'[ DESCRIBE THE BUG HERE ]',
     steps:'[ What did you tap / do before it broke? ]',
