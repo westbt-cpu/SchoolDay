@@ -42,11 +42,11 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 
 /* ── Bottom Nav ── */
 .bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #b8c4d8;display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 20px rgba(10,28,60,.14)}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 2px 8px;border:none;background:transparent;cursor:pointer;gap:2px;color:#485e7a;transition:color .15s;position:relative}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 2px 8px;border:none;background:transparent;cursor:pointer;gap:2px;color:#485e7a;transition:color .15s;position:relative}
 .bnav-btn.active{color:#1B3A6B}
 .bnav-btn.active::before{content:’’;position:absolute;top:0;left:15%;right:15%;height:3px;background:#1B3A6B;border-radius:0 0 4px 4px}
-.bnav-icon{font-size:20px;line-height:1}
-.bnav-lbl{font-size:9px;font-weight:700;letter-spacing:.02em}
+.bnav-icon{font-size:21px;line-height:1}
+.bnav-lbl{font-size:10px;font-weight:700;letter-spacing:.02em}
 
 /* ── Page ── */
 .page{max-width:700px;margin:0 auto;padding:14px 14px 100px}
@@ -448,15 +448,11 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   </div>
 </div>
 
-<!-- All links in one grid -->
+<!-- Quick Access — 4 essential tiles -->
 <div class="sh"><span class="sh-title">Quick Access</span></div>
 <div class="ql-grid">
-  <a class="ql" id="lnk-mw" href="#" target="_blank"><div class="ql-icon">📄</div><div><div class="ql-lbl">Elementary</div><div class="ql-name">Mast Way Menu</div></div></a>
-  <a class="ql" id="lnk-ms" href="#" target="_blank"><div class="ql-icon">📄</div><div><div class="ql-lbl">Grades 5–8</div><div class="ql-name">Middle School Menu</div></div></a>
-  <a class="ql" id="lnk-hs" href="#" target="_blank"><div class="ql-icon">📄</div><div><div class="ql-lbl">Grades 9–12</div><div class="ql-name">High School Menu</div></div></a>
   <a class="ql" href="https://linqconnect.com/" target="_blank"><div class="ql-icon">💳</div><div><div class="ql-lbl">Lunch Account</div><div class="ql-name">LINQConnect</div></div></a>
   <a class="ql" href="https://parentsquare.com/" target="_blank"><div class="ql-icon">💬</div><div><div class="ql-lbl">School Comms</div><div class="ql-name">ParentSquare</div></div></a>
-  <a class="ql" href="https://calendar.apple.com/" target="_blank"><div class="ql-icon">📅</div><div><div class="ql-lbl">My Calendar</div><div class="ql-name">Apple Calendar</div></div></a>
   <a class="ql" href="https://www.orcsd.org/about/school-closing-delay" target="_blank"><div class="ql-icon">❄️</div><div><div class="ql-lbl">Closings</div><div class="ql-name">Delays &amp; Alerts</div></div></a>
   <a class="ql" href="http://www.infofinderi.com/ifi/?cid=ORC-S557JPE2A1" target="_blank"><div class="ql-icon">🚌</div><div><div class="ql-lbl">Transportation</div><div class="ql-name">Bus Routes</div></div></a>
 </div>
@@ -473,81 +469,13 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       <button class="mnav-btn" onclick="changeMonth(1)">›</button>
     </div>
     <div class="legend">
-      <div class="leg"><div class="leg-dot" style="background:#1a9e5e"></div>School lunch ✓</div>
-      <div class="leg"><div class="leg-dot" style="background:#cc3333"></div>Pack lunch</div>
+      <div class="leg"><div class="leg-dot" style="background:#1a9e5e"></div>Buying</div>
+      <div class="leg"><div class="leg-dot" style="background:#cc3333"></div>Packing</div>
       <div class="leg"><div class="leg-dot" style="background:#9aaabf;border:1.5px solid #9aaabf"></div>Not set</div>
       <div class="leg"><div class="leg-dot" style="background:#fcd8d8;border:1px solid #f5c5c5"></div>No school</div>
+      <div class="leg" style="margin-left:auto;font-size:10px;color:var(--muted);font-weight:400;font-style:italic">Tap to plan</div>
     </div>
-    <p class="cal-tip">Tap any school day to plan lunch</p>
     <div class="cal-grid" id="cal-grid"></div>
-  </section>
-
-  <!-- ══ INFO ══ -->
-
-  <section class="view" id="view-info">
-
-```
-<!-- School contacts -->
-<div class="info-hero">
-  <div class="info-hero-title">School Phone Numbers</div>
-  <div class="school-contact">
-    <div class="sc-name">Mast Way (K–4)</div>
-    <div class="sc-phone"><a href="tel:+16036593001">603-659-3001</a></div>
-  </div>
-  <div class="school-contact">
-    <div class="sc-name">Moharimet (K–4)</div>
-    <div class="sc-phone"><a href="tel:+16037422900">603-742-2900</a></div>
-  </div>
-  <div class="school-contact">
-    <div class="sc-name">Middle School (5–8)</div>
-    <div class="sc-phone"><a href="tel:+16038682820">603-868-2820</a></div>
-  </div>
-  <div class="school-contact">
-    <div class="sc-name">High School (9–12)</div>
-    <div class="sc-phone"><a href="tel:+16038682375">603-868-2375</a></div>
-  </div>
-  <div class="school-contact">
-    <div class="sc-name">District Office</div>
-    <div class="sc-phone"><a href="tel:+16038685100">603-868-5100</a></div>
-  </div>
-</div>
-
-<div class="allergy-card">
-  <span style="font-size:20px;flex-shrink:0">⚕️</span>
-  <div>Food allergy? <a href="https://www.orcsd.org/departments/child-nutrition/files/documents/special_dietary_medical_statement_form_2018.pdf" target="_blank">Download the medical statement form</a>, have your child's doctor complete it, and return to the school nurse.</div>
-</div>
-
-<div class="sh" style="margin-top:0"><span class="sh-title">2025–2026 Meal Prices</span></div>
-<div class="card" style="margin-bottom:16px">
-  <div class="price-grid">
-    <div class="price-col">
-      <div class="price-col-hdr">🌅 Breakfast</div>
-      <div class="prow"><span>K–8</span><span class="pa">$1.75</span></div>
-      <div class="prow"><span>9–12</span><span class="pa">$2.00</span></div>
-      <div class="prow"><span>Adult</span><span class="pa">$2.75</span></div>
-    </div>
-    <div class="price-col">
-      <div class="price-col-hdr">☀️ Lunch</div>
-      <div class="prow"><span>Pre-K–4</span><span class="pa">$3.25</span></div>
-      <div class="prow"><span>5–8</span><span class="pa">$3.50</span></div>
-      <div class="prow"><span>9–12</span><span class="pa">$3.75</span></div>
-      <div class="prow"><span>Adult</span><span class="pa">$5.00</span></div>
-    </div>
-  </div>
-  <div class="free-note">✦ Reduced meal families: <strong>free breakfast + free lunch</strong> daily — NH SB82 &amp; school board vote.</div>
-</div>
-
-<div class="sh"><span class="sh-title">Resources</span></div>
-<div class="ql-grid">
-  <a class="ql" href="https://linqconnect.com/" target="_blank"><div class="ql-icon">💳</div><div><div class="ql-lbl">Portal</div><div class="ql-name">LINQConnect</div></div></a>
-  <a class="ql" href="https://www.orcsd.org/departments/child-nutrition/free-and-reduced-meals" target="_blank"><div class="ql-icon">📋</div><div><div class="ql-lbl">Apply</div><div class="ql-name">Free &amp; Reduced</div></div></a>
-  <a class="ql" href="https://campussuite-storage.s3.amazonaws.com/prod/1559153/a72578ba-8c6b-11ed-b6cf-0e21da113137/2898865/67ca49dc-ccfd-11ef-8f07-0a58a9feac02/file/2025-2026%20ORCSD%20School%20Calendar.pdf" target="_blank"><div class="ql-icon">📆</div><div><div class="ql-lbl">Full Year</div><div class="ql-name">School Calendar PDF</div></div></a>
-  <a class="ql" href="http://www.mwpto.org/" target="_blank"><div class="ql-icon">🌊</div><div><div class="ql-lbl">Mast Way</div><div class="ql-name">PTO Website</div></div></a>
-  <a class="ql" href="https://www.paypal.com/donate/?hosted_button_id=LLG7SFUQZZW28" target="_blank"><div class="ql-icon">💛</div><div><div class="ql-lbl">Support</div><div class="ql-name">Donate to PTO</div></div></a>
-  <a class="ql" href="https://www.boxtops4education.com/bonusapp" target="_blank"><div class="ql-icon">📦</div><div><div class="ql-lbl">Free $</div><div class="ql-name">Box Tops App</div></div></a>
-</div>
-```
-
   </section>
 
   <!-- ══ SETTINGS ══ -->
@@ -570,7 +498,67 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 
 <button class="save-btn" onclick="saveSettings()">Save Settings</button>
 
+<!-- Morning Reminder -->
 <div style="height:24px"></div>
+<div class="stg-section">
+  <div class="stg-title">Morning Reminder</div>
+  <div class="stg-note">Add a recurring 6:45 AM reminder to your Apple Calendar for every school day through June — so you never forget to check the app.</div>
+  <button onclick="downloadMorningReminder()" class="save-btn" style="background:#1a9e5e;box-shadow:0 4px 16px rgba(26,158,94,.3)">📅 Add Morning Reminder to Calendar</button>
+  <div style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center;line-height:1.5">Downloads a calendar file → tap to add to Apple Calendar<br>Fires 6:45 AM on school days only · One-time setup</div>
+</div>
+
+<!-- School Info -->
+<div style="height:8px"></div>
+<div class="stg-section">
+  <div class="stg-title">School Phone Numbers</div>
+  <div class="info-hero" style="margin-bottom:0">
+    <div class="school-contact"><div class="sc-name">Mast Way (K–4)</div><div class="sc-phone"><a href="tel:+16036593001">603-659-3001</a></div></div>
+    <div class="school-contact"><div class="sc-name">Moharimet (K–4)</div><div class="sc-phone"><a href="tel:+16037422900">603-742-2900</a></div></div>
+    <div class="school-contact"><div class="sc-name">Middle School (5–8)</div><div class="sc-phone"><a href="tel:+16038682820">603-868-2820</a></div></div>
+    <div class="school-contact"><div class="sc-name">High School (9–12)</div><div class="sc-phone"><a href="tel:+16038682375">603-868-2375</a></div></div>
+    <div class="school-contact"><div class="sc-name">District Office</div><div class="sc-phone"><a href="tel:+16038685100">603-868-5100</a></div></div>
+  </div>
+</div>
+
+<div class="stg-section">
+  <div class="stg-title">Meal Prices 2025–26</div>
+  <div class="card" style="margin-bottom:0">
+    <div class="price-grid">
+      <div class="price-col">
+        <div class="price-col-hdr">🌅 Breakfast</div>
+        <div class="prow"><span>K–8</span><span class="pa">$1.75</span></div>
+        <div class="prow"><span>9–12</span><span class="pa">$2.00</span></div>
+        <div class="prow"><span>Adult</span><span class="pa">$2.75</span></div>
+      </div>
+      <div class="price-col">
+        <div class="price-col-hdr">☀️ Lunch</div>
+        <div class="prow"><span>Pre-K–4</span><span class="pa">$3.25</span></div>
+        <div class="prow"><span>5–8</span><span class="pa">$3.50</span></div>
+        <div class="prow"><span>9–12</span><span class="pa">$3.75</span></div>
+        <div class="prow"><span>Adult</span><span class="pa">$5.00</span></div>
+      </div>
+    </div>
+    <div class="free-note">✦ Reduced meal families: <strong>free breakfast + free lunch</strong> daily — NH SB82 &amp; school board vote.</div>
+  </div>
+</div>
+
+<div class="allergy-card" style="margin-top:12px">
+  <span style="font-size:20px;flex-shrink:0">⚕️</span>
+  <div>Food allergy? <a href="https://www.orcsd.org/departments/child-nutrition/files/documents/special_dietary_medical_statement_form_2018.pdf" target="_blank">Download the medical statement form</a>, have your doctor complete it, and return to the school nurse.</div>
+</div>
+
+<div class="sh"><span class="sh-title">Resources</span></div>
+<div class="ql-grid" style="margin-bottom:16px">
+  <a class="ql" href="https://linqconnect.com/" target="_blank"><div class="ql-icon">💳</div><div><div class="ql-lbl">Portal</div><div class="ql-name">LINQConnect</div></div></a>
+  <a class="ql" href="https://www.orcsd.org/departments/child-nutrition/free-and-reduced-meals" target="_blank"><div class="ql-icon">📋</div><div><div class="ql-lbl">Apply</div><div class="ql-name">Free &amp; Reduced</div></div></a>
+  <a class="ql" href="https://campussuite-storage.s3.amazonaws.com/prod/1559153/a72578ba-8c6b-11ed-b6cf-0e21da113137/2898865/67ca49dc-ccfd-11ef-8f07-0a58a9feac02/file/2025-2026%20ORCSD%20School%20Calendar.pdf" target="_blank"><div class="ql-icon">📆</div><div><div class="ql-lbl">Full Year</div><div class="ql-name">School Calendar PDF</div></div></a>
+  <a class="ql" href="http://www.mwpto.org/" target="_blank"><div class="ql-icon">🌊</div><div><div class="ql-lbl">Mast Way</div><div class="ql-name">PTO Website</div></div></a>
+  <a class="ql" href="https://www.paypal.com/donate/?hosted_button_id=LLG7SFUQZZW28" target="_blank"><div class="ql-icon">💛</div><div><div class="ql-lbl">Support</div><div class="ql-name">Donate to PTO</div></div></a>
+  <a class="ql" href="https://www.boxtops4education.com/bonusapp" target="_blank"><div class="ql-icon">📦</div><div><div class="ql-lbl">Free $</div><div class="ql-name">Box Tops App</div></div></a>
+</div>
+
+<!-- Bug reporter -->
+<div style="height:8px"></div>
 <div class="stg-section">
   <div class="stg-title">Report a Bug</div>
   <div class="bug-card">
@@ -860,9 +848,12 @@ function getPdf(school,date){
   return base+{mw:`Mast Way and Moharimet Menus - ${mo} ${yr}.pdf`,ms:`Oyster River Middle School Lunch Menu - ${mo} ${yr}.pdf`,hs:`Oyster River High School Lunch Menu - ${mo} ${yr}.pdf`}[school];
 }
 function updateLinks(){
-  document.getElementById('lnk-mw').href=getPdf('mw');
-  document.getElementById('lnk-ms').href=getPdf('ms');
-  document.getElementById('lnk-hs').href=getPdf('hs');
+  const mw=document.getElementById('lnk-mw');
+  const ms=document.getElementById('lnk-ms');
+  const hs=document.getElementById('lnk-hs');
+  if(mw)mw.href=getPdf('mw');
+  if(ms)ms.href=getPdf('ms');
+  if(hs)hs.href=getPdf('hs');
 }
 function nextSchoolDay(){
   const d=new Date(); d.setDate(d.getDate()+1);
@@ -1431,8 +1422,64 @@ function saveSettings(){
 }
 
 // ════════════════════════
-//  BUG REPORTER
+//  MORNING REMINDER ICS
+//  Generates a recurring calendar file for every school day
+//  6:45 AM through end of school year — one download, fires every morning
 // ════════════════════════
+function downloadMorningReminder(){
+  const pad=n=>String(n).padStart(2,'0');
+  const fmtDate=d=>`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+  const fmtDT=d=>`${fmtDate(d)}T064500`;
+
+  // Generate individual events for each remaining school day through June 19 2026
+  const today=new Date(); today.setHours(0,0,0,0);
+  const endOfYear=new Date(2026,5,19); // June 19
+
+  const events=[];
+  const cur=new Date(today);
+  while(cur<=endOfYear){
+    const dow=cur.getDay();
+    const key=dk(cur.getFullYear(),cur.getMonth(),cur.getDate());
+    if(dow>=1&&dow<=5&&!isNS(key)){
+      const ds=fmtDate(cur);
+      events.push([
+        'BEGIN:VEVENT',
+        `UID:schoolday-morning-${ds}@orcsd`,
+        `DTSTART:${ds}T064500`,
+        `DTEND:${ds}T065000`,
+        'SUMMARY:🏫 SchoolDay — check weather & lunch',
+        'DESCRIPTION:Open SchoolDay to check the weather\\, lunch plan\\, and morning checklist.',
+        'BEGIN:VALARM',
+        'TRIGGER:PT0S',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:Check SchoolDay',
+        'END:VALARM',
+        'END:VEVENT'
+      ].join('\r\n'));
+    }
+    cur.setDate(cur.getDate()+1);
+  }
+
+  if(!events.length){toast('No school days remaining this year');return;}
+
+  const ics=[
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//SchoolDay//ORCSD//EN',
+    'CALSCALE:GREGORIAN',
+    'X-WR-CALNAME:SchoolDay Reminders',
+    'X-WR-TIMEZONE:America/New_York',
+    ...events,
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const dataUri='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
+  // Use a link click — data URI opens Calendar on iOS
+  const a=document.createElement('a');
+  a.href=dataUri;
+  a.click();
+  toast(`Opening Calendar — ${events.length} school day reminders`);
+}
 function generateBugReport(){
   const snap={app:'SchoolDay v4.1 — ORCSD',date:new Date().toLocaleString(),
     view:document.querySelector('.view.active')?.id||'?',mySchool:cfg.mySchool,
