@@ -300,27 +300,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .leave-done-banner{background:linear-gradient(135deg,#0d6e3f,#1a9e5e);border-radius:var(--radius);padding:24px;text-align:center;color:#fff;margin-top:8px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:var(--shadow-lg);animation:fadeIn .4s ease both}
 .leave-edit-btn{width:100%;margin-top:14px;padding:12px;border-radius:12px;border:1.5px dashed #9aaabf;background:transparent;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:‘Inter’,sans-serif}
 
-/* ── Home Tasks ── */
-.task-card{background:#fff;border:1.5px solid #b8c4d8;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden;display:flex;align-items:stretch}
-.task-card.overdue{border-color:#cc3333;background:#fef8f8}
-.task-card.due-soon{border-color:#d4631a;background:#fef9f4}
-.task-card.ok{opacity:.85}
-.task-status-bar{width:5px;flex-shrink:0}
-.task-card.overdue .task-status-bar{background:#cc3333}
-.task-card.due-soon .task-status-bar{background:#d4631a}
-.task-card.ok .task-status-bar{background:#1a9e5e}
-.task-body{flex:1;padding:13px 14px;cursor:pointer;min-width:0}
-.task-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px}
-.task-meta{font-size:12px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.task-due-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;flex-shrink:0}
-.task-card.overdue .task-due-badge{background:#fcd8d8;color:#8a1a1a}
-.task-card.due-soon .task-due-badge{background:#fdecd8;color:#7a3010}
-.task-card.ok .task-due-badge{background:#ccf0e0;color:#0d5e30}
-.task-done-btn{padding:0 16px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:none;border:none;border-left:1px solid #b8c4d8;flex-shrink:0;color:var(--muted);font-size:22px;transition:all .15s;font-family:‘Inter’,sans-serif}
-.task-done-btn:active{background:#d0d8e8}
-.task-section-hdr{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
-.task-section-hdr::after{content:’’;flex:1;height:1px;background:var(--border)}
-.tasks-empty{text-align:center;padding:40px 20px;color:var(--muted)}
 
 /* ── Task / checklist item edit overlay ── */
 .add-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,40,.6);z-index:200;backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
@@ -608,26 +587,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 
   </section>
 
-  <!-- ══ HOME TASKS ══ -->
-
-  <section class="view" id="view-tasks">
-    <div class="sh" style="margin-top:0">
-      <span class="sh-title">Home Tasks</span>
-      <button class="sh-action" onclick="openAddTask()">+ Add</button>
-    </div>
-
-```
-<div id="tasks-due" style="margin-bottom:4px"></div>
-<div id="tasks-ok"></div>
-
-<div class="tasks-empty" id="tasks-empty" style="display:none">
-  <div style="font-size:36px;margin-bottom:10px">🏠</div>
-  <div style="font-weight:700;font-size:16px;margin-bottom:6px">No tasks yet</div>
-  <div style="font-size:13px;color:var(--muted)">Tap + Add to track recurring home maintenance</div>
-</div>
-```
-
-  </section>
 
 </main>
 
@@ -635,8 +594,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <button class="bnav-btn active" data-view="today" onclick="switchView('today',this)"><span class="bnav-icon">🏠</span><span class="bnav-lbl">Today</span></button>
   <button class="bnav-btn" data-view="month" onclick="switchView('month',this)"><span class="bnav-icon">📅</span><span class="bnav-lbl">Month</span></button>
   <button class="bnav-btn" data-view="leave" onclick="switchView('leave',this);renderChecklist()"><span class="bnav-icon">🚪</span><span class="bnav-lbl">Leave</span></button>
-  <button class="bnav-btn" data-view="tasks" onclick="switchView('tasks',this);renderTasks()"><span class="bnav-icon">🔧</span><span class="bnav-lbl">Tasks</span></button>
-  <button class="bnav-btn" data-view="settings" onclick="switchView('settings',this)"><span class="bnav-icon">⚙️</span><span class="bnav-lbl">Settings</span></button>
+<button class="bnav-btn" data-view="settings" onclick="switchView('settings',this)"><span class="bnav-icon">⚙️</span><span class="bnav-lbl">Settings</span></button>
 </nav>
 
 <!-- Lunch vote modal -->
@@ -658,24 +616,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <div class="modal-foot">
       <button class="btn-sec" onclick="closeModal()">Cancel</button>
       <button class="btn-pri" id="save-votes-btn" onclick="saveVotes()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add Task sheet -->
-
-<div class="add-overlay" id="task-overlay" onclick="taskOverlayClose(event)">
-  <div class="add-sheet">
-    <div class="add-sheet-handle"></div>
-    <div class="add-sheet-title" id="task-sheet-title">Add Home Task</div>
-    <div class="add-sheet-body">
-      <div class="add-field"><label>Task Name</label><input class="add-input" id="task-name-input" placeholder="e.g. Change furnace filter" autocorrect="off"></div>
-      <div class="add-field"><label>Repeat Every (days)</label><input class="add-input" id="task-freq-input" type="number" min="1" max="999" placeholder="90" inputmode="numeric"></div>
-      <div class="add-field"><label>Last Completed</label><input class="add-input" id="task-date-input" type="date"></div>
-      <div class="add-row">
-        <button class="add-btn-cancel" onclick="closeTaskSheet()">Cancel</button>
-        <button class="add-btn-save" onclick="saveTask()">Save Task</button>
-      </div>
     </div>
   </div>
 </div>
@@ -739,9 +679,8 @@ let cfg={
 };
 let votes={};
 let checks={}; // { 'YYYY-MM-DD': { kidIdx: { itemIdx: true } } }
-let tasks=[];   // [{ id, name, freq, lastDone }]
 let calY=new Date().getFullYear(), calM=new Date().getMonth();
-let mSt=null, editTaskId=null;
+let mSt=null;
 let curSchool='mw';
 
 // ════════════════════════
@@ -752,7 +691,6 @@ function load(){
     const c=localStorage.getItem('sd-cfg');     if(c) cfg={...cfg,...JSON.parse(c)};
     const v=localStorage.getItem('sd-votes');   if(v) votes=JSON.parse(v);
     const ch=localStorage.getItem('sd-checks'); if(ch) checks=JSON.parse(ch);
-    const tk=localStorage.getItem('sd-tasks');  if(tk) tasks=JSON.parse(tk);
     curSchool=cfg.mySchool||'mw';
     const isFirstRun=!localStorage.getItem('sd-onboard-done');
     const hasDefaultNames=cfg.kids.some(k=>k.name==='Kid 1'||k.name==='Kid 2');
@@ -771,7 +709,6 @@ function load(){
       if(btn){
         switchView(screen,btn);
         if(screen==='leave') setTimeout(renderChecklist,50);
-        if(screen==='tasks') setTimeout(renderTasks,50);
       }
     }
   }catch(e){console.error('load error',e);}
@@ -780,7 +717,6 @@ function save(){
   localStorage.setItem('sd-cfg',JSON.stringify(cfg));
   localStorage.setItem('sd-votes',JSON.stringify(votes));
   localStorage.setItem('sd-checks',JSON.stringify(checks));
-  localStorage.setItem('sd-tasks',JSON.stringify(tasks));
 }
 function dismissOnboard(){document.getElementById('onboard-banner').style.display='none';localStorage.setItem('sd-onboard-done','1');}
 function goSetup(){dismissOnboard();switchView('settings',document.querySelector('.bnav-btn[data-view=settings]'));}
@@ -798,16 +734,6 @@ renderSettings();
 updateLinks();
 updateMenuCard(curSchool);
 setActivePill(curSchool);
-// Seed default tasks if none
-if(tasks.length===0){
-  tasks=[
-    {id:uid(),name:'Change furnace filter',freq:90,lastDone:'2026-01-01'},
-    {id:uid(),name:'Test smoke detectors',freq:180,lastDone:'2026-01-01'},
-    {id:uid(),name:'Clean gutters',freq:180,lastDone:'2025-10-01'},
-    {id:uid(),name:'Order furnace oil',freq:60,lastDone:'2026-02-01'},
-  ];
-  save();
-}
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
@@ -1266,106 +1192,6 @@ function removeLastItem(kidIdx){
   if(!cfg.kids[kidIdx].items?.length)return;
   const removed=cfg.kids[kidIdx].items.pop();
   save();renderChecklist();toast(`Removed "${removed}"`);
-}
-
-// ════════════════════════
-//  HOME TASKS
-// ════════════════════════
-function renderTasks(){
-  const today=new Date();today.setHours(0,0,0,0);
-  const dueTasks=[];
-  tasks.forEach(t=>{
-    const last=t.lastDone?new Date(t.lastDone):new Date(0);
-    const nextDue=new Date(last);nextDue.setDate(nextDue.getDate()+t.freq);
-    const daysLeft=Math.round((nextDue-today)/(1000*60*60*24));
-    dueTasks.push({...t,daysLeft,nextDue});
-  });
-  dueTasks.sort((a,b)=>a.daysLeft-b.daysLeft);
-  const overdue=dueTasks.filter(t=>t.daysLeft<=0);
-  const soon=dueTasks.filter(t=>t.daysLeft>0&&t.daysLeft<=14);
-  const ok=dueTasks.filter(t=>t.daysLeft>14);
-
-  const dueEl=document.getElementById('tasks-due');
-  const okEl=document.getElementById('tasks-ok');
-  const emptyEl=document.getElementById('tasks-empty');
-
-  dueEl.innerHTML='';okEl.innerHTML='';
-
-  if(tasks.length===0){emptyEl.style.display='block';return;}
-  emptyEl.style.display='none';
-
-  function taskCard(t){
-    const cls=t.daysLeft<=0?'overdue':t.daysLeft<=14?'due-soon':'ok';
-    const badge=t.daysLeft<0?`${Math.abs(t.daysLeft)}d overdue`:t.daysLeft===0?'Due today':`Due in ${t.daysLeft}d`;
-    const last=t.lastDone?new Date(t.lastDone).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Never';
-    return `<div class="task-card ${cls}">
-      <div class="task-status-bar"></div>
-      <div class="task-body" onclick="openEditTask('${t.id}')">
-        <div class="task-name">${t.name}</div>
-        <div class="task-meta">
-          <span class="task-due-badge">${badge}</span>
-          <span>Every ${t.freq}d · Last: ${last}</span>
-        </div>
-      </div>
-      <button class="task-done-btn" onclick="markTaskDone('${t.id}')" title="Mark done">✓</button>
-      <button class="task-done-btn" onclick="deleteTask('${t.id}')" title="Delete task" style="color:#cc3333;border-left:none;font-size:16px">✕</button>
-    </div>`;
-  }
-
-  if(overdue.length||soon.length){
-    dueEl.innerHTML=(overdue.length?`<div class="task-section-hdr">⚠️ Overdue</div>${overdue.map(taskCard).join('')}`:'')
-      +(soon.length?`<div class="task-section-hdr">🔔 Due soon</div>${soon.map(taskCard).join('')}`:'');
-  }
-  if(ok.length){
-    okEl.innerHTML=`<div class="task-section-hdr">✅ Up to date</div>${ok.map(taskCard).join('')}`;
-  }
-}
-
-function markTaskDone(id){
-  const t=tasks.find(t=>t.id===id);if(!t)return;
-  t.lastDone=new Date().toISOString().slice(0,10);
-  save();renderTasks();toast(`✓ ${t.name} marked done`);
-}
-function deleteTask(id){
-  const t=tasks.find(t=>t.id===id);if(!t)return;
-  tasks=tasks.filter(t=>t.id!==id);
-  save();renderTasks();toast(`Deleted "${t.name}"`);
-}
-
-function openAddTask(){
-  editTaskId=null;
-  document.getElementById('task-sheet-title').textContent='Add Home Task';
-  document.getElementById('task-name-input').value='';
-  document.getElementById('task-freq-input').value='90';
-  document.getElementById('task-date-input').value=new Date().toISOString().slice(0,10);
-  document.getElementById('task-overlay').classList.add('open');
-  document.body.style.overflow='hidden';
-  setTimeout(()=>document.getElementById('task-name-input').focus(),100);
-}
-function openEditTask(id){
-  const t=tasks.find(t=>t.id===id);if(!t)return;
-  editTaskId=id;
-  document.getElementById('task-sheet-title').textContent='Edit Task';
-  document.getElementById('task-name-input').value=t.name;
-  document.getElementById('task-freq-input').value=t.freq;
-  document.getElementById('task-date-input').value=t.lastDone||new Date().toISOString().slice(0,10);
-  document.getElementById('task-overlay').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeTaskSheet(){document.getElementById('task-overlay').classList.remove('open');document.body.style.overflow='';}
-function taskOverlayClose(e){if(e.target===document.getElementById('task-overlay'))closeTaskSheet();}
-function saveTask(){
-  const name=document.getElementById('task-name-input').value.trim();
-  const freq=parseInt(document.getElementById('task-freq-input').value)||90;
-  const lastDone=document.getElementById('task-date-input').value;
-  if(!name)return;
-  if(editTaskId){
-    const t=tasks.find(t=>t.id===editTaskId);
-    if(t){t.name=name;t.freq=freq;t.lastDone=lastDone;}
-  } else {
-    tasks.push({id:uid(),name,freq,lastDone});
-  }
-  save();closeTaskSheet();renderTasks();toast(editTaskId?'Task updated':'Task added ✓');
 }
 
 // ════════════════════════
