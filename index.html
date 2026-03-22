@@ -620,7 +620,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <div class="stg-note" style="font-weight:700;color:var(--text2);margin-bottom:4px">Step 1 — Get the menu from Claude</div>
   <div class="stg-note" style="margin-bottom:10px">Tap the button below to copy the formatting prompt + PDF link, then paste everything into Claude.ai. Claude will return a formatted list.</div>
   <button class="menu-claude-btn" onclick="copyMenuPrompt()" style="margin-top:0">📋 Copy Prompt &amp; PDF Link</button>
-  <a href="https://claude.ai" target="_blank" style="display:block;text-align:center;font-size:12px;color:#5a4fbf;font-weight:700;margin-top:8px;text-decoration:none">Open Claude.ai ↗</a>
+  <a href="claude://" onclick="setTimeout(()=>window.open('https://claude.ai','_blank'),600)" style="display:block;text-align:center;font-size:12px;color:#5a4fbf;font-weight:700;margin-top:8px;text-decoration:none">Open Claude App ↗</a>
   <div id="menu-copy-status" style="font-size:12px;color:var(--muted);text-align:center;margin-top:6px;min-height:16px"></div>
   <div style="border-top:1px solid #e5e9f0;margin:14px 0 12px"></div>
   <div class="stg-note" style="font-weight:700;color:var(--text2);margin-bottom:4px">Step 2 — Paste Claude's response here</div>
@@ -1650,11 +1650,13 @@ function buildMenuPrompt(){
   return `Please format this school cafeteria lunch menu for ${mo} ${yr}.${pdfLine}\nList each school day and its main lunch item, one per line:\n${mo} 24: Chicken Nuggets\n${mo} 25: Pizza\n\nOnly output the list — no headers, no extra text. Use full month name and day number.`;
 }
 async function copyAndOpenClaude(){
-  window.open('https://claude.ai','_blank');
-  try{
-    await navigator.clipboard.writeText(buildMenuPrompt());
-    toast('Prompt + PDF link copied — paste into Claude ✓',3500);
-  }catch(e){toast('Could not copy automatically — use Settings to copy manually');}
+  // Copy first (needs to be in same gesture tick on some browsers)
+  let copied=false;
+  try{await navigator.clipboard.writeText(buildMenuPrompt());copied=true;}catch(e){}
+  // Try native app via URL scheme; fall back to website after short delay
+  window.location.href='claude://';
+  setTimeout(()=>{window.open('https://claude.ai','_blank');},600);
+  toast(copied?'Prompt + PDF link copied — paste into Claude ✓':'Copied failed — use Settings to copy manually',3500);
 }
 async function copyMenuPrompt(){
   const statusEl=document.getElementById('menu-copy-status');
