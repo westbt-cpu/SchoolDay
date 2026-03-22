@@ -135,7 +135,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .wd-lunch{font-size:8px;color:#1a6e3c;font-weight:600;margin-top:3px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:96%;padding:0 2px}
 .today .wd-lunch{color:#7effc0}
 /* Specials grid in settings */
-.specials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.specials-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
 .special-inp-wrap{display:flex;flex-direction:column;gap:3px}
 .special-lbl{font-size:10px;font-weight:800;color:#5a4fbf;text-transform:uppercase;letter-spacing:.06em}
 .special-inp{border:1.5px solid #b8c4d8;border-radius:8px;padding:7px 8px;font-size:13px;font-family:'Inter',sans-serif;width:100%;color:var(--text);background:#fff}
@@ -560,7 +560,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <div style="height:16px"></div>
 <div class="stg-section">
   <div class="stg-title">Letter Day Schedule</div>
-  <div class="stg-note">Shows Day A–F in the week strip. Pick any date you know and its letter.</div>
+  <div class="stg-note">Shows Day A–D in the week strip. Pick any date you know and its letter. You can also tap any "Day X" label in the week view to change it quickly.</div>
   <div class="fld"><div class="fld-lbl">Reference Date</div><input class="stg-input" id="letter-ref-date" type="date"></div>
   <div class="fld"><div class="fld-lbl">Letter on that date</div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="letter-ref-btns"></div>
@@ -754,6 +754,21 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       <div class="add-row">
         <button class="add-btn-cancel" onclick="closePlanSheet()">Cancel</button>
         <button class="add-btn-save" onclick="savePlan()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="add-overlay" id="letter-pick-overlay" onclick="letterPickOverlayClose(event)">
+  <div class="add-sheet">
+    <div class="add-sheet-handle"></div>
+    <div class="add-sheet-title" id="letter-pick-title">Set Letter Day</div>
+    <div class="add-sheet-body">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:4px">What letter day is this date?</div>
+      <div style="display:flex;gap:10px;justify-content:center;margin:8px 0" id="letter-pick-btns"></div>
+      <div class="add-row" style="margin-top:8px">
+        <button class="add-btn-cancel" onclick="closeLetterPicker()">Cancel</button>
+        <button class="add-btn-save" onclick="saveLetterPick()">Save</button>
       </div>
     </div>
   </div>
@@ -1063,7 +1078,7 @@ function renderTodayPlans(){
 function getLetterDay(dateKey){
   const lr=cfg.letterRef;
   if(!lr||!lr.refDate||!lr.refLetter)return null;
-  const letters=['A','B','C','D','E','F'];
+  const letters=LETTERS;
   const startIdx=letters.indexOf(lr.refLetter);
   if(startIdx<0)return null;
   const ref=new Date(lr.refDate+'T12:00:00');
@@ -1097,7 +1112,7 @@ function buildDayCell(d,tk,isWknd){
   const ev=EVENTS[key],dv=votes[key]||{};
   let cls='wd';if(isToday)cls+=' today';if(noSch)cls+=' no-school';if(isPast)cls+=' past';
   const letter=(!noSch)?getLetterDay(key):null;
-  const letterLine=letter?`<div class="wd-letter">Day ${letter}</div>`:'';
+  const letterLine=letter?`<div class="wd-letter" onclick="openLetterPicker('${key}',event)" style="cursor:pointer">Day ${letter} ✎</div>`:'';
   const evLine=noSch?`<div class="wd-ns">No School</div>`:ev?`<div class="wd-evt">${ev.lbl}</div>`:'';
   const kidRows=cfg.kids.map((kid,ki)=>{
     const hasSchool=!noSch&&kidHasSchool(ki,key);
@@ -1588,7 +1603,7 @@ function renderSettings(){
         </div>
         <div class="fld"><div class="fld-lbl">Specials Schedule</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:4px">What subject on each letter day? (e.g. Gym, Art, Music, Library)</div>
-          <div class="specials-grid">${['A','B','C','D','E','F'].map(l=>`
+          <div class="specials-grid">${['A','B','C','D'].map(l=>`
             <div class="special-inp-wrap">
               <div class="special-lbl">Day ${l}</div>
               <input class="special-inp" id="sp-${i}-${l}" value="${k.specials?.[l]||''}" placeholder="—" autocorrect="off" autocapitalize="words" maxlength="12">
@@ -1640,7 +1655,7 @@ function removeKid(i){cfg.kids.splice(i,1);renderSettings();}
 function saveSettings(){
   cfg.kids=cfg.kids.map((k,i)=>{
     const specials={};
-    ['A','B','C','D','E','F'].forEach(l=>{const v=document.getElementById(`sp-${i}-${l}`)?.value.trim();if(v)specials[l]=v;});
+    ['A','B','C','D'].forEach(l=>{const v=document.getElementById(`sp-${i}-${l}`)?.value.trim();if(v)specials[l]=v;});
     const schoolDays=[...document.querySelectorAll(`#sd-${i} .sd-btn.active`)].map(b=>parseInt(b.dataset.day));
     return {...k,name:(document.getElementById(`kn-${i}`)?.value.trim()||k.name),specials,schoolDays:schoolDays.length?schoolDays:[1,2,3,4,5]};
   });
@@ -1687,9 +1702,10 @@ function deletePlan(kidIdx,planId){
   save();renderSettings();renderWeek();renderTodayPlans();
   toast('Plan removed');
 }
+const LETTERS=['A','B','C','D'];
 function renderLetterBtns(selected){
   const wrap=document.getElementById('letter-ref-btns');if(!wrap)return;
-  wrap.innerHTML=['A','B','C','D','E','F'].map(l=>`
+  wrap.innerHTML=LETTERS.map(l=>`
     <button onclick="pickLetter('${l}',this)" style="width:36px;height:36px;border-radius:8px;border:2px solid ${l===selected?'#5a4fbf':'#b8c4d8'};background:${l===selected?'#5a4fbf':'transparent'};color:${l===selected?'#fff':'var(--text2)'};font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0">${l}</button>`).join('');
 }
 let _selectedLetter='A';
@@ -1702,6 +1718,40 @@ function pickLetter(l,btn){
     b.style.color=active?'#fff':'var(--text2)';
   });
 }
+
+// Quick letter picker from week strip
+let _letterPickDate=null;
+function openLetterPicker(dateKey,e){
+  e.stopPropagation();
+  _letterPickDate=dateKey;
+  const cur=getLetterDay(dateKey)||'A';
+  const d=new Date(dateKey+'T12:00:00');
+  document.getElementById('letter-pick-title').textContent=`${FM[d.getMonth()]} ${d.getDate()} — Set Letter Day`;
+  const wrap=document.getElementById('letter-pick-btns');
+  wrap.innerHTML=LETTERS.map(l=>`<button onclick="pickLetterQuick('${l}',this)" style="width:48px;height:48px;border-radius:10px;border:2px solid ${l===cur?'#5a4fbf':'#b8c4d8'};background:${l===cur?'#5a4fbf':'transparent'};color:${l===cur?'#fff':'var(--text2)'};font-size:18px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">${l}</button>`).join('');
+  _letterPickQuick=cur;
+  document.getElementById('letter-pick-overlay').classList.add('open');
+}
+let _letterPickQuick='A';
+function pickLetterQuick(l,btn){
+  _letterPickQuick=l;
+  btn.closest('#letter-pick-btns').querySelectorAll('button').forEach(b=>{
+    const active=b.textContent.trim()===l;
+    b.style.borderColor=active?'#5a4fbf':'#b8c4d8';
+    b.style.background=active?'#5a4fbf':'transparent';
+    b.style.color=active?'#fff':'var(--text2)';
+  });
+}
+function saveLetterPick(){
+  if(!_letterPickDate)return;
+  cfg.letterRef={refDate:_letterPickDate,refLetter:_letterPickQuick};
+  save();renderWeek();
+  closeLetterPicker();
+  toast(`Day ${_letterPickQuick} set ✓`);
+}
+function closeLetterPicker(){document.getElementById('letter-pick-overlay').classList.remove('open');_letterPickDate=null;}
+function letterPickOverlayClose(e){if(e.target===document.getElementById('letter-pick-overlay'))closeLetterPicker();}
+
 function saveLetterRef(){
   const d=document.getElementById('letter-ref-date').value;
   if(!d){toast('Pick a reference date first');return;}
