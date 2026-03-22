@@ -886,13 +886,32 @@ function toast(msg,dur=2500){
 async function loadWx(){
   const el=document.getElementById('wx-card');
   el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.45);font-size:13px"><div class="spin spin-white"></div><span>Loading weather…</span></div>`;
-  try{await loadWxNOAA(el);}
-  catch(e){try{await loadWxOpenMeteo(el);}catch(e2){el.innerHTML=`<div style="color:rgba(255,255,255,.4);font-size:13px">⚠️ Weather unavailable</div>`;}}
+  try{await loadWxOpenMeteo(el);}
+  catch(e){try{await loadWxNOAA(el);}catch(e2){el.innerHTML=`<div style="color:rgba(255,255,255,.4);font-size:13px">⚠️ Weather unavailable</div>`;}}
+}
+async function loadWxOpenMeteo(el){
+  const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),ms));
+  const res=await Promise.race([
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=43.1339&longitude=-70.9234&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York&forecast_days=7'),
+    timeout(8000)
+  ]);
+  if(!res.ok)throw new Error('Open-Meteo error');
+  const j=await res.json();
+  const c=j.current,d=j.daily;
+  const tmp=Math.round(c.temperature_2m),fl=Math.round(c.apparent_temperature),wnd=Math.round(c.wind_speed_10m);
+  const hi=Math.round(d.temperature_2m_max[0]),lo=Math.round(d.temperature_2m_min[0]);
+  const {icon,desc}=wxCode(c.weather_code,c.is_day===1);
+  const {em,ad}=dress(tmp,c.weather_code,wnd);
+  const forecast7=d.time.slice(0,7).map((ds,i)=>{
+    const date=new Date(ds+'T12:00:00');
+    const {icon:fi}=wxCode(d.weather_code[i],true);
+    return{dow:SD[date.getDay()],icon:fi,hi:Math.round(d.temperature_2m_max[i]),lo:Math.round(d.temperature_2m_min[i]),date};
+  });
+  renderWxCard(el,{tmp,fl,hi,lo,wnd,icon,desc,em,ad,forecast7,source:'Open-Meteo · Durham NH'});
 }
 async function loadWxNOAA(el){
   const hdr={'User-Agent':'SchoolDay/1.0 (ORCSD parent app)'};
   const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),ms));
-  // Discover grid dynamically so hardcoded values never go stale
   const ptRes=await Promise.race([fetch('https://api.weather.gov/points/43.1339,-70.9234',{headers:hdr}),timeout(6000)]);
   if(!ptRes.ok)throw new Error('NOAA points error');
   const {gridId,gridX,gridY}=(await ptRes.json()).properties;
@@ -912,33 +931,6 @@ async function loadWxNOAA(el){
   const {em,ad}=dress(tmp,cur.shortForecast||'',wnd);
   const forecast7=buildNOAAForecast7(all);
   renderWxCard(el,{tmp,fl,hi,lo,wnd,icon,desc,em,ad,forecast7,source:'NOAA · Durham NH 03824'});
-}
-function buildNOAAForecast7(periods){
-  const out=[],seen=new Set();
-  for(const p of periods){
-    const date=new Date(p.startTime),dayKey=date.toDateString();
-    if(seen.has(dayKey)||!p.isDaytime)continue;
-    seen.add(dayKey);
-    const night=periods.find(n=>!n.isDaytime&&new Date(n.startTime).toDateString()===dayKey);
-    const {icon:fi}=wxFromForecast(p.shortForecast||'',true);
-    out.push({dow:SD[date.getDay()],icon:fi,hi:p.temperature,lo:night?.temperature??'—',date});
-    if(out.length>=7)break;
-  }
-  return out;
-}
-async function loadWxOpenMeteo(el){
-  const j=await(await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.1339&longitude=-70.9234&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York&forecast_days=7')).json();
-  const c=j.current,d=j.daily;
-  const tmp=Math.round(c.temperature_2m),fl=Math.round(c.apparent_temperature),wnd=Math.round(c.wind_speed_10m);
-  const hi=Math.round(d.temperature_2m_max[0]),lo=Math.round(d.temperature_2m_min[0]);
-  const {icon,desc}=wxCode(c.weather_code,c.is_day===1);
-  const {em,ad}=dress(tmp,c.weather_code,wnd);
-  const forecast7=d.time.slice(0,7).map((ds,i)=>{
-    const date=new Date(ds+'T12:00:00');
-    const {icon:fi}=wxCode(d.weather_code[i],true);
-    return{dow:SD[date.getDay()],icon:fi,hi:Math.round(d.temperature_2m_max[i]),lo:Math.round(d.temperature_2m_min[i]),date};
-  });
-  renderWxCard(el,{tmp,fl,hi,lo,wnd,icon,desc,em,ad,forecast7,source:'Open-Meteo · Durham NH'});
 }
 function renderWxCard(el,{tmp,fl,hi,lo,wnd,icon,desc,em,ad,forecast7,source}){
   const today=new Date();today.setHours(0,0,0,0);
