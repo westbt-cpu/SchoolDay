@@ -145,6 +145,21 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .wddot{width:7px;height:7px;border-radius:50%;border:1.5px solid #9aaabf;background:transparent;flex-shrink:0}
 .wdplan{font-size:9px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;font-style:italic}
 .we-banner{background:#1B3A6B;color:#fff;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+/* Day view card */
+.day-view-card{background:#0f2244;border:2.5px solid #1B3A6B;border-radius:14px;padding:14px 16px;display:flex;align-items:flex-start;gap:14px;margin-bottom:10px;box-shadow:0 4px 16px rgba(10,28,60,.35);cursor:pointer;user-select:none;transition:opacity .15s}
+.day-view-card:active{opacity:.8}
+.day-view-card.no-school{opacity:.65}
+.dvc-left{text-align:center;min-width:44px;flex-shrink:0}
+.dvc-day{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.dvc-date{font-size:38px;font-weight:900;line-height:1;color:#e8b040;margin:2px 0}
+.dvc-letter{font-size:11px;font-weight:800;color:#e8b040}
+.dvc-body{flex:1;min-width:0;padding-top:4px;display:flex;flex-direction:column;gap:5px}
+.dvc-evt{font-size:11px;color:#fff;font-weight:700;background:rgba(255,255,255,.18);border-radius:5px;padding:2px 8px;display:inline-block}
+.dvc-nosch{font-size:12px;color:#ff9a9a;font-weight:700}
+.dvc-lunch{font-size:11px;color:#7effc0;font-weight:600;line-height:1.3}
+.dvc-kids{display:flex;flex-direction:column;gap:4px;margin-top:1px}
+.dvc-kid{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#fff}
+.dvc-sp{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* School days toggles per kid */
 .sd-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
 .sd-btn{width:36px;height:36px;border-radius:8px;border:2px solid #b8c4d8;background:transparent;color:var(--text2);font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
@@ -1047,46 +1062,79 @@ function getDisplayMonday(){
   else mon.setDate(today.getDate()-(dow-1));
   return mon;
 }
+function buildDayCell(d,tk,isWknd){
+  const today=new Date();
+  const key=dk(d.getFullYear(),d.getMonth(),d.getDate());
+  const isToday=key===tk,noSch=isNS(key);
+  const isPast=!isWknd&&d<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  const ev=EVENTS[key],dv=votes[key]||{};
+  let cls='wd';if(isToday)cls+=' today';if(noSch)cls+=' no-school';if(isPast)cls+=' past';
+  const letter=(!noSch)?getLetterDay(key):null;
+  const letterLine=letter?`<div class="wd-letter">Day ${letter}</div>`:'';
+  const evLine=noSch?`<div class="wd-ns">No School</div>`:ev?`<div class="wd-evt">${ev.lbl}</div>`:'';
+  const kidRows=cfg.kids.map((kid,ki)=>{
+    const hasSchool=!noSch&&kidHasSchool(ki,key);
+    const dayPlans=getKidPlans(ki,key);
+    if(!hasSchool&&!dayPlans.length)return '';
+    if(!hasSchool)return `<div class="wdkr" style="color:${kid.color}"><span class="wdplan">${dayPlans[0].name.substring(0,7)}</span></div>`;
+    const v=dv[ki];
+    const bg=v==='yes'?kid.color:v==='no'?'#cc3333':'transparent';
+    const bc=v?(v==='no'?'#cc3333':kid.color):'#9aaabf';
+    const sp=letter?(kid.specials?.[letter]||''):'';
+    return `<div class="wdkr" style="color:${kid.color}"><div class="wddot" style="background:${bg};border-color:${bc}"></div>${sp?`<span class="wdsp">${sp}</span>`:''}</div>`;
+  }).join('');
+  const lunchItem=noSch?null:getLunchForDate(d);
+  const lunchTxt=lunchItem?(lunchItem.length>13?lunchItem.slice(0,12)+'…':lunchItem):null;
+  const el=document.createElement('div');el.className=cls;
+  el.innerHTML=`<div class="wdn">${SD[d.getDay()]}</div><div class="wdd">${d.getDate()}</div>${letterLine}${evLine}${lunchTxt?`<div class="wd-lunch">${lunchTxt}</div>`:''}<div class="wd-kid-rows">${kidRows}</div>`;
+  if(noSch)el.addEventListener('click',()=>toast(`🏫 ${ev?ev.lbl:'No school'}`,2000));
+  else el.addEventListener('click',()=>openModal(d.getFullYear(),d.getMonth(),d.getDate()));
+  return el;
+}
 function renderWeek(){
   const today=new Date(),mon=getDisplayMonday();
   const wrap=document.getElementById('week-strip-wrap'),strip=document.getElementById('week-strip');
   strip.innerHTML='';
   const tk=todayKey(),isWknd=today.getDay()===0||today.getDay()===6;
+  // Weekend banner
   let banner=document.getElementById('we-banner');
   if(!banner){banner=document.createElement('div');banner.id='we-banner';banner.className='we-banner';wrap.insertBefore(banner,strip);}
   if(isWknd){banner.innerHTML=`<span style="font-size:16px">🎉</span><span>Weekend — showing <strong>next week's</strong> schedule</span>`;banner.style.display='flex';}
   else banner.style.display='none';
-  for(let i=0;i<5;i++){
-    const d=new Date(mon);d.setDate(mon.getDate()+i);
-    const key=dk(d.getFullYear(),d.getMonth(),d.getDate());
-    const isToday=key===tk,noSch=isNS(key);
-    const isPast=!isWknd&&d<new Date(today.getFullYear(),today.getMonth(),today.getDate());
-    const ev=EVENTS[key],dv=votes[key]||{};
-    let cls='wd';if(isToday)cls+=' today';if(noSch)cls+=' no-school';if(isPast)cls+=' past';
-    const letter=(!noSch)?getLetterDay(key):null;
-    const letterLine=letter?`<div class="wd-letter">Day ${letter}</div>`:'';
-    const evLine=noSch?`<div class="wd-ns">No School</div>`:ev?`<div class="wd-evt">${ev.lbl}</div>`:'';
-    // Build per-kid rows: respect each kid's school days; show plan label on non-school days
-    const kidRows=cfg.kids.map((kid,ki)=>{
-      const hasSchool=!noSch&&kidHasSchool(ki,key);
-      const dayPlans=getKidPlans(ki,key);
-      if(!hasSchool&&!dayPlans.length)return '';
-      if(!hasSchool)return `<div class="wdkr" style="color:${kid.color}"><span class="wdplan">${dayPlans[0].name.substring(0,7)}</span></div>`;
-      const v=dv[ki];
-      const bg=v==='yes'?kid.color:v==='no'?'#cc3333':'transparent';
-      const bc=v?(v==='no'?'#cc3333':kid.color):'#9aaabf';
-      const sp=letter?(kid.specials?.[letter]||''):'';
-      return `<div class="wdkr" style="color:${kid.color}"><div class="wddot" style="background:${bg};border-color:${bc}"></div>${sp?`<span class="wdsp">${sp}</span>`:''}</div>`;
-    }).join('');
-    const bottomRow=`<div class="wd-kid-rows">${kidRows}</div>`;
-    const lunchItem=noSch?null:getLunchForDate(d);
-    const lunchTxt=lunchItem?(lunchItem.length>13?lunchItem.slice(0,12)+'…':lunchItem):null;
-    const lunchLine=lunchTxt?`<div class="wd-lunch">${lunchTxt}</div>`:'';
-    const el=document.createElement('div');el.className=cls;
-    el.innerHTML=`<div class="wdn">${SD[d.getDay()]}</div><div class="wdd">${d.getDate()}</div>${letterLine}${evLine}${lunchLine}${bottomRow}`;
-    if(noSch)el.addEventListener('click',()=>toast(`🏫 ${ev?ev.lbl:'No school'}`,2000));
-    else el.addEventListener('click',()=>openModal(d.getFullYear(),d.getMonth(),d.getDate()));
-    strip.appendChild(el);
+  // Build Mon–Fri dates
+  const days=[];
+  for(let i=0;i<5;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d);}
+  // Day-view = today's slot (Mon=0…Fri=4); on weekends pin to Monday
+  const dvIdx=isWknd?0:Math.max(0,today.getDay()-1);
+  const dvDate=days[dvIdx];
+  const remaining=days.slice(dvIdx+1);
+  // Render day-view card
+  let dvc=document.getElementById('day-view-card');
+  if(!dvc){dvc=document.createElement('div');dvc.id='day-view-card';wrap.insertBefore(dvc,strip);}
+  const dvKey=dk(dvDate.getFullYear(),dvDate.getMonth(),dvDate.getDate());
+  const dvNoSch=isNS(dvKey),dvEv=EVENTS[dvKey],dvDv=votes[dvKey]||{};
+  const dvLetter=!dvNoSch?getLetterDay(dvKey):null;
+  const dvKidRows=cfg.kids.map((kid,ki)=>{
+    const hasSchool=!dvNoSch&&kidHasSchool(ki,dvKey);
+    const dayPlans=getKidPlans(ki,dvKey);
+    if(!hasSchool&&!dayPlans.length)return '';
+    if(!hasSchool)return `<div class="dvc-kid" style="color:${kid.color}"><div class="wddot" style="border-color:${kid.color}44"></div><span style="opacity:.6;font-style:italic">${dayPlans[0].name}</span></div>`;
+    const v=dvDv[ki];
+    const bg=v==='yes'?kid.color:v==='no'?'#cc3333':'transparent';
+    const bc=v?(v==='no'?'#cc3333':kid.color):'rgba(255,255,255,.3)';
+    const sp=dvLetter?(kid.specials?.[dvLetter]||''):'';
+    return `<div class="dvc-kid" style="color:${kid.color}"><div class="wddot" style="background:${bg};border-color:${bc}"></div><span class="dvc-sp">${sp||kid.name}</span></div>`;
+  }).filter(r=>r).join('');
+  const dvLunch=dvNoSch?null:getLunchForDate(dvDate);
+  dvc.className='day-view-card'+(dvNoSch?' no-school':'');
+  dvc.innerHTML=`<div class="dvc-left"><div class="dvc-day">${SD[dvDate.getDay()]}</div><div class="dvc-date">${dvDate.getDate()}</div>${dvLetter?`<div class="dvc-letter">Day ${dvLetter}</div>`:''}</div><div class="dvc-body">${dvNoSch?`<div class="dvc-nosch">No School${dvEv?' · '+dvEv.lbl:''}</div>`:dvEv?`<div class="dvc-evt">${dvEv.lbl}</div>`:''}${dvLunch?`<div class="dvc-lunch">${dvLunch}</div>`:''}${dvKidRows?`<div class="dvc-kids">${dvKidRows}</div>`:''}</div>`;
+  dvc.onclick=()=>openModal(dvDate.getFullYear(),dvDate.getMonth(),dvDate.getDate());
+  // Remaining week strip
+  if(remaining.length){
+    strip.style.cssText=`display:grid;grid-template-columns:repeat(${remaining.length},1fr)`;
+    remaining.forEach(d=>strip.appendChild(buildDayCell(d,tk,isWknd)));
+  } else {
+    strip.style.display='none';
   }
 }
 
