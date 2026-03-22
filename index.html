@@ -858,8 +858,8 @@ function dismissA2hs(){document.getElementById('a2hs-banner').style.display='non
 load();
 initHeader();
 loadWx();
-renderCal();
-renderSettings();
+try{renderCal();}catch(e){console.error('renderCal boot error',e);}
+try{renderSettings();}catch(e){console.error('renderSettings boot error',e);}
 updateMenuCard(curSchool);
 setActivePill(curSchool);
 // Restore parsed menu banner if available, then render week (includes lunch items)
@@ -1092,7 +1092,7 @@ function getLetterDay(dateKey){
     cur.setDate(cur.getDate()+1);
     if(isSchoolDay(cur.getFullYear(),cur.getMonth(),cur.getDate()))count++;
   }
-  return letters[(startIdx+count)%6];
+  return letters[(startIdx+count)%letters.length];
 }
 
 // ════════════════════════
@@ -1579,7 +1579,7 @@ function renderSettings(){
   document.getElementById('kids-list').innerHTML=cfg.kids.map((k,i)=>`
     <div class="kid-stg-card">
       <div class="kid-stg-hdr">
-        <div class="kid-stg-av" style="background:${k.color}33;color:${k.color}">${k.name[0].toUpperCase()}</div>
+        <div class="kid-stg-av" style="background:${k.color}33;color:${k.color}">${(k.name||'?')[0].toUpperCase()}</div>
         <div class="kid-stg-num">Kid ${i+1}</div>
         ${cfg.kids.length>1?`<button class="rem-btn" onclick="removeKid(${i})">Remove</button>`:''}
       </div>
