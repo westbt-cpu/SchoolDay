@@ -462,8 +462,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       <div class="mob-left">
         <span class="mob-icon">📋</span>
         <div>
-          <div class="mob-label">Open Lunch Menu PDF</div>
-          <div class="mob-sub">Opens in browser · Pinch to zoom</div>
+          <div class="mob-label">Open Lunch Menus</div>
+          <div class="mob-sub">ORCSD · Tap to browse PDFs</div>
         </div>
       </div>
       <span class="mob-arrow">↗</span>
@@ -854,11 +854,8 @@ function todayKey(){const t=new Date();return dk(t.getFullYear(),t.getMonth(),t.
 function isWE(y,m,d){return new Date(y,m,d).getDay()%6===0;}
 function isNS(key){return NO_SCH.has(key);}
 function isSchoolDay(y,m,d){return !isWE(y,m,d)&&!isNS(dk(y,m,d));}
-function getPdf(school,date){
-  const n=date||new Date(),mo=FM[n.getMonth()],yr=n.getFullYear();
-  const enc=s=>s.replace(/ /g,'%20');
-  const base=enc(`https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026 Lunch Menus/${mo} ${yr} Lunch Menus/`);
-  return base+enc({mw:`Mast Way and Moharimet Menus - ${mo} ${yr}.pdf`,ms:`Oyster River Middle School Lunch Menu - ${mo} ${yr}.pdf`,hs:`Oyster River High School Lunch Menu - ${mo} ${yr}.pdf`}[school]);
+function getPdf(){
+  return 'https://www.orcsd.org/departments/child-nutrition/breakfast-lunch-menus';
 }
 function updateLinks(){}
 function nextSchoolDay(){
@@ -886,7 +883,6 @@ function toast(msg,dur=2500){
 // ════════════════════════
 //  WEATHER
 // ════════════════════════
-const NOAA_OFFICE='GYX',NOAA_GX=65,NOAA_GY=55;
 async function loadWx(){
   const el=document.getElementById('wx-card');
   el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.45);font-size:13px"><div class="spin spin-white"></div><span>Loading weather…</span></div>`;
@@ -896,9 +892,13 @@ async function loadWx(){
 async function loadWxNOAA(el){
   const hdr={'User-Agent':'SchoolDay/1.0 (ORCSD parent app)'};
   const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),ms));
+  // Discover grid dynamically so hardcoded values never go stale
+  const ptRes=await Promise.race([fetch('https://api.weather.gov/points/43.1339,-70.9234',{headers:hdr}),timeout(6000)]);
+  if(!ptRes.ok)throw new Error('NOAA points error');
+  const {gridId,gridX,gridY}=(await ptRes.json()).properties;
   const [hr,dy]=await Promise.all([
-    Promise.race([fetch(`https://api.weather.gov/gridpoints/${NOAA_OFFICE}/${NOAA_GX},${NOAA_GY}/forecast/hourly`,{headers:hdr}),timeout(8000)]),
-    Promise.race([fetch(`https://api.weather.gov/gridpoints/${NOAA_OFFICE}/${NOAA_GX},${NOAA_GY}/forecast`,{headers:hdr}),timeout(8000)])
+    Promise.race([fetch(`https://api.weather.gov/gridpoints/${gridId}/${gridX},${gridY}/forecast/hourly`,{headers:hdr}),timeout(8000)]),
+    Promise.race([fetch(`https://api.weather.gov/gridpoints/${gridId}/${gridX},${gridY}/forecast`,{headers:hdr}),timeout(8000)])
   ]);
   if(!hr.ok||!dy.ok)throw new Error('NOAA error');
   const [jhr,jdy]=await Promise.all([hr.json(),dy.json()]);
@@ -1315,7 +1315,7 @@ function updateMenuCard(school){
   document.getElementById('menu-card-school').textContent=SNAMES[school];
   document.getElementById('menu-card-title').textContent=`${mo} ${yr} Menu`;
   document.getElementById('menu-card-date').textContent=isAhead?`Showing ${LD[target.getDay()]}, ${mo} ${target.getDate()} — next school day`:'';
-  _currentPdfUrl=getPdf(school,target);
+  _currentPdfUrl=getPdf();
   document.getElementById('menu-open-btn').href=_currentPdfUrl;
   updateMenuSectionLabel();updateLinks();
 }
