@@ -1107,9 +1107,10 @@ function buildDayCell(d,tk,isWknd){
   return el;
 }
 function renderWeek(){
-  const wrap=document.getElementById('week-strip-wrap');
-  if(!wrap)return;
+  let wrap;
   try{
+  wrap=document.getElementById('week-strip-wrap');
+  if(!wrap)throw new Error('week-strip-wrap element not found in DOM');
   const today=new Date(),mon=getDisplayMonday();
   wrap.innerHTML='';
   const tk=todayKey(),isWknd=today.getDay()===0||today.getDay()===6;
@@ -1152,7 +1153,9 @@ function renderWeek(){
     wrap.appendChild(strip);
   }
   }catch(e){
-    wrap.innerHTML=`<div class="we-banner" style="background:#7b1c1c">Week error: ${e.message||String(e)}</div>`;
+    const msg=`Week error: ${e.message||String(e)}`;
+    if(wrap){wrap.innerHTML=`<div class="we-banner" style="background:#7b1c1c">${msg}</div>`;}
+    else{const d=document.createElement('div');d.style.cssText='background:#7b1c1c;color:#fff;padding:8px 12px;font-size:13px;border-radius:8px;margin:8px 0';d.textContent=msg;const sh=document.querySelector('#view-today .sh');if(sh)sh.insertAdjacentElement('afterend',d);else document.body.prepend(d);}
   }
 }
 
