@@ -461,11 +461,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <span class="sh-title">This Week</span>
   <button class="sh-action" onclick="gotoMonth()">Full month →</button>
 </div>
-<div id="week-strip-wrap">
-  <div id="we-banner" class="we-banner" style="display:none"><span style="font-size:16px">🎉</span><span>Weekend — showing <strong>next week's</strong> schedule</span></div>
-  <div id="day-view-card" class="day-view-card"></div>
-  <div class="week-strip" id="week-strip"></div>
-</div>
+<div id="week-strip-wrap"></div>
 
 <!-- Menu -->
 <div class="sh"><span class="sh-title" id="menu-sh-title">TODAY'S LUNCH</span></div>
@@ -1112,21 +1108,24 @@ function buildDayCell(d,tk,isWknd){
 }
 function renderWeek(){
   const today=new Date(),mon=getDisplayMonday();
-  const strip=document.getElementById('week-strip');
-  const dvc=document.getElementById('day-view-card');
-  const banner=document.getElementById('we-banner');
-  strip.innerHTML='';
+  const wrap=document.getElementById('week-strip-wrap');
+  wrap.innerHTML='';
   const tk=todayKey(),isWknd=today.getDay()===0||today.getDay()===6;
-  // Weekend banner
-  banner.style.display=isWknd?'flex':'none';
   // Build Mon–Fri dates
   const days=[];
   for(let i=0;i<5;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d);}
+  // Weekend banner
+  if(isWknd){
+    const bn=document.createElement('div');
+    bn.className='we-banner';
+    bn.innerHTML='<span style="font-size:16px">🎉</span><span>Weekend — showing <strong>next week\'s</strong> schedule</span>';
+    wrap.appendChild(bn);
+  }
   // Day-view = today's slot; on weekends pin to Monday
   const dvIdx=isWknd?0:Math.max(0,today.getDay()-1);
   const dvDate=days[dvIdx];
   const remaining=days.slice(dvIdx+1);
-  // Render day-view card
+  // Build day-view card
   const dvKey=dk(dvDate.getFullYear(),dvDate.getMonth(),dvDate.getDate());
   const dvNoSch=isNS(dvKey),dvEv=EVENTS[dvKey],dvDv=votes[dvKey]||{};
   const dvLetter=!dvNoSch?getLetterDay(dvKey):null;
@@ -1142,16 +1141,18 @@ function renderWeek(){
     return `<div class="dvc-kid" style="color:${kid.color}"><div class="wddot" style="background:${bg};border-color:${bc}"></div><span class="dvc-sp">${sp||kid.name}</span></div>`;
   }).filter(r=>r).join('');
   const dvLunch=dvNoSch?null:getLunchForDate(dvDate);
+  const dvc=document.createElement('div');
   dvc.className='day-view-card'+(dvNoSch?' no-school':'');
   dvc.innerHTML=`<div class="dvc-left"><div class="dvc-day">${SD[dvDate.getDay()]}</div><div class="dvc-date">${dvDate.getDate()}</div>${dvLetter?`<div class="dvc-letter">Day ${dvLetter}</div>`:''}</div><div class="dvc-body">${dvNoSch?`<div class="dvc-nosch">No School${dvEv?' · '+dvEv.lbl:''}</div>`:dvEv?`<div class="dvc-evt">${dvEv.lbl}</div>`:''}${dvLunch?`<div class="dvc-lunch">${dvLunch}</div>`:''}${dvKidRows?`<div class="dvc-kids">${dvKidRows}</div>`:''}</div>`;
   dvc.onclick=()=>openModal(dvDate.getFullYear(),dvDate.getMonth(),dvDate.getDate());
+  wrap.appendChild(dvc);
   // Remaining week strip
   if(remaining.length){
-    strip.style.display='grid';
+    const strip=document.createElement('div');
+    strip.className='week-strip';
     strip.style.gridTemplateColumns=`repeat(${remaining.length},1fr)`;
     remaining.forEach(d=>strip.appendChild(buildDayCell(d,tk,isWknd)));
-  } else {
-    strip.style.display='none';
+    wrap.appendChild(strip);
   }
 }
 
