@@ -801,6 +801,7 @@ function save(){
     localStorage.setItem('sd-votes',JSON.stringify(votes));
     localStorage.setItem('sd-checks',JSON.stringify(checks));
   }catch(e){console.error('save error',e);}
+}
 function dismissOnboard(){document.getElementById('onboard-banner').style.display='none';localStorage.setItem('sd-onboard-done','1');}
 function goSetup(){dismissOnboard();switchView('settings',document.querySelector('.bnav-btn[data-view=settings]'));}
 function dismissA2hs(){document.getElementById('a2hs-banner').style.display='none';localStorage.setItem('sd-a2hs-done','1');}
