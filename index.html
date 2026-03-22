@@ -207,6 +207,12 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .menu-photo-img{width:100%;border-radius:10px;display:block;max-height:320px;object-fit:contain;background:#0c1a30}
 .menu-photo-clear{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.55);border:none;color:#fff;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif}
 .menu-parse-status{font-size:12px;color:var(--muted);text-align:center;margin-top:6px;min-height:16px;font-weight:500}
+.menu-text-hdr{display:flex;align-items:center;justify-content:space-between;margin-top:10px;margin-bottom:4px}
+.menu-text-label{font-size:10px;font-weight:800;color:#485e7a;text-transform:uppercase;letter-spacing:.07em}
+.menu-text-btn{font-size:11px;padding:3px 10px;border:1.5px solid #b8c4d8;border-radius:6px;background:none;color:#1B3A6B;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.menu-text-btn-clear{border-color:#cc3333;color:#cc3333}
+.menu-text-area{width:100%;border:1.5px solid #b8c4d8;border-radius:8px;padding:8px 10px;font-size:11px;font-family:'Courier New',monospace;color:#1a3050;background:#f7f9fc;resize:vertical;min-height:100px;box-sizing:border-box;line-height:1.5;outline:none;display:block}
+.menu-text-area:focus{border-color:#1B3A6B}
 
 /* ── Links grid ── */
 .ql-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
@@ -456,6 +462,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <button class="sh-action" onclick="gotoMonth()">Full month →</button>
 </div>
 <div id="week-strip-wrap">
+  <div id="we-banner" class="we-banner" style="display:none"><span style="font-size:16px">🎉</span><span>Weekend — showing <strong>next week's</strong> schedule</span></div>
+  <div id="day-view-card" class="day-view-card"></div>
   <div class="week-strip" id="week-strip"></div>
 </div>
 
@@ -490,6 +498,16 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       <button class="menu-photo-clear" onclick="clearMenuPhoto()">✕</button>
     </div>
     <div class="menu-parse-status" id="menu-parse-status"></div>
+    <div id="menu-text-panel" style="display:none">
+      <div class="menu-text-hdr">
+        <span class="menu-text-label">Saved menu data</span>
+        <div style="display:flex;gap:6px">
+          <button class="menu-text-btn" onclick="copyMenuText()">Copy</button>
+          <button class="menu-text-btn menu-text-btn-clear" onclick="clearMenuText()">Clear</button>
+        </div>
+      </div>
+      <textarea id="menu-text-input" class="menu-text-area" placeholder="Paste menu list here, one line per day:&#10;March 23: Mozzarella Sticks&#10;March 24: Mac n' Cheese" oninput="saveMenuText(this.value)"></textarea>
+    </div>
   </div>
 </div>
 
@@ -835,6 +853,7 @@ setActivePill(curSchool);
 const _savedMenuText=localStorage.getItem('sd-menu-text');
 if(_savedMenuText)showParsedMenuBanner(_savedMenuText);
 renderWeek();
+initMenuTextPanel();
 renderTodayPlans();
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
@@ -1093,24 +1112,21 @@ function buildDayCell(d,tk,isWknd){
 }
 function renderWeek(){
   const today=new Date(),mon=getDisplayMonday();
-  const wrap=document.getElementById('week-strip-wrap'),strip=document.getElementById('week-strip');
+  const strip=document.getElementById('week-strip');
+  const dvc=document.getElementById('day-view-card');
+  const banner=document.getElementById('we-banner');
   strip.innerHTML='';
   const tk=todayKey(),isWknd=today.getDay()===0||today.getDay()===6;
   // Weekend banner
-  let banner=document.getElementById('we-banner');
-  if(!banner){banner=document.createElement('div');banner.id='we-banner';banner.className='we-banner';wrap.insertBefore(banner,strip);}
-  if(isWknd){banner.innerHTML=`<span style="font-size:16px">🎉</span><span>Weekend — showing <strong>next week's</strong> schedule</span>`;banner.style.display='flex';}
-  else banner.style.display='none';
+  banner.style.display=isWknd?'flex':'none';
   // Build Mon–Fri dates
   const days=[];
   for(let i=0;i<5;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d);}
-  // Day-view = today's slot (Mon=0…Fri=4); on weekends pin to Monday
+  // Day-view = today's slot; on weekends pin to Monday
   const dvIdx=isWknd?0:Math.max(0,today.getDay()-1);
   const dvDate=days[dvIdx];
   const remaining=days.slice(dvIdx+1);
   // Render day-view card
-  let dvc=document.getElementById('day-view-card');
-  if(!dvc){dvc=document.createElement('div');dvc.id='day-view-card';wrap.insertBefore(dvc,strip);}
   const dvKey=dk(dvDate.getFullYear(),dvDate.getMonth(),dvDate.getDate());
   const dvNoSch=isNS(dvKey),dvEv=EVENTS[dvKey],dvDv=votes[dvKey]||{};
   const dvLetter=!dvNoSch?getLetterDay(dvKey):null;
@@ -1131,7 +1147,8 @@ function renderWeek(){
   dvc.onclick=()=>openModal(dvDate.getFullYear(),dvDate.getMonth(),dvDate.getDate());
   // Remaining week strip
   if(remaining.length){
-    strip.style.cssText=`display:grid;grid-template-columns:repeat(${remaining.length},1fr)`;
+    strip.style.display='grid';
+    strip.style.gridTemplateColumns=`repeat(${remaining.length},1fr)`;
     remaining.forEach(d=>strip.appendChild(buildDayCell(d,tk,isWknd)));
   } else {
     strip.style.display='none';
@@ -1299,13 +1316,42 @@ async function parseMenuPhoto(file){
     if(text){
       statusEl.innerHTML='<strong style="color:#1a9e5e">✓ Menu read!</strong> Scroll up to see it.';
       localStorage.setItem('sd-menu-text',text);
-      showParsedMenuBanner(text);
+      initMenuTextPanel();showParsedMenuBanner(text);
     } else {
       statusEl.textContent='⚠️ Could not read menu — try a clearer photo.';
     }
   }catch(e){
     statusEl.textContent='⚠️ Parse failed: '+(e.message||'unknown error');
   }
+}
+function initMenuTextPanel(){
+  const text=localStorage.getItem('sd-menu-text')||'';
+  const ta=document.getElementById('menu-text-input');
+  const panel=document.getElementById('menu-text-panel');
+  if(ta)ta.value=text;
+  if(panel)panel.style.display=text.trim()?'block':'none';
+}
+function saveMenuText(text){
+  if(text.trim())localStorage.setItem('sd-menu-text',text);
+  else localStorage.removeItem('sd-menu-text');
+  document.getElementById('menu-text-panel').style.display=text.trim()?'block':'none';
+  renderWeek();showParsedMenuBanner(text);
+}
+function copyMenuText(){
+  const text=document.getElementById('menu-text-input').value;
+  if(!text)return;
+  navigator.clipboard.writeText(text).then(()=>toast('Copied!',1500)).catch(()=>{
+    document.getElementById('menu-text-input').select();
+    document.execCommand('copy');toast('Copied!',1500);
+  });
+}
+function clearMenuText(){
+  localStorage.removeItem('sd-menu-text');
+  document.getElementById('menu-text-input').value='';
+  document.getElementById('menu-text-panel').style.display='none';
+  document.getElementById('menu-parse-status').textContent='';
+  const b=document.getElementById('menu-parsed-banner');if(b)b.remove();
+  renderWeek();
 }
 function getLunchForDate(d){
   const text=localStorage.getItem('sd-menu-text');
