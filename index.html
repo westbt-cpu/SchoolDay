@@ -803,6 +803,7 @@ const EVENTS={
 };
 const NO_SCH=new Set(Object.entries(EVENTS).filter(([,v])=>v.ns).map(([k])=>k));
 const SCHOOL_NAMES={mw:'Mast Way',ms:'Middle School',hs:'High School'};
+const LETTERS=['A','B','C','D'];
 const SNAMES={mw:'Mast Way & Moharimet',ms:'Middle School',hs:'High School'};
 
 // ════════════════════════
@@ -1702,7 +1703,6 @@ function deletePlan(kidIdx,planId){
   save();renderSettings();renderWeek();renderTodayPlans();
   toast('Plan removed');
 }
-const LETTERS=['A','B','C','D'];
 function renderLetterBtns(selected){
   const wrap=document.getElementById('letter-ref-btns');if(!wrap)return;
   wrap.innerHTML=LETTERS.map(l=>`
