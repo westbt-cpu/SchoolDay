@@ -127,6 +127,18 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .wd-ns{font-size:8px;color:#cc3333;font-weight:700;margin-top:4px}
 .wd-letter{font-size:10px;font-weight:800;color:#1B3A6B;margin-top:3px;letter-spacing:.02em}
 .today .wd-letter{color:#e8b040}
+/* Per-kid rows in week strip (dot + special label) */
+.wd-kid-rows{display:flex;flex-direction:column;gap:3px;align-items:flex-start;margin-top:5px;padding:0 4px;width:100%}
+.wdkr{display:flex;align-items:center;gap:3px;font-size:9px;font-weight:700;line-height:1;white-space:nowrap;overflow:hidden;width:100%}
+.wdkr .wddot{flex-shrink:0}
+.wdsp{flex:1;overflow:hidden;text-overflow:ellipsis}
+/* Specials grid in settings */
+.specials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.special-inp-wrap{display:flex;flex-direction:column;gap:3px}
+.special-lbl{font-size:10px;font-weight:800;color:#5a4fbf;text-transform:uppercase;letter-spacing:.06em}
+.special-inp{border:1.5px solid #b8c4d8;border-radius:8px;padding:7px 8px;font-size:13px;font-family:'Inter',sans-serif;width:100%;color:var(--text);background:#fff}
+/* Special label in lunch modal */
+.kid-special{font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
 .wddots{display:flex;justify-content:center;gap:3px;margin-top:6px;min-height:8px}
 .wddot{width:7px;height:7px;border-radius:50%;border:1.5px solid #9aaabf;background:transparent;flex-shrink:0}
 .we-banner{background:#1B3A6B;color:#fff;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
@@ -993,18 +1005,21 @@ function renderWeek(){
     const isToday=key===tk,noSch=isNS(key);
     const isPast=!isWknd&&d<new Date(today.getFullYear(),today.getMonth(),today.getDate());
     const ev=EVENTS[key],dv=votes[key]||{};
-    const dots=cfg.kids.map((_,i)=>{
-      const v=dv[i];
-      const bg=v==='yes'?cfg.kids[i].color:v==='no'?'#cc3333':'transparent';
-      const bc=v?(v==='no'?'#cc3333':cfg.kids[i].color):'#9aaabf';
-      return `<div class="wddot" style="background:${bg};border-color:${bc}"></div>`;
-    }).join('');
     let cls='wd';if(isToday)cls+=' today';if(noSch)cls+=' no-school';if(isPast)cls+=' past';
     const letter=(!noSch)?getLetterDay(key):null;
     const letterLine=letter?`<div class="wd-letter">Day ${letter}</div>`:'';
     const evLine=noSch?`<div class="wd-ns">No School</div>`:ev?`<div class="wd-evt">${ev.lbl}</div>`:'';
+    // Build per-kid rows: dot + special label (falls back to plain dots if no specials configured)
+    const kidRows=cfg.kids.map((kid,ki)=>{
+      const v=dv[ki];
+      const bg=v==='yes'?kid.color:v==='no'?'#cc3333':'transparent';
+      const bc=v?(v==='no'?'#cc3333':kid.color):'#9aaabf';
+      const sp=letter?(kid.specials?.[letter]||''):'';
+      return `<div class="wdkr" style="color:${kid.color}"><div class="wddot" style="background:${bg};border-color:${bc}"></div>${sp?`<span class="wdsp">${sp}</span>`:''}</div>`;
+    }).join('');
+    const bottomRow=`<div class="wd-kid-rows">${kidRows}</div>`;
     const el=document.createElement('div');el.className=cls;
-    el.innerHTML=`<div class="wdn">${SD[d.getDay()]}</div><div class="wdd">${d.getDate()}</div>${letterLine}${evLine}<div class="wddots">${dots}</div>`;
+    el.innerHTML=`<div class="wdn">${SD[d.getDay()]}</div><div class="wdd">${d.getDate()}</div>${letterLine}${evLine}${bottomRow}`;
     if(noSch)el.addEventListener('click',()=>toast(`🏫 ${ev?ev.lbl:'No school'}`,2000));
     else el.addEventListener('click',()=>openModal(d.getFullYear(),d.getMonth(),d.getDate()));
     strip.appendChild(el);
@@ -1060,11 +1075,13 @@ function openModal(y,m,d){
   document.body.style.overflow='hidden';
 }
 function renderKidRows(){
+  const letter=mSt?getLetterDay(mSt.key):null;
   document.getElementById('m-kids').innerHTML=cfg.kids.map((k,i)=>{
     const v=mSt.p[i];
+    const sp=letter?(k.specials?.[letter]||''):'';
     return `<div class="kid-row" id="kr-${i}">
       <div class="kid-av" style="background:${k.color}22;color:${k.color}">${k.name[0].toUpperCase()}</div>
-      <div class="kid-nm">${k.name}</div>
+      <div class="kid-nm">${k.name}${sp?`<div class="kid-special">📚 ${sp}</div>`:''}</div>
       <div class="vpair">
         <button class="vbtn yes ${v==='yes'?'active':''}" onclick="vote(${i},'yes')">🏫 Buy</button>
         <button class="vbtn no  ${v==='no' ?'active':''}" onclick="vote(${i},'no')">🎒 Pack</button>
@@ -1364,6 +1381,15 @@ function renderSettings(){
             <button onclick="openItemSheet(${i})" style="margin-top:8px;background:none;border:1.5px dashed #9aaabf;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:600;color:#1f78b4;cursor:pointer;width:100%;font-family:'Inter',sans-serif">+ Add item</button>
           </div>
         </div>
+        <div class="fld"><div class="fld-lbl">Specials Schedule</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">What subject on each letter day? (e.g. Gym, Art, Music, Library)</div>
+          <div class="specials-grid">${['A','B','C','D','E','F'].map(l=>`
+            <div class="special-inp-wrap">
+              <div class="special-lbl">Day ${l}</div>
+              <input class="special-inp" id="sp-${i}-${l}" value="${k.specials?.[l]||''}" placeholder="—" autocorrect="off" autocapitalize="words" maxlength="12">
+            </div>`).join('')}
+          </div>
+        </div>
       </div>
     </div>`).join('');
   document.getElementById('add-btn').style.display=cfg.kids.length>=3?'none':'';
@@ -1393,7 +1419,11 @@ function pickColor(i,c,btn){
 function addKid(){if(cfg.kids.length>=3)return;cfg.kids.push({name:'',color:COLORS[cfg.kids.length],items:['Backpack']});renderSettings();}
 function removeKid(i){cfg.kids.splice(i,1);renderSettings();}
 function saveSettings(){
-  cfg.kids=cfg.kids.map((k,i)=>({...k,name:(document.getElementById(`kn-${i}`)?.value.trim()||k.name)}));
+  cfg.kids=cfg.kids.map((k,i)=>{
+    const specials={};
+    ['A','B','C','D','E','F'].forEach(l=>{const v=document.getElementById(`sp-${i}-${l}`)?.value.trim();if(v)specials[l]=v;});
+    return {...k,name:(document.getElementById(`kn-${i}`)?.value.trim()||k.name),specials};
+  });
   save();renderWeek();renderCal();
   curSchool=cfg.mySchool;setActivePill(curSchool);updateMenuCard(curSchool);
   localStorage.setItem('sd-onboard-done','1');
