@@ -111,7 +111,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 
 /* ── Week strip ── */
 .week-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
-.wd{background:#fff;border:2px solid #b8c4d8;border-radius:12px;padding:9px 4px 8px;text-align:center;cursor:pointer;transition:all .15s;user-select:none;box-shadow:var(--shadow);position:relative}
+.wd{background:#fff;border:2px solid #b8c4d8;border-radius:12px;padding:9px 4px 8px;text-align:center;cursor:pointer;transition:all .15s;user-select:none;box-shadow:var(--shadow);position:relative;overflow:hidden}
 .wd *{pointer-events:none}
 .wd:not(.no-school):not(.we):active{transform:scale(.95)}
 .wd.today{border-color:#1B3A6B;border-width:2.5px;background:#0f2244;color:#fff;box-shadow:0 4px 16px rgba(10,28,60,.35)}
@@ -407,7 +407,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 
   <section class="view active" id="view-today">
 
-```
 <!-- Add to Home Screen nudge (iOS only, shown once) -->
 <div class="a2hs-banner" id="a2hs-banner" style="display:none">
   <span style="font-size:24px;flex-shrink:0">📲</span>
@@ -493,7 +492,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <a class="ql" href="https://www.orcsd.org/about/school-closing-delay" target="_blank"><div class="ql-icon">❄️</div><div><div class="ql-lbl">Closings</div><div class="ql-name">Delays &amp; Alerts</div></div></a>
   <a class="ql" href="http://www.infofinderi.com/ifi/?cid=ORC-S557JPE2A1" target="_blank"><div class="ql-icon">🚌</div><div><div class="ql-lbl">Transportation</div><div class="ql-name">Bus Routes</div></div></a>
 </div>
-```
 
   </section>
 
@@ -519,7 +517,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 
   <section class="view" id="view-settings">
 
-```
 <div class="stg-section">
   <div class="stg-title">Your School</div>
   <div class="stg-note">Sets which menu opens by default when you tap Today.</div>
@@ -648,7 +645,6 @@ March 26: Mac & Cheese'></textarea>
     </div>
   </div>
 </div>
-```
 
   </section>
 
@@ -664,7 +660,6 @@ March 26: Mac & Cheese'></textarea>
       <button class="leave-reset-btn" onclick="resetChecklist()" title="Reset all">↺</button>
     </div>
 
-```
 <div id="leave-progress-bar-wrap">
   <div class="leave-progress-track"><div class="leave-progress-fill" id="leave-progress-fill"></div></div>
   <div class="leave-progress-label" id="leave-progress-label">0 of 0 ready</div>
@@ -681,7 +676,6 @@ March 26: Mac & Cheese'></textarea>
 </div>
 
 <button class="leave-edit-btn" onclick="switchView('settings',document.querySelector('.bnav-btn[data-view=settings]'))">✏️ Edit kids &amp; items in Settings</button>
-```
 
   </section>
 
@@ -835,7 +829,7 @@ function load(){
     const visits=parseInt(localStorage.getItem('sd-visits')||'0')+1;
     localStorage.setItem('sd-visits',visits);
     const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-    if(isIOS&&!window.navigator.standalone&&!localStorage.getItem('sd-a2hs-done')&&visits===2){
+    if(isIOS&&!window.navigator.standalone&&!localStorage.getItem('sd-a2hs-done')&&visits>=2){
       document.getElementById('a2hs-banner').style.display='flex';
     }
     // Handle NFC deep links
@@ -851,10 +845,11 @@ function load(){
   }catch(e){console.error('load error',e);}
 }
 function save(){
-  localStorage.setItem('sd-cfg',JSON.stringify(cfg));
-  localStorage.setItem('sd-votes',JSON.stringify(votes));
-  localStorage.setItem('sd-checks',JSON.stringify(checks));
-}
+  try{
+    localStorage.setItem('sd-cfg',JSON.stringify(cfg));
+    localStorage.setItem('sd-votes',JSON.stringify(votes));
+    localStorage.setItem('sd-checks',JSON.stringify(checks));
+  }catch(e){console.error('save error',e);}
 function dismissOnboard(){document.getElementById('onboard-banner').style.display='none';localStorage.setItem('sd-onboard-done','1');}
 function goSetup(){dismissOnboard();switchView('settings',document.querySelector('.bnav-btn[data-view=settings]'));}
 function dismissA2hs(){document.getElementById('a2hs-banner').style.display='none';localStorage.setItem('sd-a2hs-done','1');}
@@ -865,15 +860,14 @@ function dismissA2hs(){document.getElementById('a2hs-banner').style.display='non
 load();
 initHeader();
 loadWx();
-renderWeek();
 renderCal();
 renderSettings();
-updateLinks();
 updateMenuCard(curSchool);
 setActivePill(curSchool);
-// Restore parsed menu banner if available
+// Restore parsed menu banner if available, then render week (includes lunch items)
 const _savedMenuText=localStorage.getItem('sd-menu-text');
-if(_savedMenuText){showParsedMenuBanner(_savedMenuText);renderWeek();}
+if(_savedMenuText)showParsedMenuBanner(_savedMenuText);
+renderWeek();
 renderTodayPlans();
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
@@ -915,14 +909,7 @@ function getPdf(school,date){
   const base=enc(`https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026 Lunch Menus/${mo} ${yr} Lunch Menus/`);
   return base+enc({mw:`Mast Way and Moharimet Menus - ${mo} ${yr}.pdf`,ms:`Oyster River Middle School Lunch Menu - ${mo} ${yr}.pdf`,hs:`Oyster River High School Lunch Menu - ${mo} ${yr}.pdf`}[school]);
 }
-function updateLinks(){
-  const mw=document.getElementById('lnk-mw');
-  const ms=document.getElementById('lnk-ms');
-  const hs=document.getElementById('lnk-hs');
-  if(mw)mw.href=getPdf('mw');
-  if(ms)ms.href=getPdf('ms');
-  if(hs)hs.href=getPdf('hs');
-}
+function updateLinks(){}
 function nextSchoolDay(){
   const d=new Date(); d.setDate(d.getDate()+1);
   for(let i=0;i<14;i++){if(isSchoolDay(d.getFullYear(),d.getMonth(),d.getDate()))return new Date(d);d.setDate(d.getDate()+1);}
@@ -1368,6 +1355,7 @@ let _currentPdfUrl='';
 function openMenuPdf(e){
   e.preventDefault();
   if(_currentPdfUrl)window.open(_currentPdfUrl,'_blank','noopener');
+  else toast('Menu PDF not available yet',2500);
 }
 function updateMenuCard(school){
   const target=menuTargetDate();
