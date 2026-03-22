@@ -189,6 +189,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .mob-arrow{font-size:18px;opacity:.6}
 .menu-photo-btn{width:100%;margin-top:10px;padding:10px;border:2px dashed #b8c4d8;border-radius:10px;background:none;color:#485e7a;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .15s,color .15s}
 .menu-photo-btn:active{border-color:#1B3A6B;color:#1B3A6B}
+.menu-claude-btn{width:100%;margin-top:10px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,#3b1f7a,#5a4fbf);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
+.menu-claude-btn:active{opacity:.85}
 .menu-photo-wrap{margin-top:10px;position:relative}
 .menu-photo-img{width:100%;border-radius:10px;display:block;max-height:320px;object-fit:contain;background:#0c1a30}
 .menu-photo-clear{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.55);border:none;color:#fff;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif}
@@ -471,6 +473,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       <span class="mob-arrow">↗</span>
     </a>
     <input type="file" id="menu-photo-input" accept="image/*" style="display:none" onchange="handleMenuPhoto(this.files[0])">
+    <button class="menu-claude-btn" onclick="copyAndOpenClaude()">🤖 Copy Prompt &amp; PDF · Open Claude</button>
     <button class="menu-photo-btn" onclick="document.getElementById('menu-photo-input').click()">📸 Add menu photo</button>
     <div class="menu-photo-wrap" id="menu-photo-wrap" style="display:none">
       <img class="menu-photo-img" id="menu-photo-img" src="" alt="Lunch menu photo">
@@ -613,8 +616,14 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <!-- Menu JSON Import -->
 <div style="height:8px"></div>
 <div class="stg-section">
-  <div class="stg-title">Paste Lunch Menu</div>
-  <div class="stg-note">Take a photo of the lunch menu in Claude.ai and ask it to format the menu. Then paste the result here to fill your app for the month.</div>
+  <div class="stg-title">Import Lunch Menu</div>
+  <div class="stg-note" style="font-weight:700;color:var(--text2);margin-bottom:4px">Step 1 — Get the menu from Claude</div>
+  <div class="stg-note" style="margin-bottom:10px">Tap the button below to copy the formatting prompt + PDF link, then paste everything into Claude.ai. Claude will return a formatted list.</div>
+  <button class="menu-claude-btn" onclick="copyMenuPrompt()" style="margin-top:0">📋 Copy Prompt &amp; PDF Link</button>
+  <a href="https://claude.ai" target="_blank" style="display:block;text-align:center;font-size:12px;color:#5a4fbf;font-weight:700;margin-top:8px;text-decoration:none">Open Claude.ai ↗</a>
+  <div id="menu-copy-status" style="font-size:12px;color:var(--muted);text-align:center;margin-top:6px;min-height:16px"></div>
+  <div style="border-top:1px solid #e5e9f0;margin:14px 0 12px"></div>
+  <div class="stg-note" style="font-weight:700;color:var(--text2);margin-bottom:4px">Step 2 — Paste Claude's response here</div>
   <textarea class="menu-import-ta" id="menu-import-ta" placeholder='Paste Claude output here, e.g.:
 March 24: Chicken Nuggets
 March 25: Pizza
@@ -1632,6 +1641,27 @@ function importMenuText(){
   statusEl.innerHTML='<strong style="color:#1a9e5e">✓ Menu imported!</strong> Showing today\'s item on the Today tab.';
   document.getElementById('menu-import-ta').value='';
   toast('Menu imported ✓');
+}
+function buildMenuPrompt(){
+  const pdfUrl=document.getElementById('menu-open-btn')?.href||'';
+  const target=menuTargetDate();
+  const mo=FM[target.getMonth()],yr=target.getFullYear();
+  const pdfLine=pdfUrl&&pdfUrl!=='#'&&pdfUrl!==location.href?`\nMenu PDF: ${pdfUrl}\n`:'';
+  return `Please format this school cafeteria lunch menu for ${mo} ${yr}.${pdfLine}\nList each school day and its main lunch item, one per line:\n${mo} 24: Chicken Nuggets\n${mo} 25: Pizza\n\nOnly output the list — no headers, no extra text. Use full month name and day number.`;
+}
+async function copyAndOpenClaude(){
+  window.open('https://claude.ai','_blank');
+  try{
+    await navigator.clipboard.writeText(buildMenuPrompt());
+    toast('Prompt + PDF link copied — paste into Claude ✓',3500);
+  }catch(e){toast('Could not copy automatically — use Settings to copy manually');}
+}
+async function copyMenuPrompt(){
+  const statusEl=document.getElementById('menu-copy-status');
+  try{
+    await navigator.clipboard.writeText(buildMenuPrompt());
+    if(statusEl)statusEl.innerHTML='<strong style="color:#1a9e5e">✓ Copied!</strong> Open Claude.ai, paste, and share the PDF or a photo of the menu.';
+  }catch(e){if(statusEl)statusEl.textContent='⚠️ Copy failed — try from the Today tab button';}
 }
 function renderLetterBtns(selected){
   const wrap=document.getElementById('letter-ref-btns');if(!wrap)return;
