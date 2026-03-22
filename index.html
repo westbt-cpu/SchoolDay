@@ -132,6 +132,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .wdkr{display:flex;align-items:center;gap:3px;font-size:9px;font-weight:700;line-height:1;white-space:nowrap;overflow:hidden;width:100%}
 .wdkr .wddot{flex-shrink:0}
 .wdsp{flex:1;overflow:hidden;text-overflow:ellipsis}
+.wd-lunch{font-size:8px;color:#1a6e3c;font-weight:600;margin-top:3px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:96%;padding:0 2px}
+.today .wd-lunch{color:#7effc0}
 /* Specials grid in settings */
 .specials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
 .special-inp-wrap{display:flex;flex-direction:column;gap:3px}
@@ -870,7 +872,7 @@ updateMenuCard(curSchool);
 setActivePill(curSchool);
 // Restore parsed menu banner if available
 const _savedMenuText=localStorage.getItem('sd-menu-text');
-if(_savedMenuText)showParsedMenuBanner(_savedMenuText);
+if(_savedMenuText){showParsedMenuBanner(_savedMenuText);renderWeek();}
 renderTodayPlans();
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
@@ -908,8 +910,9 @@ function isNS(key){return NO_SCH.has(key);}
 function isSchoolDay(y,m,d){return !isWE(y,m,d)&&!isNS(dk(y,m,d));}
 function getPdf(school,date){
   const n=date||new Date(),mo=FM[n.getMonth()],yr=n.getFullYear();
-  const base=`https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026 Lunch Menus/${mo} ${yr} Lunch Menus/`;
-  return base+{mw:`Mast Way and Moharimet Menus - ${mo} ${yr}.pdf`,ms:`Oyster River Middle School Lunch Menu - ${mo} ${yr}.pdf`,hs:`Oyster River High School Lunch Menu - ${mo} ${yr}.pdf`}[school];
+  const enc=s=>s.replace(/ /g,'%20');
+  const base=enc(`https://www.orcsd.org/departments/child-nutrition/files/documents/2025-2026 Lunch Menus/${mo} ${yr} Lunch Menus/`);
+  return base+enc({mw:`Mast Way and Moharimet Menus - ${mo} ${yr}.pdf`,ms:`Oyster River Middle School Lunch Menu - ${mo} ${yr}.pdf`,hs:`Oyster River High School Lunch Menu - ${mo} ${yr}.pdf`}[school]);
 }
 function updateLinks(){
   const mw=document.getElementById('lnk-mw');
@@ -1148,8 +1151,10 @@ function renderWeek(){
       return `<div class="wdkr" style="color:${kid.color}"><div class="wddot" style="background:${bg};border-color:${bc}"></div>${sp?`<span class="wdsp">${sp}</span>`:''}</div>`;
     }).join('');
     const bottomRow=`<div class="wd-kid-rows">${kidRows}</div>`;
+    const lunchItem=noSch?null:getLunchForDate(d);
+    const lunchLine=lunchItem?`<div class="wd-lunch">${lunchItem}</div>`:'';
     const el=document.createElement('div');el.className=cls;
-    el.innerHTML=`<div class="wdn">${SD[d.getDay()]}</div><div class="wdd">${d.getDate()}</div>${letterLine}${evLine}${bottomRow}`;
+    el.innerHTML=`<div class="wdn">${SD[d.getDay()]}</div><div class="wdd">${d.getDate()}</div>${letterLine}${evLine}${lunchLine}${bottomRow}`;
     if(noSch)el.addEventListener('click',()=>toast(`🏫 ${ev?ev.lbl:'No school'}`,2000));
     else el.addEventListener('click',()=>openModal(d.getFullYear(),d.getMonth(),d.getDate()));
     strip.appendChild(el);
@@ -1322,21 +1327,27 @@ async function parseMenuPhoto(file){
     statusEl.textContent='⚠️ Parse failed: '+(e.message||'unknown error');
   }
 }
+function getLunchForDate(d){
+  const text=localStorage.getItem('sd-menu-text');
+  if(!text)return null;
+  const mo=FM[d.getMonth()],moS=mo.slice(0,3),dayNum=d.getDate();
+  const re=new RegExp(`^(?:${mo}|${moS})\\.?\\s+${dayNum}(?!\\d)`,'i');
+  const match=text.split('\n').map(l=>l.trim()).filter(Boolean).find(l=>re.test(l));
+  return match?match.replace(/^[^:]+:\s*/,''):null;
+}
 function showParsedMenuBanner(text){
-  // Find today's (or next school day's) entry in the parsed text
   const target=menuTargetDate();
-  const mo=FM[target.getMonth()].slice(0,3);
-  const dayNum=target.getDate();
-  const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
-  const match=lines.find(l=>l.toLowerCase().includes(mo.toLowerCase())&&l.includes(String(dayNum)));
+  const today=new Date();today.setHours(0,0,0,0);target.setHours(0,0,0,0);
+  const isToday=target.getTime()===today.getTime();
+  const label=isToday?"Today's special":`${LD[target.getDay()]}'s special`;
+  const item=getLunchForDate(target);
   const existing=document.getElementById('menu-parsed-banner');
   if(existing)existing.remove();
-  if(match){
-    const item=match.replace(/^[^:]+:\s*/,'');
+  if(item){
     const banner=document.createElement('div');
     banner.id='menu-parsed-banner';
     banner.style.cssText='margin-top:8px;background:#ccf0e0;border-radius:8px;padding:9px 12px;font-size:13px;color:#0d5e30;font-weight:600;line-height:1.45';
-    banner.innerHTML=`🍽️ <strong>Today's special:</strong> ${item}`;
+    banner.innerHTML=`🍽️ <strong>${label}:</strong> ${item}`;
     document.getElementById('menu-parse-status').insertAdjacentElement('afterend',banner);
   }
 }
@@ -1638,6 +1649,7 @@ function importMenuText(){
   if(!raw){statusEl.textContent='Paste menu text first';return;}
   localStorage.setItem('sd-menu-text',raw);
   showParsedMenuBanner(raw);
+  renderWeek();
   statusEl.innerHTML='<strong style="color:#1a9e5e">✓ Menu imported!</strong> Showing today\'s item on the Today tab.';
   document.getElementById('menu-import-ta').value='';
   toast('Menu imported ✓');
