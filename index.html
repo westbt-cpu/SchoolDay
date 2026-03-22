@@ -477,7 +477,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <div class="menu-card-date" id="menu-card-date"></div>
   </div>
   <div class="menu-card-body">
-    <a class="menu-open-btn" id="menu-open-btn" href="https://www.orcsd.org/departments/child-nutrition/breakfast-lunch-menus" target="_blank" rel="noopener">
+    <a class="menu-open-btn" id="menu-open-btn" href="https://www.orcsd.org/departments/child-nutrition/breakfast-lunch-menus" onclick="window.open(this.href,'_blank');return false;">
       <div class="mob-left">
         <span class="mob-icon">📋</span>
         <div>
@@ -494,15 +494,16 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       <button class="menu-photo-clear" onclick="clearMenuPhoto()">✕</button>
     </div>
     <div class="menu-parse-status" id="menu-parse-status"></div>
-    <div id="menu-text-panel" style="display:none">
+    <div id="menu-text-panel">
       <div class="menu-text-hdr">
-        <span class="menu-text-label">Saved menu data</span>
+        <span class="menu-text-label">Menu data</span>
         <div style="display:flex;gap:6px">
+          <button class="menu-text-btn" onclick="copyClaudePrompt()" title="Copy prompt to give Claude AI">AI prompt</button>
           <button class="menu-text-btn" onclick="copyMenuText()">Copy</button>
           <button class="menu-text-btn menu-text-btn-clear" onclick="clearMenuText()">Clear</button>
         </div>
       </div>
-      <textarea id="menu-text-input" class="menu-text-area" placeholder="Paste menu list here, one line per day:&#10;March 23: Mozzarella Sticks&#10;March 24: Mac n' Cheese" oninput="saveMenuText(this.value)"></textarea>
+      <textarea id="menu-text-input" class="menu-text-area" placeholder="Paste menu list here, one line per school day:&#10;March 23: Mozzarella Sticks&#10;March 24: Mac n' Cheese&#10;&#10;(Tap 'AI prompt' to get a Claude prompt for converting the PDF)" oninput="saveMenuText(this.value)"></textarea>
     </div>
   </div>
 </div>
@@ -511,7 +512,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <div class="sh"><span class="sh-title">Quick Access</span></div>
 <div class="ql-grid">
   <a class="ql" href="https://linqconnect.com/" target="_blank"><div class="ql-icon">💳</div><div><div class="ql-lbl">Lunch Account</div><div class="ql-name">LINQConnect</div></div></a>
-  <a class="ql" href="https://parentsquare.com/" target="_blank"><div class="ql-icon">💬</div><div><div class="ql-lbl">School Comms</div><div class="ql-name">ParentSquare</div></div></a>
+  <a class="ql" href="https://parentsquare.com/" onclick="openParentSquare(event)"><div class="ql-icon">💬</div><div><div class="ql-lbl">School Comms</div><div class="ql-name">ParentSquare</div></div></a>
   <a class="ql" href="https://www.orcsd.org/about/school-closing-delay" target="_blank"><div class="ql-icon">❄️</div><div><div class="ql-lbl">Closings</div><div class="ql-name">Delays &amp; Alerts</div></div></a>
   <a class="ql" href="http://www.infofinderi.com/ifi/?cid=ORC-S557JPE2A1" target="_blank"><div class="ql-icon">🚌</div><div><div class="ql-lbl">Transportation</div><div class="ql-name">Bus Routes</div></div></a>
 </div>
@@ -562,7 +563,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <div class="stg-note">Shows Day A–F in the week strip. Pick any date you know and its letter.</div>
   <div class="fld"><div class="fld-lbl">Reference Date</div><input class="stg-input" id="letter-ref-date" type="date"></div>
   <div class="fld"><div class="fld-lbl">Letter on that date</div>
-    <div style="display:flex;gap:8px;margin-top:6px" id="letter-ref-btns"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="letter-ref-btns"></div>
   </div>
   <button onclick="saveLetterRef()" class="save-btn" style="margin-top:12px;background:#5a4fbf;box-shadow:0 4px 16px rgba(90,79,191,.3)">Save Letter Schedule</button>
   <div id="letter-preview" style="margin-top:8px;font-size:12px;color:var(--muted);text-align:center;min-height:16px;line-height:1.5"></div>
@@ -886,6 +887,17 @@ function isWE(y,m,d){return new Date(y,m,d).getDay()%6===0;}
 function isNS(key){return NO_SCH.has(key);}
 function isSchoolDay(y,m,d){return !isWE(y,m,d)&&!isNS(dk(y,m,d));}
 function updateLinks(){}
+function openParentSquare(e){
+  e.preventDefault();
+  // Try to open iOS app via URL scheme; fall back to website after 500ms
+  var opened=false;
+  var t=setTimeout(function(){if(!opened){window.open('https://parentsquare.com/','_blank');}},500);
+  try{
+    window.location.href='parentsquare://';
+    // If scheme launched, the page loses focus — clear timeout on blur
+    window.addEventListener('blur',function h(){opened=true;clearTimeout(t);window.removeEventListener('blur',h);});
+  }catch(_){clearTimeout(t);window.open('https://parentsquare.com/','_blank');}
+}
 function nextSchoolDay(){
   const d=new Date(); d.setDate(d.getDate()+1);
   for(let i=0;i<14;i++){if(isSchoolDay(d.getFullYear(),d.getMonth(),d.getDate()))return new Date(d);d.setDate(d.getDate()+1);}
@@ -1332,9 +1344,7 @@ async function parseMenuPhoto(file){
 function initMenuTextPanel(){
   const text=localStorage.getItem('sd-menu-text')||'';
   const ta=document.getElementById('menu-text-input');
-  const panel=document.getElementById('menu-text-panel');
   if(ta)ta.value=text;
-  if(panel)panel.style.display=text.trim()?'block':'none';
 }
 function mergeMenuText(existing,incoming){
   // Detect which months appear in the incoming text
@@ -1347,7 +1357,6 @@ function mergeMenuText(existing,incoming){
 function saveMenuText(text){
   if(text.trim())localStorage.setItem('sd-menu-text',text);
   else localStorage.removeItem('sd-menu-text');
-  document.getElementById('menu-text-panel').style.display=text.trim()?'block':'none';
   renderWeek();showParsedMenuBanner(text);
 }
 function copyMenuText(){
@@ -1361,10 +1370,16 @@ function copyMenuText(){
 function clearMenuText(){
   localStorage.removeItem('sd-menu-text');
   document.getElementById('menu-text-input').value='';
-  document.getElementById('menu-text-panel').style.display='none';
   document.getElementById('menu-parse-status').textContent='';
   const b=document.getElementById('menu-parsed-banner');if(b)b.remove();
   renderWeek();
+}
+function copyClaudePrompt(){
+  const prompt='Convert this school lunch menu into a plain list. Format each school day as:\nMonth DD: Item name\n\nExamples:\nMarch 24: Mozzarella Sticks\nMarch 25: Mac and Cheese\n\nRules:\n- One line per school day\n- Use the full month name (March, April, etc.)\n- Only include the main entree — skip sides, drinks, or headers\n- Skip weekends and holidays\n- Just the list, nothing else';
+  navigator.clipboard.writeText(prompt).then(()=>toast('Claude prompt copied — paste it in Claude with the menu PDF!',3000)).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=prompt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    toast('Claude prompt copied!',3000);
+  });
 }
 function getLunchForDate(d){
   const text=localStorage.getItem('sd-menu-text');
