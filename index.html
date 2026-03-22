@@ -141,7 +141,30 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .kid-special{font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
 .wddots{display:flex;justify-content:center;gap:3px;margin-top:6px;min-height:8px}
 .wddot{width:7px;height:7px;border-radius:50%;border:1.5px solid #9aaabf;background:transparent;flex-shrink:0}
+.wdplan{font-size:9px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;font-style:italic}
 .we-banner{background:#1B3A6B;color:#fff;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+/* School days toggles per kid */
+.sd-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.sd-btn{width:36px;height:36px;border-radius:8px;border:2px solid #b8c4d8;background:transparent;color:var(--text2);font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.sd-btn.active{border-color:#1B3A6B;background:#1B3A6B;color:#fff}
+/* Plans list in settings */
+.plan-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #b8c4d8}
+.plan-item:last-child{border-bottom:none}
+.plan-item-body{flex:1;min-width:0}
+.plan-item-name{font-size:13px;font-weight:700;color:var(--text)}
+.plan-item-meta{font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
+.plan-del-btn{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1;font-family:'Inter',sans-serif}
+/* Today plans banners */
+.plan-banner{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #b8c4d8;border-radius:var(--radius);padding:11px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.plan-banner-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.plan-banner-name{font-size:14px;font-weight:700;color:var(--text)}
+.plan-banner-meta{font-size:12px;color:var(--muted);font-weight:500;margin-top:1px}
+/* Plan day selector in sheet */
+.plan-day-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.plan-day-btn{width:38px;height:38px;border-radius:8px;border:2px solid #b8c4d8;background:transparent;color:var(--text2);font-size:11px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.plan-day-btn.active{border-color:#1B3A6B;background:#1B3A6B;color:#fff}
+/* Menu JSON import */
+.menu-import-ta{width:100%;height:100px;border:1.5px solid #b8c4d8;border-radius:10px;padding:10px 12px;font-size:12px;font-family:'DM Mono',monospace;color:var(--text2);resize:vertical;line-height:1.5;margin-top:8px}
 
 /* ── Pill bar ── */
 .pill-bar{display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none;margin-bottom:10px}
@@ -411,6 +434,9 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   </div>
 </div>
 
+<!-- Today's plans (activities/camp) -->
+<div id="today-plans-area"></div>
+
 <!-- Week strip — FIRST actionable element -->
 <div class="sh">
   <span class="sh-title">This Week</span>
@@ -584,6 +610,19 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <a class="ql" href="https://www.boxtops4education.com/bonusapp" target="_blank"><div class="ql-icon">📦</div><div><div class="ql-lbl">Free $</div><div class="ql-name">Box Tops App</div></div></a>
 </div>
 
+<!-- Menu JSON Import -->
+<div style="height:8px"></div>
+<div class="stg-section">
+  <div class="stg-title">Paste Lunch Menu</div>
+  <div class="stg-note">Take a photo of the lunch menu in Claude.ai and ask it to format the menu. Then paste the result here to fill your app for the month.</div>
+  <textarea class="menu-import-ta" id="menu-import-ta" placeholder='Paste Claude output here, e.g.:
+March 24: Chicken Nuggets
+March 25: Pizza
+March 26: Mac & Cheese'></textarea>
+  <button onclick="importMenuText()" class="save-btn" style="margin-top:10px">Import Menu</button>
+  <div id="menu-import-status" style="font-size:12px;color:var(--muted);text-align:center;margin-top:6px;min-height:16px"></div>
+</div>
+
 <!-- Bug reporter -->
 <div style="height:8px"></div>
 <div class="stg-section">
@@ -682,6 +721,42 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       <div class="add-row">
         <button class="add-btn-cancel" onclick="closeItemSheet()">Cancel</button>
         <button class="add-btn-save" onclick="saveItem()">Add Item</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Plan sheet -->
+<div class="add-overlay" id="plan-overlay" onclick="planOverlayClose(event)">
+  <div class="add-sheet">
+    <div class="add-sheet-handle"></div>
+    <div class="add-sheet-title" id="plan-sheet-title">Add Activity or Camp</div>
+    <div class="add-sheet-body">
+      <div class="add-field"><label>Name</label><input class="add-input" id="plan-name-input" placeholder="e.g. Soccer, Piano, Camp Birchwood" autocorrect="off" autocapitalize="words"></div>
+      <div class="add-field">
+        <label>Days of the week</label>
+        <div class="plan-day-row" id="plan-day-row">
+          <button class="plan-day-btn" data-day="1" onclick="togglePlanDayBtn(this)">M</button>
+          <button class="plan-day-btn" data-day="2" onclick="togglePlanDayBtn(this)">T</button>
+          <button class="plan-day-btn" data-day="3" onclick="togglePlanDayBtn(this)">W</button>
+          <button class="plan-day-btn" data-day="4" onclick="togglePlanDayBtn(this)">Th</button>
+          <button class="plan-day-btn" data-day="5" onclick="togglePlanDayBtn(this)">F</button>
+          <button class="plan-day-btn" data-day="6" onclick="togglePlanDayBtn(this)">Sa</button>
+          <button class="plan-day-btn" data-day="0" onclick="togglePlanDayBtn(this)">Su</button>
+        </div>
+      </div>
+      <div class="add-field"><label>Time (optional)</label><input class="add-input" id="plan-time-input" placeholder="e.g. 3:30 PM" autocorrect="off"></div>
+      <div class="add-field">
+        <label>Date range (optional — leave blank for ongoing)</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="add-input" id="plan-start-input" type="date" style="flex:1">
+          <span style="color:var(--muted);font-size:12px;flex-shrink:0">to</span>
+          <input class="add-input" id="plan-end-input" type="date" style="flex:1">
+        </div>
+      </div>
+      <div class="add-row">
+        <button class="add-btn-cancel" onclick="closePlanSheet()">Cancel</button>
+        <button class="add-btn-save" onclick="savePlan()">Save</button>
       </div>
     </div>
   </div>
@@ -787,6 +862,7 @@ setActivePill(curSchool);
 // Restore parsed menu banner if available
 const _savedMenuText=localStorage.getItem('sd-menu-text');
 if(_savedMenuText)showParsedMenuBanner(_savedMenuText);
+renderTodayPlans();
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
@@ -959,6 +1035,47 @@ function dress(t,cond,w){
 }
 
 // ════════════════════════
+//  KID SCHEDULE HELPERS
+// ════════════════════════
+function kidHasSchool(kidIdx,dateKey){
+  const kid=cfg.kids[kidIdx];
+  const dow=new Date(dateKey+'T12:00:00').getDay();
+  const sdays=kid.schoolDays??[1,2,3,4,5];
+  return sdays.includes(dow)&&!isNS(dateKey);
+}
+function getKidPlans(kidIdx,dateKey){
+  const kid=cfg.kids[kidIdx];
+  if(!kid.plans?.length)return[];
+  const dow=new Date(dateKey+'T12:00:00').getDay();
+  return kid.plans.filter(p=>{
+    if(p.days?.length&&!p.days.includes(dow))return false;
+    if(p.startDate&&dateKey<p.startDate)return false;
+    if(p.endDate&&dateKey>p.endDate)return false;
+    return true;
+  });
+}
+function renderTodayPlans(){
+  const tk=todayKey();
+  const area=document.getElementById('today-plans-area');
+  if(!area)return;
+  const banners=[];
+  cfg.kids.forEach((kid,ki)=>{
+    const plans=getKidPlans(ki,tk);
+    plans.forEach(p=>{
+      const endFmt=p.endDate?(' · through '+new Date(p.endDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})):'';
+      banners.push(`<div class="plan-banner">
+        <div class="plan-banner-av" style="background:${kid.color}22;color:${kid.color}">${kid.name[0].toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div class="plan-banner-name">${p.name}</div>
+          <div class="plan-banner-meta">${kid.name}${p.time?' · '+p.time:''}${endFmt}</div>
+        </div>
+      </div>`);
+    });
+  });
+  area.innerHTML=banners.length?`<div class="sh"><span class="sh-title">Today's Plans</span></div>${banners.join('')}`:'';
+}
+
+// ════════════════════════
 //  LETTER DAY
 // ════════════════════════
 function getLetterDay(dateKey){
@@ -1009,8 +1126,12 @@ function renderWeek(){
     const letter=(!noSch)?getLetterDay(key):null;
     const letterLine=letter?`<div class="wd-letter">Day ${letter}</div>`:'';
     const evLine=noSch?`<div class="wd-ns">No School</div>`:ev?`<div class="wd-evt">${ev.lbl}</div>`:'';
-    // Build per-kid rows: dot + special label (falls back to plain dots if no specials configured)
+    // Build per-kid rows: respect each kid's school days; show plan label on non-school days
     const kidRows=cfg.kids.map((kid,ki)=>{
+      const hasSchool=!noSch&&kidHasSchool(ki,key);
+      const dayPlans=getKidPlans(ki,key);
+      if(!hasSchool&&!dayPlans.length)return '';
+      if(!hasSchool)return `<div class="wdkr" style="color:${kid.color}"><span class="wdplan">${dayPlans[0].name.substring(0,7)}</span></div>`;
       const v=dv[ki];
       const bg=v==='yes'?kid.color:v==='no'?'#cc3333':'transparent';
       const bc=v?(v==='no'?'#cc3333':kid.color):'#9aaabf';
@@ -1249,17 +1370,22 @@ function renderChecklist(){
 
   cfg.kids.forEach((kid,kidIdx)=>{
     const items=kid.items||[];
-    if(!items.length)return;
+    const hasSchool=kidHasSchool(kidIdx,tk);
+    const dayPlans=getKidPlans(kidIdx,tk);
+    // Skip kid if no school today, no plans, and no items
+    if(!hasSchool&&!dayPlans.length)return;
+    if(!items.length&&!dayPlans.length)return;
     const kidChecks=todayChecks[kidIdx]||{};
     const doneCnt=items.filter((_,ii)=>kidChecks[ii]).length;
     totalItems+=items.length; totalDone+=doneCnt;
 
+    const planBadge=!hasSchool&&dayPlans.length?`<span style="font-size:11px;font-weight:600;color:${kid.color};margin-left:6px">📍 ${dayPlans[0].name}</span>`:'';
     const card=document.createElement('div');
     card.className='leave-kid-card';
     card.innerHTML=`
       <div class="leave-kid-hdr">
         <div class="leave-kid-av" style="background:${kid.color}22;color:${kid.color}">${kid.name[0].toUpperCase()}</div>
-        <div class="leave-kid-name">${kid.name}</div>
+        <div class="leave-kid-name">${kid.name}${planBadge}</div>
         <div class="leave-kid-count" id="kid-count-${kidIdx}">${doneCnt}/${items.length} ready</div>
       </div>
       ${items.map((item,ii)=>`
@@ -1381,6 +1507,12 @@ function renderSettings(){
             <button onclick="openItemSheet(${i})" style="margin-top:8px;background:none;border:1.5px dashed #9aaabf;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:600;color:#1f78b4;cursor:pointer;width:100%;font-family:'Inter',sans-serif">+ Add item</button>
           </div>
         </div>
+        <div class="fld"><div class="fld-lbl">School Days</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Which days does this kid attend school?</div>
+          <div class="sd-row" id="sd-${i}">${[['M',1],['T',2],['W',3],['Th',4],['F',5]].map(([lbl,day])=>`
+            <button class="sd-btn ${(k.schoolDays??[1,2,3,4,5]).includes(day)?'active':''}" data-day="${day}" onclick="this.classList.toggle('active')">${lbl}</button>`).join('')}
+          </div>
+        </div>
         <div class="fld"><div class="fld-lbl">Specials Schedule</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:4px">What subject on each letter day? (e.g. Gym, Art, Music, Library)</div>
           <div class="specials-grid">${['A','B','C','D','E','F'].map(l=>`
@@ -1389,6 +1521,20 @@ function renderSettings(){
               <input class="special-inp" id="sp-${i}-${l}" value="${k.specials?.[l]||''}" placeholder="—" autocorrect="off" autocapitalize="words" maxlength="12">
             </div>`).join('')}
           </div>
+        </div>
+        <div class="fld"><div class="fld-lbl">Activities &amp; Plans</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Soccer, piano, summer camp — any recurring or date-ranged plans</div>
+          <div id="plans-${i}">${(k.plans||[]).map(p=>`
+            <div class="plan-item">
+              <div style="width:10px;height:10px;border-radius:50%;background:${k.color};flex-shrink:0"></div>
+              <div class="plan-item-body">
+                <div class="plan-item-name">${p.name}</div>
+                <div class="plan-item-meta">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].filter((_,d)=>p.days.includes(d)).join(', ')}${p.time?' · '+p.time:''}${p.startDate?' · '+new Date(p.startDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}${p.endDate?' – '+new Date(p.endDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):''}</div>
+              </div>
+              <button class="plan-del-btn" onclick="deletePlan(${i},'${p.id}')">✕</button>
+            </div>`).join('')}
+          </div>
+          <button onclick="openAddPlan(${i})" style="margin-top:8px;background:none;border:1.5px dashed #9aaabf;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:600;color:#1f78b4;cursor:pointer;width:100%;font-family:'Inter',sans-serif">+ Add Activity or Camp</button>
         </div>
       </div>
     </div>`).join('');
@@ -1422,13 +1568,70 @@ function saveSettings(){
   cfg.kids=cfg.kids.map((k,i)=>{
     const specials={};
     ['A','B','C','D','E','F'].forEach(l=>{const v=document.getElementById(`sp-${i}-${l}`)?.value.trim();if(v)specials[l]=v;});
-    return {...k,name:(document.getElementById(`kn-${i}`)?.value.trim()||k.name),specials};
+    const schoolDays=[...document.querySelectorAll(`#sd-${i} .sd-btn.active`)].map(b=>parseInt(b.dataset.day));
+    return {...k,name:(document.getElementById(`kn-${i}`)?.value.trim()||k.name),specials,schoolDays:schoolDays.length?schoolDays:[1,2,3,4,5]};
   });
   save();renderWeek();renderCal();
   curSchool=cfg.mySchool;setActivePill(curSchool);updateMenuCard(curSchool);
   localStorage.setItem('sd-onboard-done','1');
   document.getElementById('onboard-banner').style.display='none';
   toast('Settings saved ✓');
+}
+// ════════════════════════
+//  PLANS CRUD
+// ════════════════════════
+let _planKidIdx=null,_planId=null;
+function openAddPlan(kidIdx){
+  _planKidIdx=kidIdx;_planId=null;
+  document.getElementById('plan-sheet-title').textContent='Add Activity or Camp';
+  document.getElementById('plan-name-input').value='';
+  document.getElementById('plan-time-input').value='';
+  document.getElementById('plan-start-input').value='';
+  document.getElementById('plan-end-input').value='';
+  document.querySelectorAll('.plan-day-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('plan-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('plan-name-input').focus(),100);
+}
+function closePlanSheet(){document.getElementById('plan-overlay').classList.remove('open');document.body.style.overflow='';}
+function planOverlayClose(e){if(e.target===document.getElementById('plan-overlay'))closePlanSheet();}
+function togglePlanDayBtn(btn){btn.classList.toggle('active');}
+function savePlan(){
+  const name=document.getElementById('plan-name-input').value.trim();
+  if(!name){toast('Enter a plan name');return;}
+  const days=[...document.querySelectorAll('.plan-day-btn.active')].map(b=>parseInt(b.dataset.day));
+  if(!days.length){toast('Pick at least one day');return;}
+  const time=document.getElementById('plan-time-input').value.trim();
+  const startDate=document.getElementById('plan-start-input').value||null;
+  const endDate=document.getElementById('plan-end-input').value||null;
+  const kid=cfg.kids[_planKidIdx];
+  if(!kid.plans)kid.plans=[];
+  if(_planId){
+    const p=kid.plans.find(p=>p.id===_planId);
+    if(p)Object.assign(p,{name,days,time,startDate,endDate});
+  } else {
+    kid.plans.push({id:uid(),name,days,time,startDate,endDate});
+  }
+  save();closePlanSheet();renderSettings();renderWeek();renderTodayPlans();
+  toast(`${name} saved ✓`);
+}
+function deletePlan(kidIdx,planId){
+  cfg.kids[kidIdx].plans=(cfg.kids[kidIdx].plans||[]).filter(p=>p.id!==planId);
+  save();renderSettings();renderWeek();renderTodayPlans();
+  toast('Plan removed');
+}
+// ════════════════════════
+//  MENU JSON IMPORT
+// ════════════════════════
+function importMenuText(){
+  const raw=document.getElementById('menu-import-ta').value.trim();
+  const statusEl=document.getElementById('menu-import-status');
+  if(!raw){statusEl.textContent='Paste menu text first';return;}
+  localStorage.setItem('sd-menu-text',raw);
+  showParsedMenuBanner(raw);
+  statusEl.innerHTML='<strong style="color:#1a9e5e">✓ Menu imported!</strong> Showing today\'s item on the Today tab.';
+  document.getElementById('menu-import-ta').value='';
+  toast('Menu imported ✓');
 }
 function renderLetterBtns(selected){
   const wrap=document.getElementById('letter-ref-btns');if(!wrap)return;
@@ -1520,7 +1723,7 @@ function downloadMorningReminder(){
 function generateBugReport(){
   const snap={app:'SchoolDay v4.1 — ORCSD',date:new Date().toLocaleString(),
     view:document.querySelector('.view.active')?.id||'?',mySchool:cfg.mySchool,
-    kids:cfg.kids.map(k=>k.name),voteDays:Object.keys(votes).length,taskCount:tasks.length,
+    kids:cfg.kids.map(k=>k.name),voteDays:Object.keys(votes).length,
     ua:navigator.userAgent.substring(0,150),
     issue:'[ DESCRIBE THE BUG HERE ]',steps:'[ What did you tap? ]',
     expected:'[ What should have happened? ]',actual:'[ What actually happened? ]'};
