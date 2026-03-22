@@ -464,7 +464,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <div class="menu-card-date" id="menu-card-date"></div>
   </div>
   <div class="menu-card-body">
-    <a class="menu-open-btn" id="menu-open-btn" href="#" target="_blank">
+    <a class="menu-open-btn" id="menu-open-btn" href="#" onclick="openMenuPdf(event)">
       <div class="mob-left">
         <span class="mob-icon">📋</span>
         <div>
@@ -706,6 +706,7 @@ March 26: Mac & Cheese'></textarea>
       <div class="modal-event" id="m-event"></div>
     </div>
     <div class="modal-instruct">Is each kid buying school lunch, or bringing from home?</div>
+    <div id="m-lunch-item" style="display:none;padding:10px 20px;background:#ccf0e0;font-size:13px;color:#0d5e30;font-weight:600;border-bottom:1px solid #b8c4d8"></div>
     <div id="m-kids"></div>
     <div class="modal-cal" id="m-cal">
       <div class="cal-reminder-title">🍎 Add "Pack Lunch" reminder — night before at 7 PM</div>
@@ -1152,7 +1153,8 @@ function renderWeek(){
     }).join('');
     const bottomRow=`<div class="wd-kid-rows">${kidRows}</div>`;
     const lunchItem=noSch?null:getLunchForDate(d);
-    const lunchLine=lunchItem?`<div class="wd-lunch">${lunchItem}</div>`:'';
+    const lunchTxt=lunchItem?(lunchItem.length>13?lunchItem.slice(0,12)+'…':lunchItem):null;
+    const lunchLine=lunchTxt?`<div class="wd-lunch">${lunchTxt}</div>`:'';
     const el=document.createElement('div');el.className=cls;
     el.innerHTML=`<div class="wdn">${SD[d.getDay()]}</div><div class="wdd">${d.getDate()}</div>${letterLine}${evLine}${lunchLine}${bottomRow}`;
     if(noSch)el.addEventListener('click',()=>toast(`🏫 ${ev?ev.lbl:'No school'}`,2000));
@@ -1203,6 +1205,9 @@ function openModal(y,m,d){
   document.getElementById('m-title').textContent=`${LD[dt.getDay()]}, ${FM[m]} ${d}`;
   const ev=EVENTS[key];
   document.getElementById('m-event').textContent=(!ev||ev.ns)?'':('📅 '+ev.lbl);
+  const lunch=getLunchForDate(dt);
+  const li=document.getElementById('m-lunch-item');
+  if(lunch){li.textContent=`🍽️ ${lunch}`;li.style.display='';}else{li.style.display='none';}
   renderKidRows();updateSaveBtn();
   document.getElementById('m-cal').classList.remove('show');
   document.getElementById('cal-links').innerHTML='';
@@ -1359,6 +1364,11 @@ function setSchool(btn,school){
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');curSchool=school;updateMenuCard(school);
 }
+let _currentPdfUrl='';
+function openMenuPdf(e){
+  e.preventDefault();
+  if(_currentPdfUrl)window.open(_currentPdfUrl,'_blank','noopener');
+}
 function updateMenuCard(school){
   const target=menuTargetDate();
   const today=new Date();today.setHours(0,0,0,0);target.setHours(0,0,0,0);
@@ -1367,7 +1377,8 @@ function updateMenuCard(school){
   document.getElementById('menu-card-school').textContent=SNAMES[school];
   document.getElementById('menu-card-title').textContent=`${mo} ${yr} Menu`;
   document.getElementById('menu-card-date').textContent=isAhead?`Showing ${LD[target.getDay()]}, ${mo} ${target.getDate()} — next school day`:'';
-  document.getElementById('menu-open-btn').href=getPdf(school,target);
+  _currentPdfUrl=getPdf(school,target);
+  document.getElementById('menu-open-btn').href=_currentPdfUrl;
   updateMenuSectionLabel();updateLinks();
 }
 
@@ -1655,10 +1666,10 @@ function importMenuText(){
   toast('Menu imported ✓');
 }
 function buildMenuPrompt(){
-  const pdfUrl=document.getElementById('menu-open-btn')?.href||'';
+  const pdfUrl=_currentPdfUrl||'';
   const target=menuTargetDate();
   const mo=FM[target.getMonth()],yr=target.getFullYear();
-  const pdfLine=pdfUrl&&pdfUrl!=='#'&&pdfUrl!==location.href?`\nMenu PDF: ${pdfUrl}\n`:'';
+  const pdfLine=pdfUrl?`\nMenu PDF: ${pdfUrl}\n`:'';
   return `Please format this school cafeteria lunch menu for ${mo} ${yr}.${pdfLine}\nList each school day and its main lunch item, one per line:\n${mo} 24: Chicken Nuggets\n${mo} 25: Pizza\n\nOnly output the list — no headers, no extra text. Use full month name and day number.`;
 }
 async function copyAndOpenClaude(){
