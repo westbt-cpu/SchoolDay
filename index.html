@@ -1315,8 +1315,9 @@ async function parseMenuPhoto(file){
     const text=data.content?.[0]?.text?.trim()||'';
     if(text){
       statusEl.innerHTML='<strong style="color:#1a9e5e">✓ Menu read!</strong> Scroll up to see it.';
-      localStorage.setItem('sd-menu-text',text);
-      initMenuTextPanel();showParsedMenuBanner(text);
+      const merged=mergeMenuText(localStorage.getItem('sd-menu-text')||'',text);
+      localStorage.setItem('sd-menu-text',merged);
+      initMenuTextPanel();showParsedMenuBanner(merged);
     } else {
       statusEl.textContent='⚠️ Could not read menu — try a clearer photo.';
     }
@@ -1330,6 +1331,14 @@ function initMenuTextPanel(){
   const panel=document.getElementById('menu-text-panel');
   if(ta)ta.value=text;
   if(panel)panel.style.display=text.trim()?'block':'none';
+}
+function mergeMenuText(existing,incoming){
+  // Detect which months appear in the incoming text
+  const newMonths=new Set();
+  incoming.split('\n').forEach(l=>{const m=l.trim().match(/^([A-Za-z]+)/);if(m)newMonths.add(m[1].toLowerCase());});
+  // Keep existing lines whose month is NOT being replaced
+  const kept=existing.split('\n').filter(l=>{const m=l.trim().match(/^([A-Za-z]+)/);return m&&!newMonths.has(m[1].toLowerCase());});
+  return [...kept,...incoming.split('\n').filter(l=>l.trim())].join('\n');
 }
 function saveMenuText(text){
   if(text.trim())localStorage.setItem('sd-menu-text',text);
