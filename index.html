@@ -122,9 +122,11 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .today .wdn{color:rgba(255,255,255,.6)}
 .wdd{font-size:20px;font-weight:900;line-height:1;color:#0c1a30}
 .today .wdd{color:#e8b040}
-.wd-evt{font-size:8px;color:#5a4fbf;font-weight:600;margin-top:3px;line-height:1.2;overflow:hidden;max-height:14px}
-.today .wd-evt{color:rgba(255,255,255,.65)}
-.wd-ns{font-size:8px;color:#cc3333;font-weight:700;margin-top:3px}
+.wd-evt{font-size:9px;color:#fff;font-weight:700;margin-top:4px;background:#5a4fbf;border-radius:4px;padding:1px 5px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:96%}
+.today .wd-evt{background:rgba(255,255,255,.22);color:#fff}
+.wd-ns{font-size:8px;color:#cc3333;font-weight:700;margin-top:4px}
+.wd-letter{font-size:10px;font-weight:800;color:#1B3A6B;margin-top:3px;letter-spacing:.02em}
+.today .wd-letter{color:#e8b040}
 .wddots{display:flex;justify-content:center;gap:3px;margin-top:6px;min-height:8px}
 .wddot{width:7px;height:7px;border-radius:50%;border:1.5px solid #9aaabf;background:transparent;flex-shrink:0}
 .we-banner{background:#1B3A6B;color:#fff;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
@@ -150,6 +152,12 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .mob-label{font-size:15px;font-weight:800}
 .mob-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;font-weight:500}
 .mob-arrow{font-size:18px;opacity:.6}
+.menu-photo-btn{width:100%;margin-top:10px;padding:10px;border:2px dashed #b8c4d8;border-radius:10px;background:none;color:#485e7a;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .15s,color .15s}
+.menu-photo-btn:active{border-color:#1B3A6B;color:#1B3A6B}
+.menu-photo-wrap{margin-top:10px;position:relative}
+.menu-photo-img{width:100%;border-radius:10px;display:block;max-height:320px;object-fit:contain;background:#0c1a30}
+.menu-photo-clear{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.55);border:none;color:#fff;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif}
+.menu-parse-status{font-size:12px;color:var(--muted);text-align:center;margin-top:6px;min-height:16px;font-weight:500}
 
 /* ── Links grid ── */
 .ql-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
@@ -424,6 +432,13 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       </div>
       <span class="mob-arrow">↗</span>
     </a>
+    <input type="file" id="menu-photo-input" accept="image/*" style="display:none" onchange="handleMenuPhoto(this.files[0])">
+    <button class="menu-photo-btn" onclick="document.getElementById('menu-photo-input').click()">📸 Add menu photo</button>
+    <div class="menu-photo-wrap" id="menu-photo-wrap" style="display:none">
+      <img class="menu-photo-img" id="menu-photo-img" src="" alt="Lunch menu photo">
+      <button class="menu-photo-clear" onclick="clearMenuPhoto()">✕</button>
+    </div>
+    <div class="menu-parse-status" id="menu-parse-status"></div>
   </div>
 </div>
 
@@ -476,6 +491,27 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 </div>
 
 <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+
+<!-- Letter Day Schedule -->
+<div style="height:16px"></div>
+<div class="stg-section">
+  <div class="stg-title">Letter Day Schedule</div>
+  <div class="stg-note">Shows Day A–F in the week strip. Pick any date you know and its letter.</div>
+  <div class="fld"><div class="fld-lbl">Reference Date</div><input class="stg-input" id="letter-ref-date" type="date"></div>
+  <div class="fld"><div class="fld-lbl">Letter on that date</div>
+    <div style="display:flex;gap:8px;margin-top:6px" id="letter-ref-btns"></div>
+  </div>
+  <button onclick="saveLetterRef()" class="save-btn" style="margin-top:12px;background:#5a4fbf;box-shadow:0 4px 16px rgba(90,79,191,.3)">Save Letter Schedule</button>
+</div>
+
+<!-- Menu AI -->
+<div style="height:8px"></div>
+<div class="stg-section">
+  <div class="stg-title">Menu AI (Optional)</div>
+  <div class="stg-note">Enter a Claude API key to auto-parse menu photos into text. Stored on your device only.</div>
+  <div class="fld"><div class="fld-lbl">Claude API Key</div><input class="stg-input" id="claude-key-input" type="password" placeholder="sk-ant-…" autocorrect="off" spellcheck="false"></div>
+  <button onclick="saveClaudeKey()" class="save-btn" style="margin-top:12px">Save API Key</button>
+</div>
 
 <!-- Morning Reminder -->
 <div style="height:24px"></div>
@@ -675,7 +711,9 @@ const SNAMES={mw:'Mast Way & Moharimet',ms:'Middle School',hs:'High School'};
 // ════════════════════════
 let cfg={
   kids:[{name:'Kid 1',color:'#2dbe7a',items:['Backpack','Homework','Lunch']},{name:'Kid 2',color:'#C8962A',items:['Backpack','Library book']}],
-  mySchool:'mw'
+  mySchool:'mw',
+  letterRef:{refDate:'2025-09-02',refLetter:'A'},
+  claudeKey:''
 };
 let votes={};
 let checks={}; // { 'YYYY-MM-DD': { kidIdx: { itemIdx: true } } }
@@ -734,6 +772,9 @@ renderSettings();
 updateLinks();
 updateMenuCard(curSchool);
 setActivePill(curSchool);
+// Restore parsed menu banner if available
+const _savedMenuText=localStorage.getItem('sd-menu-text');
+if(_savedMenuText)showParsedMenuBanner(_savedMenuText);
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
@@ -906,6 +947,28 @@ function dress(t,cond,w){
 }
 
 // ════════════════════════
+//  LETTER DAY
+// ════════════════════════
+function getLetterDay(dateKey){
+  const lr=cfg.letterRef;
+  if(!lr||!lr.refDate||!lr.refLetter)return null;
+  const letters=['A','B','C','D','E','F'];
+  const startIdx=letters.indexOf(lr.refLetter);
+  if(startIdx<0)return null;
+  const ref=new Date(lr.refDate+'T12:00:00');
+  const target=new Date(dateKey+'T12:00:00');
+  if(target<ref)return null;
+  // Count school days from refDate up to (not including) dateKey
+  let count=0;
+  const cur=new Date(ref);
+  while(cur.toISOString().slice(0,10)<dateKey){
+    cur.setDate(cur.getDate()+1);
+    if(isSchoolDay(cur.getFullYear(),cur.getMonth(),cur.getDate()))count++;
+  }
+  return letters[(startIdx+count)%6];
+}
+
+// ════════════════════════
 //  WEEK STRIP
 // ════════════════════════
 function getDisplayMonday(){
@@ -937,9 +1000,11 @@ function renderWeek(){
       return `<div class="wddot" style="background:${bg};border-color:${bc}"></div>`;
     }).join('');
     let cls='wd';if(isToday)cls+=' today';if(noSch)cls+=' no-school';if(isPast)cls+=' past';
+    const letter=(!noSch)?getLetterDay(key):null;
+    const letterLine=letter?`<div class="wd-letter">Day ${letter}</div>`:'';
     const evLine=noSch?`<div class="wd-ns">No School</div>`:ev?`<div class="wd-evt">${ev.lbl}</div>`:'';
     const el=document.createElement('div');el.className=cls;
-    el.innerHTML=`<div class="wdn">${SD[d.getDay()]}</div><div class="wdd">${d.getDate()}</div>${evLine}<div class="wddots">${dots}</div>`;
+    el.innerHTML=`<div class="wdn">${SD[d.getDay()]}</div><div class="wdd">${d.getDate()}</div>${letterLine}${evLine}<div class="wddots">${dots}</div>`;
     if(noSch)el.addEventListener('click',()=>toast(`🏫 ${ev?ev.lbl:'No school'}`,2000));
     else el.addEventListener('click',()=>openModal(d.getFullYear(),d.getMonth(),d.getDate()));
     strip.appendChild(el);
@@ -1051,6 +1116,82 @@ function saveVotes(){
     toast('Saved! Tap to add calendar reminder.',3500);
   } else {toast('Saved! ✓');closeModal();}
   renderWeek();renderCal();
+}
+
+// ════════════════════════
+//  MENU PHOTO
+// ════════════════════════
+let menuPhotoObjectUrl=null;
+function handleMenuPhoto(file){
+  if(!file)return;
+  if(menuPhotoObjectUrl)URL.revokeObjectURL(menuPhotoObjectUrl);
+  menuPhotoObjectUrl=URL.createObjectURL(file);
+  const img=document.getElementById('menu-photo-img');
+  img.src=menuPhotoObjectUrl;
+  document.getElementById('menu-photo-wrap').style.display='block';
+  document.getElementById('menu-parse-status').textContent='';
+  if(cfg.claudeKey)parseMenuPhoto(file);
+  else document.getElementById('menu-parse-status').textContent='Add a Claude API key in Settings to auto-read the menu.';
+}
+function clearMenuPhoto(){
+  if(menuPhotoObjectUrl){URL.revokeObjectURL(menuPhotoObjectUrl);menuPhotoObjectUrl=null;}
+  document.getElementById('menu-photo-img').src='';
+  document.getElementById('menu-photo-wrap').style.display='none';
+  document.getElementById('menu-parse-status').textContent='';
+  document.getElementById('menu-photo-input').value='';
+}
+async function parseMenuPhoto(file){
+  const statusEl=document.getElementById('menu-parse-status');
+  statusEl.textContent='⏳ Reading menu…';
+  try{
+    const b64=await new Promise((res,rej)=>{
+      const r=new FileReader();
+      r.onload=e=>res(e.target.result.split(',')[1]);
+      r.onerror=rej;
+      r.readAsDataURL(file);
+    });
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'x-api-key':cfg.claudeKey,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-allow-browser':'true'},
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',max_tokens:1024,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:file.type,data:b64}},
+          {type:'text',text:'This is a school cafeteria lunch menu. List each school day and its main lunch item in the format "Month DD: item name", one per line. Only output the list, no other text.'}
+        ]}]
+      })
+    });
+    if(!resp.ok)throw new Error('API '+resp.status);
+    const data=await resp.json();
+    const text=data.content?.[0]?.text?.trim()||'';
+    if(text){
+      statusEl.innerHTML='<strong style="color:#1a9e5e">✓ Menu read!</strong> Scroll up to see it.';
+      localStorage.setItem('sd-menu-text',text);
+      showParsedMenuBanner(text);
+    } else {
+      statusEl.textContent='⚠️ Could not read menu — try a clearer photo.';
+    }
+  }catch(e){
+    statusEl.textContent='⚠️ Parse failed: '+(e.message||'unknown error');
+  }
+}
+function showParsedMenuBanner(text){
+  // Find today's (or next school day's) entry in the parsed text
+  const target=menuTargetDate();
+  const mo=FM[target.getMonth()].slice(0,3);
+  const dayNum=target.getDate();
+  const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
+  const match=lines.find(l=>l.toLowerCase().includes(mo.toLowerCase())&&l.includes(String(dayNum)));
+  const existing=document.getElementById('menu-parsed-banner');
+  if(existing)existing.remove();
+  if(match){
+    const item=match.replace(/^[^:]+:\s*/,'');
+    const banner=document.createElement('div');
+    banner.id='menu-parsed-banner';
+    banner.style.cssText='margin-top:8px;background:#ccf0e0;border-radius:8px;padding:9px 12px;font-size:13px;color:#0d5e30;font-weight:600;line-height:1.45';
+    banner.innerHTML=`🍽️ <strong>Today's special:</strong> ${item}`;
+    document.getElementById('menu-parse-status').insertAdjacentElement('afterend',banner);
+  }
 }
 
 // ════════════════════════
@@ -1227,6 +1368,13 @@ function renderSettings(){
     </div>`).join('');
   document.getElementById('add-btn').style.display=cfg.kids.length>=3?'none':'';
   document.getElementById('add-btn').textContent=cfg.kids.length===0?'+ Add First Kid':'+ Add Another Kid';
+  // Letter day fields
+  const lr=cfg.letterRef||{refDate:'2025-09-02',refLetter:'A'};
+  _selectedLetter=lr.refLetter||'A';
+  document.getElementById('letter-ref-date').value=lr.refDate||'2025-09-02';
+  renderLetterBtns(_selectedLetter);
+  // API key field
+  document.getElementById('claude-key-input').value=cfg.claudeKey||'';
 }
 function removeItemAt(kidIdx,itemIdx){
   cfg.kids[kidIdx].items.splice(itemIdx,1);
@@ -1251,6 +1399,33 @@ function saveSettings(){
   localStorage.setItem('sd-onboard-done','1');
   document.getElementById('onboard-banner').style.display='none';
   toast('Settings saved ✓');
+}
+function renderLetterBtns(selected){
+  const wrap=document.getElementById('letter-ref-btns');if(!wrap)return;
+  wrap.innerHTML=['A','B','C','D','E','F'].map(l=>`
+    <button onclick="pickLetter('${l}',this)" style="width:36px;height:36px;border-radius:8px;border:2px solid ${l===selected?'#5a4fbf':'#b8c4d8'};background:${l===selected?'#5a4fbf':'transparent'};color:${l===selected?'#fff':'var(--text2)'};font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0">${l}</button>`).join('');
+}
+let _selectedLetter='A';
+function pickLetter(l,btn){
+  _selectedLetter=l;
+  btn.closest('#letter-ref-btns').querySelectorAll('button').forEach(b=>{
+    const active=b.textContent.trim()===l;
+    b.style.borderColor=active?'#5a4fbf':'#b8c4d8';
+    b.style.background=active?'#5a4fbf':'transparent';
+    b.style.color=active?'#fff':'var(--text2)';
+  });
+}
+function saveLetterRef(){
+  const d=document.getElementById('letter-ref-date').value;
+  if(!d){toast('Pick a reference date first');return;}
+  cfg.letterRef={refDate:d,refLetter:_selectedLetter};
+  save();renderWeek();
+  toast(`Day ${_selectedLetter} on ${d} saved ✓`);
+}
+function saveClaudeKey(){
+  cfg.claudeKey=document.getElementById('claude-key-input').value.trim();
+  save();
+  toast(cfg.claudeKey?'API key saved ✓':'API key cleared');
 }
 
 // ════════════════════════
