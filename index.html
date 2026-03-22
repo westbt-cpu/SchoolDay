@@ -458,7 +458,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <div class="menu-card-date" id="menu-card-date"></div>
   </div>
   <div class="menu-card-body">
-    <a class="menu-open-btn" id="menu-open-btn" href="#" onclick="openMenuPdf(event)">
+    <a class="menu-open-btn" id="menu-open-btn" href="https://www.orcsd.org/departments/child-nutrition/breakfast-lunch-menus" target="_blank" rel="noopener">
       <div class="mob-left">
         <span class="mob-icon">📋</span>
         <div>
@@ -855,9 +855,6 @@ function todayKey(){const t=new Date();return dk(t.getFullYear(),t.getMonth(),t.
 function isWE(y,m,d){return new Date(y,m,d).getDay()%6===0;}
 function isNS(key){return NO_SCH.has(key);}
 function isSchoolDay(y,m,d){return !isWE(y,m,d)&&!isNS(dk(y,m,d));}
-function getPdf(){
-  return 'https://www.orcsd.org/departments/child-nutrition/breakfast-lunch-menus';
-}
 function updateLinks(){}
 function nextSchoolDay(){
   const d=new Date(); d.setDate(d.getDate()+1);
@@ -1294,12 +1291,6 @@ function setSchool(btn,school){
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');curSchool=school;updateMenuCard(school);
 }
-let _currentPdfUrl='';
-function openMenuPdf(e){
-  e.preventDefault();
-  if(_currentPdfUrl)window.open(_currentPdfUrl,'_blank','noopener');
-  else toast('Menu PDF not available yet',2500);
-}
 function updateMenuCard(school){
   const target=menuTargetDate();
   const today=new Date();today.setHours(0,0,0,0);target.setHours(0,0,0,0);
@@ -1308,8 +1299,6 @@ function updateMenuCard(school){
   document.getElementById('menu-card-school').textContent=SNAMES[school];
   document.getElementById('menu-card-title').textContent=`${mo} ${yr} Menu`;
   document.getElementById('menu-card-date').textContent=isAhead?`Showing ${LD[target.getDay()]}, ${mo} ${target.getDate()} — next school day`:'';
-  _currentPdfUrl=getPdf();
-  document.getElementById('menu-open-btn').href=_currentPdfUrl;
   updateMenuSectionLabel();updateLinks();
 }
 
