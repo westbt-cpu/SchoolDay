@@ -248,7 +248,9 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .cal-ev{font-size:7.5px;font-weight:600;color:#5a4fbf;line-height:1.2;max-height:18px;overflow:hidden}
 .today .cal-ev{color:rgba(255,255,255,.7)}
 .ns .cal-ev{color:#cc3333;font-size:7px}
-.cal-dots{display:flex;justify-content:center;gap:3px;margin-top:auto;padding-top:4px}
+.cal-dots{display:flex;justify-content:center;gap:4px;margin-top:auto;padding-top:4px}
+.cdot-kid{display:inline-flex;align-items:center;gap:1px}
+.cdot-init{font-size:7px;font-weight:800;line-height:1}
 .cdot{width:8px;height:8px;border-radius:50%;border:1.5px solid #9aaabf;background:transparent;flex-shrink:0}
 .cdot.no{background:#cc3333!important;border-color:#cc3333!important}
 
@@ -1119,12 +1121,13 @@ function buildDayCell(d,tk,isWknd){
     const hasSchool=!noSch&&kidHasSchool(ki,key);
     const dayPlans=getKidPlans(ki,key);
     if(!hasSchool&&!dayPlans.length)return '';
-    if(!hasSchool)return `<div class="wdkr" style="color:${kid.color}"><span class="wdplan">${dayPlans[0].name.substring(0,7)}</span></div>`;
+    if(!hasSchool)return `<div class="wdkr" style="color:${kid.color}"><span class="wdplan">${kid.name} · ${dayPlans[0].name}</span></div>`;
     const v=dv[ki];
     const bg=v==='yes'?kid.color:v==='no'?'#cc3333':'transparent';
     const bc=v?(v==='no'?'#cc3333':kid.color):'#9aaabf';
     const sp=letter?(kid.specials?.[letter]||''):'';
-    return `<div class="wdkr" style="color:${kid.color}"><div class="wddot" style="background:${bg};border-color:${bc}"></div>${sp?`<span class="wdsp">${sp}</span>`:''}</div>`;
+    const detail=sp||(v==='yes'?'Pack':v==='no'?'Buy':'');
+    return `<div class="wdkr" style="color:${kid.color}"><div class="wddot" style="background:${bg};border-color:${bc}"></div><span class="wdsp">${kid.name}${detail?' · '+detail:''}</span></div>`;
   }).join('');
   const lunchItem=noSch?null:getLunchForDate(d);
   const lunchTxt=lunchItem?(lunchItem.length>13?lunchItem.slice(0,12)+'…':lunchItem):null;
@@ -1165,7 +1168,8 @@ function renderWeek(){
     const bg=v==='yes'?kid.color:v==='no'?'#cc3333':'transparent';
     const bc=v?(v==='no'?'#cc3333':kid.color):'rgba(255,255,255,.3)';
     const sp=dvLetter?(kid.specials?.[dvLetter]||''):'';
-    return `<div class="dvc-kid" style="color:${kid.color}"><div class="wddot" style="background:${bg};border-color:${bc}"></div><span class="dvc-sp">${sp||kid.name}</span></div>`;
+    const detail=sp||(v==='yes'?'Pack':v==='no'?'Buy':'');
+    return `<div class="dvc-kid" style="color:${kid.color}"><div class="wddot" style="background:${bg};border-color:${bc}"></div><span class="dvc-sp">${kid.name}${detail?' · '+detail:''}</span></div>`;
   }).filter(r=>r).join('');
   const dvLunch=dvNoSch?null:getLunchForDate(dvDate);
   const dvc=document.createElement('div');
@@ -1205,11 +1209,11 @@ function renderCal(){
     const key=dk(sY,sM,day),we=isWE(sY,sM,day),ns=isNS(key);
     const isT=key===tk,past=new Date(sY,sM,day)<tod,ev=EVENTS[key],dv=votes[key]||{};
     let cls='cal-cell';if(we)cls+=' we';else if(ns)cls+=' ns';if(isT)cls+=' today';if(past)cls+=' past';
-    const dots=(!we&&!ns)?cfg.kids.map((_,i)=>{
+    const dots=(!we&&!ns)?cfg.kids.map((kid,i)=>{
       const v=dv[i];
-      const bg=v==='yes'?cfg.kids[i].color:v==='no'?'#cc3333':'transparent';
-      const bc=v?(v==='no'?'#cc3333':cfg.kids[i].color):'#9aaabf';
-      return `<div class="cdot ${v||''}" style="background:${bg};border-color:${bc}"></div>`;
+      const bg=v==='yes'?kid.color:v==='no'?'#cc3333':'transparent';
+      const bc=v?(v==='no'?'#cc3333':kid.color):'#9aaabf';
+      return `<div class="cdot-kid"><span class="cdot-init" style="color:${kid.color}">${(kid.name||'?')[0]}</span><div class="cdot ${v||''}" style="background:${bg};border-color:${bc}"></div></div>`;
     }).join(''):'';
     const evH=ev?`<div class="cal-ev">${ns?ev.lbl.replace(' Break','').replace(' Day',''):ev.lbl}</div>`:'';
     const cell=document.createElement('div');cell.className=cls;
