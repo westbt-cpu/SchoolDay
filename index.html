@@ -261,7 +261,10 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .modal-handle{width:36px;height:4px;background:#b8c4d8;border-radius:2px;margin:14px auto 0}
 .modal-hdr{background:#0f2244;background:linear-gradient(135deg,#091830,#1B3A6B);padding:16px 20px 18px;color:#fff}
 .modal-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#e8b040;margin-bottom:3px}
-.modal-dtitle{font-size:20px;font-weight:800}
+.modal-nav{display:flex;align-items:center;gap:2px}
+.mnav-btn{background:none;border:none;color:#fff;font-size:28px;cursor:pointer;padding:0 8px;line-height:1;opacity:.5;flex-shrink:0;font-family:'Inter',sans-serif}
+.mnav-btn:active{opacity:1}
+.modal-dtitle{font-size:20px;font-weight:800;flex:1}
 .modal-event{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;font-weight:500}
 .modal-instruct{padding:10px 20px;background:#f0f4fa;border-bottom:1px solid #b8c4d8;font-size:12px;color:#485e7a;font-weight:500;line-height:1.5}
 .kid-row{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid #b8c4d8}
@@ -697,7 +700,11 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <div class="modal-handle"></div>
     <div class="modal-hdr">
       <div class="modal-eyebrow">Lunch Plans</div>
-      <div class="modal-dtitle" id="m-title"></div>
+      <div class="modal-nav">
+        <button class="mnav-btn" onclick="navigateModal(-1)">‹</button>
+        <div class="modal-dtitle" id="m-title"></div>
+        <button class="mnav-btn" onclick="navigateModal(1)">›</button>
+      </div>
       <div class="modal-event" id="m-event"></div>
     </div>
     <div class="modal-instruct">Is each kid buying school lunch, or bringing from home?</div>
@@ -1266,6 +1273,17 @@ function vote(i,choice){
   row.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('active'));
   row.querySelector('.'+choice).classList.add('active');
   updateSaveBtn();
+}
+function navigateModal(delta){
+  if(!mSt)return;
+  votes[mSt.key]={...mSt.p};save();renderWeek();renderCal();
+  const dt=new Date(mSt.y,mSt.m,mSt.d);
+  for(let i=0;i<14;i++){
+    dt.setDate(dt.getDate()+delta);
+    const dow=dt.getDay();
+    if(dow!==0&&dow!==6&&!isNS(dk(dt.getFullYear(),dt.getMonth(),dt.getDate())))break;
+  }
+  openModal(dt.getFullYear(),dt.getMonth(),dt.getDate());
 }
 function closeModal(){document.getElementById('day-overlay').classList.remove('open');document.body.style.overflow='';mSt=null;}
 function overlayClose(e){if(e.target===document.getElementById('day-overlay'))closeModal();}
