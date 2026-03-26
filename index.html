@@ -556,7 +556,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <button class="add-btn" id="add-btn" onclick="addKid()">+ Add Another Kid</button>
 </div>
 
-<button class="save-btn" onclick="saveSettings()">Save Settings</button>
 
 <!-- Letter Day Schedule -->
 <div style="height:16px"></div>
@@ -797,9 +796,9 @@ const EVENTS={
   '2026-03-07':{lbl:'PTO Skate',ns:false},
   '2026-03-13':{lbl:'Teacher Day',ns:true},
   '2026-03-18':{lbl:'Board Meeting',ns:false},'2026-03-19':{lbl:'Music Concert',ns:false},
-  '2026-04-20':{lbl:'Spring Break',ns:true},'2026-04-21':{lbl:'Spring Break',ns:true},
-  '2026-04-22':{lbl:'Spring Break',ns:true},'2026-04-23':{lbl:'Spring Break',ns:true},
-  '2026-04-24':{lbl:'Spring Break',ns:true},
+  '2026-04-27':{lbl:'Spring Break',ns:true},'2026-04-28':{lbl:'Spring Break',ns:true},
+  '2026-04-29':{lbl:'Spring Break',ns:true},'2026-04-30':{lbl:'Spring Break',ns:true},
+  '2026-05-01':{lbl:'Spring Break',ns:true},
   '2026-05-25':{lbl:'Memorial Day',ns:true},
   '2026-06-19':{lbl:'Juneteenth',ns:true},
 };
@@ -1588,7 +1587,7 @@ function renderSettings(){
         ${cfg.kids.length>1?`<button class="rem-btn" onclick="removeKid(${i})">Remove</button>`:''}
       </div>
       <div class="kid-stg-body">
-        <div class="fld"><div class="fld-lbl">Name</div><input class="stg-input" id="kn-${i}" value="${k.name}" placeholder="e.g. Emma" autocorrect="off" autocapitalize="words"></div>
+        <div class="fld"><div class="fld-lbl">Name</div><input class="stg-input" id="kn-${i}" value="${k.name}" placeholder="e.g. Emma" autocorrect="off" autocapitalize="words" oninput="saveSettings()"></div>
         <div class="fld"><div class="fld-lbl">Color</div><div class="swatches">${COLORS.map(c=>`<button class="swatch ${k.color===c?'sel':''}" style="background:${c}" onclick="pickColor(${i},'${c}',this)"></button>`).join('')}</div></div>
         <div class="fld"><div class="fld-lbl">Checklist Items</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Items on the Leave House checklist for this kid</div>
@@ -1603,7 +1602,7 @@ function renderSettings(){
         <div class="fld"><div class="fld-lbl">School Days</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Which days does this kid attend school?</div>
           <div class="sd-row" id="sd-${i}">${[['M',1],['T',2],['W',3],['Th',4],['F',5]].map(([lbl,day])=>`
-            <button class="sd-btn ${(k.schoolDays??[1,2,3,4,5]).includes(day)?'active':''}" data-day="${day}" onclick="this.classList.toggle('active')">${lbl}</button>`).join('')}
+            <button class="sd-btn ${(k.schoolDays??[1,2,3,4,5]).includes(day)?'active':''}" data-day="${day}" onclick="this.classList.toggle('active');saveSettings()">${lbl}</button>`).join('')}
           </div>
         </div>
         <div class="fld"><div class="fld-lbl">Specials Schedule</div>
@@ -1611,7 +1610,7 @@ function renderSettings(){
           <div class="specials-grid">${['A','B','C','D'].map(l=>`
             <div class="special-inp-wrap">
               <div class="special-lbl">Day ${l}</div>
-              <input class="special-inp" id="sp-${i}-${l}" value="${k.specials?.[l]||''}" placeholder="—" autocorrect="off" autocapitalize="words" maxlength="12">
+              <input class="special-inp" id="sp-${i}-${l}" value="${k.specials?.[l]||''}" placeholder="—" autocorrect="off" autocapitalize="words" maxlength="12" oninput="saveSettings()">
             </div>`).join('')}
           </div>
         </div>
@@ -1649,14 +1648,16 @@ function selectMySchool(school,btn){
   cfg.mySchool=school;
   document.querySelectorAll('.school-sel-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  saveSettings();
 }
 function pickColor(i,c,btn){
   cfg.kids[i].color=c;
   btn.closest('.swatches').querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));btn.classList.add('sel');
   const av=btn.closest('.kid-stg-card').querySelector('.kid-stg-av');av.style.background=c+'33';av.style.color=c;
+  saveSettings();
 }
 function addKid(){if(cfg.kids.length>=3)return;cfg.kids.push({name:'',color:COLORS[cfg.kids.length],items:['Backpack']});renderSettings();}
-function removeKid(i){cfg.kids.splice(i,1);renderSettings();}
+function removeKid(i){cfg.kids.splice(i,1);save();renderSettings();renderWeek();renderCal();}
 function saveSettings(){
   cfg.kids=cfg.kids.map((k,i)=>{
     const specials={};
